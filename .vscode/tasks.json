@@ -8,9 +8,9 @@
             "args": [
                 "-g", // Debug flag
                 "-v", // Verbose output
-                "${workspaceFolder}\\src\\Main.cpp",
+                "${workspaceFolder}\\src\\main.cpp",
                 "-o",
-                "${workspaceFolder}\\bin\\Main.exe",
+                "${workspaceFolder}\\bin\\main.exe",
                 
                 "-I${workspaceFolder}\\lib\\glfw-3.3.2\\include\\",         // GLFW
                 "-L${workspaceFolder}\\lib\\glfw-3.3.2\\lib-mingw-w64\\",   // GLFW

@@ -1,9 +1,12 @@
 #include <iostream>
 #include <vector>
 #include <string>
+
+#define GLEW_STATIC
 #include <GL/glew.h>
+
 #include <GLFW/glfw3.h>
-#include "log.h"
+#include "init.h"
 
 using namespace std;
 
@@ -12,27 +15,26 @@ int main(void)
 
     GLFWwindow* window;
 
-    vector<string> msg {"Hello", "World"};
-
-    for (const string& word : msg)
-    {
-        cout << word << " ";
-    }
-    cout << endl;
-
-    // cin.get();
-    
     if (!glfwInit())
         return -1;
 
-    window = glfwCreateWindow(800, 600, "OpenGL", NULL, NULL);
+    window = glfwCreateWindow(1920, 1080, "OpenGL", NULL, NULL);
     if (!window)
     {
+        std::cout << "GLFW window could not be created." << std::endl;
         glfwTerminate();
-        return -1;
+        exit (EXIT_FAILURE);
     }
 
+    // Build OpenGL context and load GLEW
     glfwMakeContextCurrent(window);
+
+    if (glewInit() != GLEW_OK) {
+        std::cout << "GLEW was unable to set up OpenGL context." << std::endl;
+        return -1;
+    }
+    
+    std::cout << "OpenGL Version " << glGetString(GL_VERSION) << std::endl;
 
     while (!glfwWindowShouldClose(window))
     {
