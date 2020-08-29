@@ -4,9 +4,25 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        
         {
-            "name": "JAAAAA",
+            "name": "gdb attach",
+            "type": "cppdbg",
+            "request": "attach",
+            "program": "${workspaceFolder}\\bin\\main.exe",
+            "processId": "${command:pickProcess}",
+            "MIMode": "gdb",
+            "miDebuggerPath": "C:\\Program Files\\mingw-w64\\x86_64-8.1.0-posix-seh-rt_v6-rev0\\mingw64\\bin\\gdb.exe",
+            // "preLaunchTask": "BUILD",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "gdb launch",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}\\bin\\main.exe",
@@ -14,7 +30,7 @@
             "stopAtEntry": true,
             "cwd": "${workspaceFolder}\\bin",
             "environment": [],
-            "externalConsole": false,
+            "externalConsole": true,
             "MIMode": "gdb",
             "miDebuggerPath": "C:\\Program Files\\mingw-w64\\x86_64-8.1.0-posix-seh-rt_v6-rev0\\mingw64\\bin\\gdb.exe",
             "setupCommands": [

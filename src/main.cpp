@@ -8,9 +8,11 @@ using namespace std;
 
 int main(void)
 {
+    // cin.get();
+
     GLFWwindow* window;
 
-    vector<string> msg {"Hello", "C++", "World", "from", "VS Code", "and the C++ extension!"};
+    vector<string> msg {"Hello", "World"};
 
     for (const string& word : msg)
     {
