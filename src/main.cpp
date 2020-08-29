@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "log.h"
 
@@ -19,7 +20,7 @@ int main(void)
     }
     cout << endl;
 
-    cin.get();
+    // cin.get();
     
     if (!glfwInit())
         return -1;

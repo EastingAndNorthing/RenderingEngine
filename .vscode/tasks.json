@@ -6,18 +6,24 @@
             "label": "BUILD",
             "command": "g++",
             "args": [
-                "-g",
-                "-v",
+                "-g", // Debug flag
+                "-v", // Verbose output
                 "${workspaceFolder}\\src\\Main.cpp",
                 "-o",
                 "${workspaceFolder}\\bin\\Main.exe",
-                "-I",
-                "${workspaceFolder}\\lib\\glfw-3.3.2\\include\\",
-                "-L",
-                "${workspaceFolder}\\lib\\glfw-3.3.2\\lib-mingw-w64\\",
-                "-lglfw3",
-                "-lopengl32",
-                "-lgdi32"
+                
+                "-I${workspaceFolder}\\lib\\glfw-3.3.2\\include\\",         // GLFW
+                "-L${workspaceFolder}\\lib\\glfw-3.3.2\\lib-mingw-w64\\",   // GLFW
+                "-lglfw3",                                                  // GLFW
+                "-lgdi32",                                                  // GLFW
+
+                "-I${workspaceFolder}\\lib\\glew-2.1.0\\include\\",             // GLEW
+                "-L${workspaceFolder}\\lib\\glew-2.1.0\\lib\\Release\\x64\\",   // GLEW
+                "-lglew32s",                                                    // GLEW
+                
+                // "-lkernel32",
+                // "-luser32",
+                "-lopengl32", 
             ],
             "options": {
             },
