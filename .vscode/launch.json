@@ -12,7 +12,6 @@
             "processId": "${command:pickProcess}",
             "MIMode": "gdb",
             "miDebuggerPath": "C:\\Program Files\\mingw-w64\\x86_64-8.1.0-posix-seh-rt_v6-rev0\\mingw64\\bin\\gdb.exe",
-            // "preLaunchTask": "BUILD",
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",
@@ -20,14 +19,15 @@
                     "ignoreFailures": true
                 }
             ]
+            // "preLaunchTask": "BUILD",
         },
         {
             "name": "gdb launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}\\bin\\main.exe",
+            "program": "${workspaceFolder}\\bin\\Main.exe",
             "args": [],
-            "stopAtEntry": true,
+            "stopAtEntry": false,
             "cwd": "${workspaceFolder}\\bin",
             "environment": [],
             "externalConsole": true,

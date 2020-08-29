@@ -2,13 +2,12 @@
 #include <vector>
 #include <string>
 #include <GLFW/glfw3.h>
-// #include "log.h"
+#include "log.h"
 
 using namespace std;
 
 int main(void)
 {
-    // cin.get();
 
     GLFWwindow* window;
 
@@ -20,6 +19,8 @@ int main(void)
     }
     cout << endl;
 
+    cin.get();
+    
     if (!glfwInit())
         return -1;
 

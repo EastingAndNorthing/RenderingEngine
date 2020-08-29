@@ -8,13 +8,13 @@
             "args": [
                 "-g",
                 "-v",
-                "${workspaceFolder}\\src\\main.cpp",
+                "${workspaceFolder}\\src\\Main.cpp",
                 "-o",
-                "${workspaceFolder}\\bin\\main.exe",
+                "${workspaceFolder}\\bin\\Main.exe",
                 "-I",
-                "${workspaceFolder}\\src\\lib\\GLFW\\include\\",
+                "${workspaceFolder}\\lib\\glfw-3.3.2\\include\\",
                 "-L",
-                "${workspaceFolder}\\src\\lib\\GLFW\\lib-mingw-w64\\",
+                "${workspaceFolder}\\lib\\glfw-3.3.2\\lib-mingw-w64\\",
                 "-lglfw3",
                 "-lopengl32",
                 "-lgdi32"
