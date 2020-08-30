@@ -34,6 +34,8 @@
                 "-g",
                 "-std=c++17",
                 "-stdlib=libc++",
+                // "-framework",
+                // "CoreVideo",
                 "-framework",
                 "OpenGL",
                 "-framework",

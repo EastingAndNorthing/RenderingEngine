@@ -12,6 +12,13 @@ Renderer& Renderer::instance() {
 void Renderer::init() {
     glfwInit();
 
+#ifdef __APPLE__
+  glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, 2);
+  glfwWindowHint (GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+  glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#endif
+
     window = glfwCreateWindow(g_settings.window_width, g_settings.window_height, g_settings.window_title, NULL, NULL);
 
     if (!window) {
@@ -29,8 +36,9 @@ void Renderer::init() {
 
     glViewport(0, 0, g_settings.window_width, g_settings.window_height);
 
-    std::printf("[RENDERER] Initialized with OpenGL %d.%d.\n", GLVersion.major, GLVersion.minor);
-
+    printf("[RENDERER] Initialized with OpenGL %d.%d.\n", GLVersion.major, GLVersion.minor);
+    printf("[RENDERER] Supported GLSL version is %s.\n", (char *)glGetString(GL_SHADING_LANGUAGE_VERSION));
+    
 	// glEnable(GL_DEPTH_TEST);
 	// glDepthFunc(GL_LESS);
 	// glEnable(GL_STENCIL_TEST);
