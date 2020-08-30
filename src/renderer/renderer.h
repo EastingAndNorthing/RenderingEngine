@@ -1,22 +1,21 @@
 #pragma once
 #include "../common.h"
 
-class Renderer
-{
-public:
-	
-	Renderer();
-	
-	Renderer(Renderer const&) = delete; // Disallow copying
-	
-	~Renderer();
-
-	GLFWwindow* get_window() const;
-
+class Renderer {
 private:
 
-	GLFWwindow* window;
-
+	Renderer();
 	void init();
+
+public:
+	
+	Renderer(Renderer const&) = delete; // Singleton, disable copy
+  	~Renderer() = default;
+
+	GLFWwindow* window;
+    
+	static Renderer& instance();
+
+	void log();
 	
 };

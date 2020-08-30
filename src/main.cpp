@@ -1,12 +1,14 @@
 #include "common.h"
 #include "renderer/renderer.h"
 
-Settings settings;
-Renderer renderer;
+Settings g_settings;
 
 int main(void)
 {
-    while (!glfwWindowShouldClose(renderer.get_window()))
+
+    Renderer &renderer = Renderer::instance();
+
+    while (!glfwWindowShouldClose(renderer.window))
     {
         // Check if any events have been activated (key pressed, mouse moved etc.) and call corresponding response functions
         glfwPollEvents();
@@ -16,7 +18,7 @@ int main(void)
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Swap the screen buffers
-        glfwSwapBuffers(renderer.get_window());
+        glfwSwapBuffers(renderer.window);
     }
 
     glfwTerminate();

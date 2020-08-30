@@ -1,6 +1,6 @@
 #pragma once
 #include "../common.h"
-#include <string>
+#include <iostream>
 
 struct Settings
 {
@@ -8,6 +8,10 @@ struct Settings
 	int window_width = 1920;
 	int window_height = 1080;
 	int vsync = 1;
+
+	Settings() {
+		std::cout << "[SETTINGS] Initialized." << std::endl;
+	}
 };
 
-extern Settings settings;
+extern Settings g_settings;
