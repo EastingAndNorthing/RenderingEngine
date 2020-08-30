@@ -15,7 +15,6 @@
             "environment": [],
             "externalConsole": false,
             "MIMode": "lldb",
-            "preLaunchTask": "BUILD (MacOS)"
         },
         {
             "name": "(MacOS) Build + Launch",

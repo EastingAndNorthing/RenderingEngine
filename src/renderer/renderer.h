@@ -9,13 +9,13 @@ private:
 
 public:
 	
-	Renderer(Renderer const&) = delete; // Singleton, disable copy
+	Renderer(Renderer const&) = delete; // Don't copy me :)
   	~Renderer() = default;
 
 	GLFWwindow* window;
     
 	static Renderer& instance();
 
-	void log();
+	void log(const char* msg);
 	
 };

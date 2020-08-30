@@ -9,14 +9,6 @@ Renderer& Renderer::instance() {
     return instance;
 }
 
-// GLFWwindow* Renderer::get_window() const {
-// 	return window;
-// }
-
-void Renderer::log() {
-    printf("[RENDERER] JAAAAA");
-}
-
 void Renderer::init() {
     glfwInit();
 
@@ -45,4 +37,8 @@ void Renderer::init() {
 	// glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 	// glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 	// glEnable(GL_CULL_FACE);
+}
+
+void Renderer::log(const char* msg) {
+    printf("[RENDERER] %s\n", msg);
 }
