@@ -5,10 +5,36 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "gdb build + launch",
+            "name": "(MacOS) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}\\bin\\main.exe",
+            "program": "${workspaceFolder}/bin/macos/main.app",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb",
+            "preLaunchTask": "BUILD (MacOS)"
+        },
+        {
+            "name": "(MacOS) Build + Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/macos/main.app",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb",
+            "preLaunchTask": "BUILD (MacOS)"
+        },
+        {
+            "name": "(Win) Build + Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}\\bin\\windows\\main.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}\\bin",
@@ -26,10 +52,10 @@
             "preLaunchTask": "BUILD"
         },
         {
-            "name": "gdb launch",
+            "name": "(Win) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}\\bin\\Main.exe",
+            "program": "${workspaceFolder}\\bin\\windows\\main.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}\\bin",
