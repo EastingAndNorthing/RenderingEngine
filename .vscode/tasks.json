@@ -3,30 +3,55 @@
     "tasks": [
         {
             "type": "shell",
-            "label": "BUILD",
+            "label": "BUILD (Windows)",
             "command": "g++",
             "args": [
-                "-g",       // Debug flag
-                // "-v",    // Verbose output
+                "-g",
                 "${workspaceFolder}\\src\\*.cpp",
                 "${workspaceFolder}\\src\\general\\*.cpp",
                 "${workspaceFolder}\\src\\renderer\\*.cpp",
-                
-                "-I${workspaceFolder}\\lib\\glfw-3.3.2\\include\\",             // GLFW
-                "-L${workspaceFolder}\\lib\\glfw-3.3.2\\lib-mingw-w64\\",       // GLFW
-                "-lglfw3",                                                      // GLFW
-                "-lgdi32",                                                      // GLFW
-
-                "-I${workspaceFolder}\\lib\\glad\\include\\",                   // GLAD
-                "${workspaceFolder}\\lib\\glad\\src\\glad.c",                   // GLAD
-                
-                "-lopengl32", 
-
+                "-I${workspaceFolder}\\lib\\glfw-3.3.2\\include\\",
+                "-L${workspaceFolder}\\lib\\glfw-3.3.2\\lib-mingw-w64\\",
+                "-lglfw3",
+                "-lgdi32",
+                "-I${workspaceFolder}\\lib\\glad\\include\\",
+                "${workspaceFolder}\\lib\\glad\\src\\glad.c",
+                "-lopengl32",
                 "-o",
-                "${workspaceFolder}\\bin\\main.exe",
+                "${workspaceFolder}\\bin\\windows\\main.exe"
             ],
-            "options": {
-            },
+            "options": {},
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build"
+        },
+        {
+            "type": "shell",
+            "label": "BUILD (MacOS)",
+            "command": "/usr/bin/clang++",
+            "args": [
+                "-g",
+                "-std=c++17",
+                "-stdlib=libc++",
+                "-framework",
+                "OpenGL",
+                "-framework",
+                "Cocoa",
+                "-framework",
+                "IOKit",
+                "${workspaceFolder}/src/*.cpp",
+                "${workspaceFolder}/src/general/*.cpp",
+                "${workspaceFolder}/src/renderer/*.cpp",
+                "-I${workspaceFolder}/lib/glfw-3.3.2.macos/include/",
+                "-L${workspaceFolder}/lib/glfw-3.3.2.macos/lib-macos/",
+                "-lglfw3",
+                "-I${workspaceFolder}/lib/glad/include/",
+                "${workspaceFolder}/lib/glad/src/glad.c",
+                "-o",
+                "${workspaceFolder}/bin/macos/main.app"
+            ],
+            "options": {},
             "problemMatcher": [
                 "$gcc"
             ],
