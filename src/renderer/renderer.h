@@ -1,21 +1,27 @@
 #pragma once
+
 #include "../common.h"
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 class Renderer {
-private:
-
-	Renderer();
-	void init();
-
 public:
 	
-	Renderer(Renderer const&) = delete; // Don't copy me :)
+	Renderer(Renderer const&) = delete;
   	~Renderer() = default;
 
 	GLFWwindow* window;
     
-	static Renderer& instance();
+	static Renderer& Instance();
 
-	void log(const char* msg);
+	GLuint CompileShader(const std::string& source, unsigned int type);
+
+	GLuint CompileShaders(const std::string& vertexShader, const std::string& fragmentShader);
 	
+private:
+
+	Renderer();
+	
+	void Init();
+
 };

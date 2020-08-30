@@ -24,7 +24,10 @@
             "problemMatcher": [
                 "$gcc"
             ],
-            "group": "build"
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         },
         {
             "type": "shell",
@@ -34,8 +37,6 @@
                 "-g",
                 "-std=c++17",
                 "-stdlib=libc++",
-                // "-framework",
-                // "CoreVideo",
                 "-framework",
                 "OpenGL",
                 "-framework",
@@ -54,6 +55,24 @@
                 "${workspaceFolder}/bin/macos/main.app"
             ],
             "options": {},
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build"
+        },
+        {
+            "type": "shell",
+            "label": "C/C++: g++.exe build active file",
+            "command": "C:\\Program Files\\mingw-w64\\x86_64-8.1.0-posix-seh-rt_v6-rev0\\mingw64\\bin\\g++.exe",
+            "args": [
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}\\${fileBasenameNoExtension}.exe"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
             "problemMatcher": [
                 "$gcc"
             ],

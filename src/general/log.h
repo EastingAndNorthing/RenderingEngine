@@ -1,3 +1,3 @@
 #pragma once
 
-void Log(const char* msg, int prio);
+void Log(const char* msg, bool success);
