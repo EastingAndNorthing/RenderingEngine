@@ -1,5 +1,5 @@
 #include "common.h"
-#include "renderer/renderer.h"
+#include "core/renderer.h"
 #include <string>
 
 Settings g_settings;
