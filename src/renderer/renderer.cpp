@@ -1,3 +1,6 @@
+#include <fstream>
+#include <string>
+#include <sstream>
 #include "renderer.h"
 #include "../common.h"
 
@@ -47,9 +50,9 @@ void Renderer::Init() {
 	// glEnable(GL_CULL_FACE);
 }
 
-GLuint Renderer::CompileShader(const std::string& rawShader, unsigned int type) {
+GLuint Renderer::CompileShader(const std::string& shaderSource, unsigned int type) {
     GLuint shaderId = glCreateShader(type);
-    const char* src = rawShader.c_str();
+    const char* src = shaderSource.c_str();
     glShaderSource(shaderId, 1, &src, nullptr);
     glCompileShader(shaderId);
 
@@ -71,10 +74,53 @@ GLuint Renderer::CompileShader(const std::string& rawShader, unsigned int type) 
     return shaderId;
 }
 
-GLuint Renderer::CompileShaders(const std::string& vertexShader, const std::string& fragmentShader) {
+GLuint Renderer::CompileShaders(const std::string& vertexShaderPath, const std::string& fragmentShaderPath) {
+	
+    std::string vert;
+    std::string frag;
+
+    std::ifstream f_shader_file;
+	f_shader_file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+	std::stringstream f_shader_stream;
+
+	try
+	{
+		f_shader_file.open(vertexShaderPath);
+		f_shader_stream << f_shader_file.rdbuf();
+		f_shader_file.close();
+
+        std::cout << "Ye boi." << std::endl;
+
+        vert = f_shader_stream.str();
+		// return f_shader_stream.str();
+	}
+	catch (std::ifstream::failure& e)
+	{
+        std::cout << "[RENDERER] Failed to load shader: " << vertexShaderPath << std::endl;
+		throw e;
+	}
+    
+    // std::ifstream stream(vertexShaderPath);
+
+    // std::string line;
+    // std::stringstream ss[2];
+    // while (getline(stream, line)) {
+    //     if(line.find("#version") != std::string::npos) {
+    //         std::cout << "found it" << std::endl;
+    //     }
+    // }
+
+    // std::ifstream ifs_v(vertexShaderPath);
+    // std::string vert ( (std::istreambuf_iterator<char>(ifs_v) ), (std::istreambuf_iterator<char>()) );
+
+    // std::cout << vert << std::endl;
+
+    // std::ifstream ifs_f(fragmentShaderPath);
+    // std::string frag ( (std::istreambuf_iterator<char>(ifs_f) ), (std::istreambuf_iterator<char>()) );
+
     GLuint program = glCreateProgram();
-    GLuint vs = CompileShader(vertexShader, GL_VERTEX_SHADER);
-    GLuint fs = CompileShader(fragmentShader, GL_FRAGMENT_SHADER);
+    GLuint vs = CompileShader(vert, GL_VERTEX_SHADER);
+    GLuint fs = CompileShader(frag, GL_FRAGMENT_SHADER);
 
     if(vs == 0 || fs == 0) 
         return 0;
