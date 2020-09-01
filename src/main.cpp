@@ -2,7 +2,7 @@
 #include "common.h"
 #include "core/Renderer.h"
 #include "core/Vec3.h"
-#include "primitives/Polygon.h"
+#include "core/Vertex.h"
 
 Settings g_settings;
 
@@ -16,8 +16,6 @@ int main(void)
     Vertex v1 = { Vec3(-0.5f, -0.5f, 0.2f) };
     Vertex v2 = { Vec3( 0.0f,  0.5f, 0.5f) };
     Vertex v3 = { Vec3( 0.5f, -0.5f, 0.21f) };
-
-    Polygon polygon = { v1, v2, v3 };
 
     // Vertex positions, 2 floats per vertex
     float positions[6] = {
