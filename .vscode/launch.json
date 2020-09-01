@@ -6,6 +6,7 @@
     "configurations": [
         {
             "name": "(MacOS) Launch",
+            "internalConsoleOptions": "openOnSessionStart",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/bin/macos/main.app",
@@ -18,6 +19,7 @@
         },
         {
             "name": "(MacOS) Build + Launch",
+            "internalConsoleOptions": "openOnSessionStart",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/bin/macos/main.app",

@@ -1,13 +1,23 @@
+#include <fstream>
+#include <sstream>
 #include <string>
 #include "common.h"
 #include "core/Renderer.h"
 #include "core/Vec3.h"
 #include "core/Vertex.h"
+#include <mach-o/dyld.h>  
 
 Settings g_settings;
 
 int main(void)
 {
+
+    // char path[1024];
+    // uint32_t size = sizeof(path);
+    // if (_NSGetExecutablePath(path, &size) == 0)
+    //     printf("executable path is %s\n", path);
+    // else
+    //     printf("lol, buffer too small; should be %u\n m8", size);
 
     Renderer &renderer = Renderer::Instance();
 
@@ -32,25 +42,7 @@ int main(void)
     glBindBuffer(GL_ARRAY_BUFFER, vertexArrayObj);
     glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
     
-    std::string vs = 
-        "#version 330 core\n"
-        "\n"
-        "layout(location = 0) in vec4 position;\n"
-        "\n"
-        "void main() { \n"
-            "gl_Position = position;\n"
-        "}\n";
-
-    std::string fs = 
-        "#version 330 core\n"
-        "\n"
-        "layout(location = 0) out vec4 color;\n"
-        "\n"
-        "void main() { \n"
-            "color = vec4(1.0, 1.0, 0.0, 1.0);\n"
-        "}\n";
-
-    GLuint shader = renderer.CompileShaders(vs, fs);
+    GLuint shader = renderer.CompileShaders("shaders/Basic.vert", "shaders/Basic.frag");
 
     GLint vertexPosAtrib = glGetAttribLocation(shader, "position");
     // Define that we are using 2d vertex positions,
