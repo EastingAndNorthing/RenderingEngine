@@ -1,6 +1,5 @@
 #include <fstream>
 #include <string>
-#include <sstream>
 #include "renderer.h"
 #include "../common.h"
 
