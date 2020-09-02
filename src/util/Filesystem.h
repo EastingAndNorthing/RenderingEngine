@@ -12,15 +12,15 @@ class Filesystem {
 public:
 
 	Filesystem(Filesystem const&) = delete;
-  	~Filesystem() = default;
+	~Filesystem() = default;
 
 	static Filesystem& Instance();
 
-    std::string basePath;
+	std::string basePath;
 
-    std::string getBasePath();
-    
-    std::string getFileContents(const std::string& relativePath);
+	std::string getBasePath();
+
+	std::string getFileContents(const std::string& relativePath);
 
 private:
 

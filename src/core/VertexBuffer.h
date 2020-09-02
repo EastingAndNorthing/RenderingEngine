@@ -2,12 +2,12 @@
 
 class VertexBuffer {
 public:
-	
+
 	VertexBuffer();
 
-  	~VertexBuffer() = default;
-    
-    GLuint vertexArrayObj;
+	~VertexBuffer() = default;
+
+	GLuint vertexArrayObj;
 
 private:
 

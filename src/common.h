@@ -5,5 +5,5 @@
 #include <GLFW/glfw3.h>
 
 // General
-#include "general/settings.h"
+#include "general/Settings.h"
 // #include "general/log.h"
