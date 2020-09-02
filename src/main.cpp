@@ -5,7 +5,7 @@
 #include "core/Renderer.h"
 #include "core/Vec3.h"
 #include "core/Vertex.h"
-#include <mach-o/dyld.h>  
+// #include <mach-o/dyld.h>
 
 Settings g_settings;
 

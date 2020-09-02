@@ -51,23 +51,27 @@ void Renderer::Init() {
 }
 
 GLuint Renderer::CompileShader(const std::string& shaderSource, unsigned int type) {
-
-    printf("[INFO] [RENDERER] Compiling shader: '%s'...\n", shaderSource.c_str());
-
     // stream.open("main.app.dSYM/Contents/...");
     std::ifstream stream(shaderSource);
     std::string shader_str((std::istreambuf_iterator<char>(stream)),
-                          std::istreambuf_iterator<char>());
+                            std::istreambuf_iterator<char>());
+    
+    if (!stream.is_open()) {
+        printf("[ERROR] [RENDERER] Shader '%s' could not be opened.\n", shaderSource.c_str());
+        return 0;
+    } else {
+        printf("[INFO] [RENDERER] Compiling shader: '%s'...\n", shaderSource.c_str());
+    }
 
     GLuint shaderId = glCreateShader(type);
     const char* src = shader_str.c_str();
     glShaderSource(shaderId, 1, &src, nullptr);
     glCompileShader(shaderId);
 
-    int result;
-    glGetShaderiv(shaderId, GL_COMPILE_STATUS, &result);
+    int compilation_result;
+    glGetShaderiv(shaderId, GL_COMPILE_STATUS, &compilation_result);
 
-    if(result == GL_FALSE) {
+    if(compilation_result == GL_FALSE) {
         int length;
         glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &length);
         
@@ -100,7 +104,7 @@ GLuint Renderer::CompileShaders(const std::string& vertexShaderPath, const std::
     glDeleteShader(vert);
     glDeleteShader(frag);
 
-    printf("[INFO] [RENDERER] Shader compiled.\n");
+    printf("[INFO] [RENDERER] Shader successfully validated.\n");
 
     return program;
 }
