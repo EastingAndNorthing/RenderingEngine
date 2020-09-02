@@ -1,8 +1,7 @@
-#include <fstream>
-#include <sstream>
 #include <string>
+#include "common.h"
+#include "util/Filesystem.h"
 #include "Renderer.h"
-#include "../common.h"
 
 Renderer::Renderer() {
 	Init();
@@ -26,7 +25,7 @@ void Renderer::Init() {
     window = glfwCreateWindow(g_settings.window_width, g_settings.window_height, g_settings.window_title, NULL, NULL);
 
     if (!window) {
-        printf("[ERR] [RENDERER] GLFW window could not be created.");
+        printf("[ERR] GLFW window could not be created.");
         glfwTerminate();
     }
 
@@ -34,13 +33,13 @@ void Renderer::Init() {
 	glfwSwapInterval(g_settings.vsync);
     
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
-        printf("[ERR] [RENDERER] Failed to initialize OpenGL context");
+        printf("[ERR] Failed to initialize OpenGL context");
     }
 
     glViewport(0, 0, g_settings.window_width, g_settings.window_height);
 
-    printf("[INFO] [RENDERER] Initialized with OpenGL %d.%d.\n", GLVersion.major, GLVersion.minor);
-    printf("[INFO] [RENDERER] Supported GLSL version is %s.\n", (char *)glGetString(GL_SHADING_LANGUAGE_VERSION));
+    printf("[RENDERER] Initialized with OpenGL %d.%d.\n", GLVersion.major, GLVersion.minor);
+    printf("[RENDERER] Supported GLSL version is %s.\n", (char *)glGetString(GL_SHADING_LANGUAGE_VERSION));
     
 	// glEnable(GL_DEPTH_TEST);
 	// glDepthFunc(GL_LESS);
@@ -51,17 +50,11 @@ void Renderer::Init() {
 }
 
 GLuint Renderer::CompileShader(const std::string& shaderSource, unsigned int type) {
-    // stream.open("main.app.dSYM/Contents/...");
-    std::ifstream stream(shaderSource);
-    std::string shader_str((std::istreambuf_iterator<char>(stream)),
-                            std::istreambuf_iterator<char>());
-    
-    if (!stream.is_open()) {
-        printf("[ERROR] [RENDERER] Shader '%s' could not be opened.\n", shaderSource.c_str());
-        return 0;
-    } else {
-        printf("[INFO] [RENDERER] Compiling shader: '%s'...\n", shaderSource.c_str());
-    }
+
+    Filesystem &fs = Filesystem::Instance();
+    std::string shader_str = fs.getFileContents(shaderSource);
+
+    printf("[INFO] Compiling shader: '%s'...\n", shaderSource.c_str());
 
     GLuint shaderId = glCreateShader(type);
     const char* src = shader_str.c_str();
@@ -77,7 +70,7 @@ GLuint Renderer::CompileShader(const std::string& shaderSource, unsigned int typ
         
         char* message = (char*) alloca(length * sizeof(char));
         glGetShaderInfoLog(shaderId, length, &length, message);
-        printf("[ERR] [RENDERER] Could not compile shader: '%s'. \nOpenGL: %s", shaderSource.c_str(), message);
+        printf("[ERR] Could not compile shader: '%s'. \nOpenGL: %s", shaderSource.c_str(), message);
         
         glDeleteShader(shaderId);
         return 0;
@@ -100,11 +93,20 @@ GLuint Renderer::CompileShaders(const std::string& vertexShaderPath, const std::
     glAttachShader(program, frag);
     glLinkProgram(program);
     glValidateProgram(program);
-
     glDeleteShader(vert);
     glDeleteShader(frag);
 
-    printf("[INFO] [RENDERER] Shader successfully validated.\n");
+    int program_linked = 0;
+    glGetProgramiv(program, GL_LINK_STATUS, &program_linked);
+    if (program_linked == GL_FALSE) {
+        GLsizei log_length = 0;
+        GLchar message[1024];
+        glGetProgramInfoLog(program, 1024, &log_length, message);
+        printf("[ERR] Shader linking error: %s\n", message);
+        return 0;
+    }
+
+    printf("[SUCCESS] Shader compiled.\n");
 
     return program;
 }
