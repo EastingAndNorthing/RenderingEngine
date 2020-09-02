@@ -1,13 +1,14 @@
 #include "common.h"
+#include "core/Vertex.h"
 
 class VertexBuffer {
 public:
 
-	VertexBuffer();
+	VertexBuffer(const void* vertices, unsigned int size, int mode = GL_STATIC_DRAW);
 
 	~VertexBuffer() = default;
 
-	GLuint vertexArrayObj;
+	GLuint m_vertexArrayObj;
 
 private:
 

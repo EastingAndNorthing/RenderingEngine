@@ -3,6 +3,7 @@
 #include "core/Renderer.h"
 #include "core/Vec3.h"
 #include "core/Vertex.h"
+#include "core/VertexBuffer.h"
 
 Settings g_settings;
 
@@ -18,14 +19,16 @@ int main(int argc, char **argv) {
         v1, v2, v3
     };
 
-    // Build a new buffer to hold vertices
-    GLuint vertexArrayObj;
-    glGenVertexArrays(1, &vertexArrayObj);
-    glBindVertexArray(vertexArrayObj);
-    glGenBuffers(1, &vertexArrayObj);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexArrayObj);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    // // Build a new buffer to hold vertices
+    // GLuint vertexArrayObj;
+    // glGenVertexArrays(1, &vertexArrayObj);
+    // glBindVertexArray(vertexArrayObj);
+    // glGenBuffers(1, &vertexArrayObj);
+    // glBindBuffer(GL_ARRAY_BUFFER, vertexArrayObj);
+    // glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     
+    VertexBuffer* vbuffer = new VertexBuffer(vertices, sizeof(vertices), GL_STATIC_DRAW);
+
     GLuint shader = renderer.CompileShaders("shaders/Basic.vert", "shaders/Basic.frag");
     GLint vertexPosAtrib = glGetAttribLocation(shader, "position");
     glVertexAttribPointer(vertexPosAtrib, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0); // offsetof(Vertex, attribute)
@@ -45,7 +48,8 @@ int main(int argc, char **argv) {
         glfwSwapBuffers(renderer.window);
     }
 
-    // glBindBuffer(GL_ARRAY_BUFFER, 0);
+    delete vbuffer;
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glfwTerminate();
     return 0;
 }
