@@ -8,8 +8,8 @@ Vertex::Vertex() {
     position = { 0, 0, 0 };
 }
 
-Vertex::Vertex(Vec3 position)
-    : position(position)
+Vertex::Vertex(Vec3 position, Vec3 color)
+    : position(position), color(color)
 {}
 
 Vertex::Vertex(float x, float y, float z)

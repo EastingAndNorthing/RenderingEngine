@@ -12,6 +12,12 @@ Renderer& Renderer::Instance() {
     return instance;
 }
 
+/*! @brief Creates a native window and starts an OpenGL context using GLFW. 
+ * Loads the OpenGL library functions using GLAD. 
+ *
+ * @param[in] timeout The maximum amount of time, in seconds, to wait.
+ *
+ */
 void Renderer::Init() {
     glfwInit();
 
@@ -41,6 +47,9 @@ void Renderer::Init() {
     printf("[RENDERER] Initialized with OpenGL %d.%d.\n", GLVersion.major, GLVersion.minor);
     printf("[RENDERER] Supported GLSL version is %s.\n", (char *)glGetString(GL_SHADING_LANGUAGE_VERSION));
     
+    GLuint base_vao;
+    glGenVertexArrays(1, &base_vao);
+    glBindVertexArray(base_vao);
 	// glEnable(GL_DEPTH_TEST);
 	// glDepthFunc(GL_LESS);
 	// glEnable(GL_STENCIL_TEST);
@@ -49,64 +58,3 @@ void Renderer::Init() {
 	// glEnable(GL_CULL_FACE);
 }
 
-GLuint Renderer::CompileShader(const std::string& shaderSource, unsigned int type) {
-
-    Filesystem &fs = Filesystem::Instance();
-    std::string shader_str = fs.getFileContents(shaderSource);
-
-    printf("[INFO] Compiling shader: '%s'...\n", shaderSource.c_str());
-
-    GLuint shaderId = glCreateShader(type);
-    const char* src = shader_str.c_str();
-    glShaderSource(shaderId, 1, &src, nullptr);
-    glCompileShader(shaderId);
-
-    int compilation_result;
-    glGetShaderiv(shaderId, GL_COMPILE_STATUS, &compilation_result);
-
-    if(compilation_result == GL_FALSE) {
-        int length;
-        glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &length);
-        
-        char* message = (char*) alloca(length * sizeof(char));
-        glGetShaderInfoLog(shaderId, length, &length, message);
-        printf("[ERR] Could not compile shader: '%s'. \nOpenGL: %s", shaderSource.c_str(), message);
-        
-        glDeleteShader(shaderId);
-        return 0;
-    }
-
-    return shaderId;
-}
-
-GLuint Renderer::CompileShaders(const std::string& vertexShaderPath, const std::string& fragmentShaderPath) {
-    
-    GLuint vert = CompileShader(vertexShaderPath, GL_VERTEX_SHADER);
-    GLuint frag = CompileShader(fragmentShaderPath, GL_FRAGMENT_SHADER);
-
-    if(vert == 0 || frag == 0) {
-        return 0;
-    }
-
-    GLuint program = glCreateProgram();
-    glAttachShader(program, vert);
-    glAttachShader(program, frag);
-    glLinkProgram(program);
-    glValidateProgram(program);
-    glDeleteShader(vert);
-    glDeleteShader(frag);
-
-    int program_linked = 0;
-    glGetProgramiv(program, GL_LINK_STATUS, &program_linked);
-    if (program_linked == GL_FALSE) {
-        GLsizei log_length = 0;
-        GLchar message[1024];
-        glGetProgramInfoLog(program, 1024, &log_length, message);
-        printf("[ERR] Shader linking error: %s\n", message);
-        return 0;
-    }
-
-    printf("[SUCCESS] Shader compiled.\n");
-
-    return program;
-}

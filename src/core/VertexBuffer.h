@@ -8,7 +8,14 @@ public:
 
 	~VertexBuffer() = default;
 
-	GLuint m_vertexArrayObj;
+	GLuint vao;
+	GLuint vbuffer;
+
+	GLuint getID();
+
+	void Bind();
+
+	void Unbind();
 
 private:
 

@@ -4,10 +4,10 @@
 
 struct Vertex {
     Vec3 position;
-    int textureID;
+    Vec3 color;
 
     Vertex();
-    Vertex(Vec3 position);
+    Vertex(Vec3 position, Vec3 color = {});
     Vertex(float x, float y, float z);
 
 };
