@@ -68,18 +68,17 @@ int main(int argc, char **argv) {
         glClear(GL_COLOR_BUFFER_BIT);
 
         // RENDERING LOOP /////////////////////////////////////////////////////
-
+        myQuad->Bind();
         myQuadIBO->Bind();
         basicShader->Bind();
-        myQuad->Bind();
         
-        glDrawArrays(GL_TRIANGLES, 0, 3); // Without ibo
         glDrawElements(
             GL_TRIANGLES,      // mode
             indices.size(),    // count
             GL_UNSIGNED_INT,   // type
             nullptr            // offset in buffer to start drawing
         );
+        
         ///////////////////////////////////////////////////////////////////////
         glfwSwapBuffers(renderer.window);
     }
