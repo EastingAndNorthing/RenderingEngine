@@ -1,13 +1,13 @@
+#include <vector>
 #include "common.h"
 #include "core/Vertex.h"
 #include "core/VertexBuffer.h"
 
 /*!
  * @param vertices
- * @param size Should be sizeof(vertices)
  * @param mode GL_STATIC_DRAW or GL_DYNAMIC_DRAW. See glBufferData() for more options.
  */
-VertexBuffer::VertexBuffer(const void* vertices, unsigned int size, int mode) {
+VertexBuffer::VertexBuffer(std::vector<Vertex> &vertices, int mode) {
     
     // Generate and bind a vertex array object. This makes a connection between a buffer and a vertex layout (attribute locations)
     // @TODO Benchmark if using separate vao's is less efficient than having 1 global vao. 
@@ -16,7 +16,7 @@ VertexBuffer::VertexBuffer(const void* vertices, unsigned int size, int mode) {
 
     glGenBuffers(1, &this->vbuffer);
     glBindBuffer(GL_ARRAY_BUFFER, this->vbuffer);
-    glBufferData(GL_ARRAY_BUFFER, size, vertices, mode);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], mode);
     
 };
 
