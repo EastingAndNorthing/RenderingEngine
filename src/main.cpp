@@ -1,6 +1,7 @@
 #include "common.h"
 #include "core/Renderer.h"
 #include "core/Vec3.h"
+#include "core/Vec4.h"
 #include "core/Vertex.h"
 #include "core/VertexBuffer.h"
 #include "core/Shader.h"
@@ -13,17 +14,17 @@ int main(int argc, char **argv) {
 
     Vertex v1 = {
         Vec3(-0.5f, -0.5f, 0.2f),
-        Vec3(1.0f, 0.0f, 0.0f),
+        Vec4(1.0f, 0.0f, 0.0f, 0.0f),
     };
 
     Vertex v2 = {
         Vec3( 0.0f,  0.5f, 0.5f),
-        Vec3(0.0f, 1.0f, 0.0f),
+        Vec4(0.0f, 1.0f, 0.0f, 0.0f),
     };
 
     Vertex v3 = {
         Vec3( 0.5f, -0.5f, 0.8f),
-        Vec3(0.0f, 0.0f, 1.0f),
+        Vec4(0.0f, 0.0f, 1.0f, 0.0f),
     };
 
     Vertex vertices[3] {

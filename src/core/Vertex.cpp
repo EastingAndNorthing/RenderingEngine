@@ -8,7 +8,7 @@ Vertex::Vertex() {
     position = { 0, 0, 0 };
 }
 
-Vertex::Vertex(Vec3 position, Vec3 color)
+Vertex::Vertex(Vec3 position, Vec4 color)
     : position(position), color(color)
 {}
 

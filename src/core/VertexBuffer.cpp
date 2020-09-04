@@ -10,6 +10,7 @@
 VertexBuffer::VertexBuffer(const void* vertices, unsigned int size, int mode) {
     
     // Generate and bind a vertex array object. This makes a connection between a buffer and a vertex layout (attribute locations)
+    // @TODO Benchmark if using separate vao's is less efficient than having 1 global vao. 
     glGenVertexArrays(1, &this->vao);
     glBindVertexArray(this->vao);
 
