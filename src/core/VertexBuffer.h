@@ -1,3 +1,5 @@
+#pragma once
+
 #include <vector>
 #include "common.h"
 #include "core/Vertex.h"
@@ -12,13 +14,14 @@ public:
 	GLuint vao;
 	GLuint vbuffer;
 
-	GLuint getID();
-
 	void Bind();
 
 	void Unbind();
 
+	unsigned int getSize();
+
 private:
 
+	unsigned int size;
 
 };

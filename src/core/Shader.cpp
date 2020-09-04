@@ -2,6 +2,8 @@
 #include "core/Shader.h"
 #include "util/Filesystem.h"
 
+Shader::Shader() {}
+
 Shader::Shader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath, bool autoCompile) 
     : vertexShaderPath(vertexShaderPath), fragmentShaderPath(fragmentShaderPath)
 {
@@ -82,8 +84,4 @@ void Shader::Bind() {
 
 void Shader::UnBind() {
     glUseProgram(0);
-}
-
-GLuint Shader::getID() {
-    return this->program;
 }

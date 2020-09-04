@@ -1,7 +1,10 @@
-#include <string>
+#include <unordered_map>
+#include <utility>
 #include "common.h"
+#include "core/Renderer.h"
 #include "util/Filesystem.h"
-#include "Renderer.h"
+#include "core/Shader.h"
+#include "primitives/Mesh.h"
 
 Renderer::Renderer() {
 	Init();
@@ -58,3 +61,41 @@ void Renderer::Init() {
 	// glEnable(GL_CULL_FACE);
 }
 
+void Renderer::Enqueue(Mesh &mesh) {
+    printf("Adding mesh of %u bytes\n", mesh.vertexBuffer.getSize());
+    this->renderQueue.push_back(mesh);
+}
+
+void Renderer::Draw() {
+
+    for (auto& mesh: this->renderQueue) {
+
+        mesh.Bind();
+
+        // Draw using an index buffer if it is available Otherwise, draw all vertices.
+        if(mesh.indexBuffer.getCount() > 0) {
+
+            glDrawElements(
+                GL_TRIANGLES,                   // mode
+                mesh.indexBuffer.getCount(),    // count / amount of indices
+                GL_UNSIGNED_INT,                // type
+                nullptr                         // offset in buffer to start drawing
+            );
+
+        } else {
+
+            glDrawArrays(GL_TRIANGLES, 0, mesh.vertexBuffer.getSize());
+
+        }
+
+    }
+}
+
+void Renderer::Clear() {
+    glUseProgram(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+}

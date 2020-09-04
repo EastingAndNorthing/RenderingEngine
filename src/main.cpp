@@ -7,6 +7,7 @@
 #include "core/VertexBuffer.h"
 #include "core/IndexBuffer.h"
 #include "core/Shader.h"
+#include "primitives/Mesh.h"
 
 Settings g_settings;
 
@@ -34,58 +35,43 @@ int main(int argc, char **argv) {
         Vec4(1.0f, 1.0f, 0.0f, 0.0f),
     };
 
-    std::vector<Vertex> vertices {
+    std::vector<Vertex> someQuad {
         v1, v2, v3, v4
     };
 
-    std::vector<unsigned int> indices = {
+    std::vector<unsigned int> someQuadIndices = {
         0, 1, 2,
         0, 2, 3
     };
 
-    VertexBuffer* myQuad = new VertexBuffer(vertices, GL_STATIC_DRAW);
-    IndexBuffer* myQuadIBO = new IndexBuffer(indices, GL_STATIC_DRAW);
+    std::vector<Vertex> someTriangle {
+        Vertex(0,1,0), Vertex(0,1,1), Vertex(1,1,0),
+    };
+
+    Mesh* myQuad = new Mesh(someQuad, someQuadIndices);
+    Mesh* myTriangle = new Mesh(someTriangle);
 
     Shader* basicShader = new Shader("shaders/Basic.vert", "shaders/Basic.frag");
-
-    GLint vertexPosAtrib = glGetAttribLocation(basicShader->getID(), "position"); // Note that this is based on the currently active vertex array object (VertexBuffer)
-    glVertexAttribPointer(vertexPosAtrib, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0); // Look into offsetof(Vertex, attribute)
-    glEnableVertexAttribArray(vertexPosAtrib);
-
-    GLint vertexColAtrib = glGetAttribLocation(basicShader->getID(), "color"); // Note that this is based on the currently active vertex array object (VertexBuffer)
-    glVertexAttribPointer(vertexColAtrib, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*) offsetof(Vertex, color));
-    glEnableVertexAttribArray(vertexColAtrib);
     
-    // Reset loaded data for now
-    glUseProgram(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    myQuad->assignShader(*basicShader);
+    myTriangle->assignShader(*basicShader);
+
+    renderer.Enqueue(*myQuad);
+    // renderer.Enqueue(*myTriangle); // This breaks shader?
+
+    renderer.Clear();
 
     while (!glfwWindowShouldClose(renderer.window)) {
         glfwPollEvents();
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // RENDERING LOOP /////////////////////////////////////////////////////
-        myQuad->Bind();
-        myQuadIBO->Bind();
-        basicShader->Bind();
-        
-        glDrawElements(
-            GL_TRIANGLES,      // mode
-            indices.size(),    // count
-            GL_UNSIGNED_INT,   // type
-            nullptr            // offset in buffer to start drawing
-        );
-        
-        ///////////////////////////////////////////////////////////////////////
+        renderer.Draw();
+
         glfwSwapBuffers(renderer.window);
     }
 
-    // delete myTriangle;
-    delete myQuad;
-    delete myQuadIBO;
+    // delete mesh; // Clean up heap
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glUseProgram(0);

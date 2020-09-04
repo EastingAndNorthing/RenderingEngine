@@ -1,6 +1,10 @@
 #pragma once
 
+#include <unordered_map>
+#include <vector>
 #include "common.h"
+#include "core/Shader.h"
+#include "primitives/Mesh.h"
 
 class Renderer {
 public:
@@ -12,14 +16,19 @@ public:
     
 	static Renderer& Instance();
 
-	GLuint CompileShader(const std::string& shaderSource, unsigned int type);
-	
-	GLuint CompileShaders(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
+	void Enqueue(Mesh &mesh);
+
+	void Draw();
+
+	void Clear();
 
 private:
 
 	Renderer();
 	
 	void Init();
+
+	// std::unordered_map<Mesh, Shader> renderQueue;
+	std::vector<Mesh> renderQueue;
 
 };
