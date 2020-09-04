@@ -26,9 +26,14 @@ std::string Filesystem::getBasePath() {
         char c_path[1024];
         uint32_t size = sizeof(c_path);
         if (_NSGetExecutablePath(c_path, &size) == 0)
-            std::string path(c_path); // TODO fix relative path
+            std::string path(c_path);
         else
             printf("Could not get executable path, I need %u characters\n", size);
+        
+        std::string path(c_path);
+
+        std::string executable = "main.app";
+
     #elif _WIN32
         // Copied from Boost library
         typedef std::vector<char> char_vector;
@@ -59,14 +64,15 @@ std::string Filesystem::getBasePath() {
         } while (shouldContinue);
 
         std::string path = &buf[0];
-        std::string exe = "main.exe";
-
-        std::string::size_type i = path.find(exe);
-
-        if (i != std::string::npos)
-            path.erase(i, exe.length());
+        std::string executable = "main.exe";
 
     #endif
+
+    // Make relative
+    std::string::size_type i = path.find(executable);
+
+    if (i != std::string::npos)
+        path.erase(i, executable.length());
 
     return path;
 }
