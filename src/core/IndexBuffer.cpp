@@ -3,6 +3,12 @@
 #include "core/Vertex.h"
 #include "core/IndexBuffer.h"
 
+IndexBuffer::IndexBuffer()
+    : count(0) 
+{
+    this->count = 0;
+}
+
 /*!
  * @param indices
  * @param mode GL_STATIC_DRAW or GL_DYNAMIC_DRAW. See glBufferData() for more options.
@@ -16,10 +22,6 @@ IndexBuffer::IndexBuffer(std::vector<unsigned int> &indices, int mode) {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->count * sizeof(unsigned int), &indices[0], mode);
     
 };
-
-IndexBuffer::IndexBuffer() {
-    
-}
 
 void IndexBuffer::Bind() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ibo);

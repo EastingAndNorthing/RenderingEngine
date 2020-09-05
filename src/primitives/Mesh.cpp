@@ -17,7 +17,7 @@ Mesh::Mesh(std::vector<Vertex> &vertices, std::vector<unsigned int> &indices)
 {}
 
 Mesh::Mesh(std::vector<Vertex> &vertices) 
-    : vertexBuffer(vertices)
+    : vertexBuffer(vertices), indexBuffer()
 {}
 
 Mesh::~Mesh() {

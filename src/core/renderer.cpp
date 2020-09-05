@@ -63,28 +63,28 @@ void Renderer::Init() {
 
 void Renderer::Enqueue(Mesh &mesh) {
     printf("Adding mesh of %u bytes\n", mesh.vertexBuffer.getSize());
-    this->renderQueue.push_back(mesh);
+    this->renderQueue.push_back(&mesh);
 }
 
 void Renderer::Draw() {
 
     for (auto& mesh: this->renderQueue) {
 
-        mesh.Bind();
+        mesh->Bind();
 
         // Draw using an index buffer if it is available Otherwise, draw all vertices.
-        if(mesh.indexBuffer.getCount() > 0) {
+        if(mesh->indexBuffer.getCount() > 0) {
 
             glDrawElements(
                 GL_TRIANGLES,                   // mode
-                mesh.indexBuffer.getCount(),    // count / amount of indices
+                mesh->indexBuffer.getCount(),   // count / amount of indices
                 GL_UNSIGNED_INT,                // type
                 nullptr                         // offset in buffer to start drawing
             );
 
         } else {
 
-            glDrawArrays(GL_TRIANGLES, 0, mesh.vertexBuffer.getSize());
+            glDrawArrays(GL_TRIANGLES, 0, mesh->vertexBuffer.getSize());
 
         }
 

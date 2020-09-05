@@ -29,6 +29,6 @@ private:
 	void Init();
 
 	// std::unordered_map<Mesh, Shader> renderQueue;
-	std::vector<Mesh> renderQueue;
+	std::vector<Mesh*> renderQueue;
 
 };

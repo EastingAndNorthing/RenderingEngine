@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
     };
 
     std::vector<Vertex> someTriangle {
-        Vertex(0,1,0), Vertex(0,1,1), Vertex(1,1,0),
+        Vertex(-1,-1,0), Vertex(1,-1,1), Vertex(1,1,0),
     };
 
     Mesh* myQuad = new Mesh(someQuad, someQuadIndices);
@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
     myTriangle->assignShader(*basicShader);
 
     renderer.Enqueue(*myQuad);
-    // renderer.Enqueue(*myTriangle); // This breaks shader?
+    renderer.Enqueue(*myTriangle);
 
     renderer.Clear();
 

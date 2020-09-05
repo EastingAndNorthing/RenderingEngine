@@ -47,7 +47,7 @@ GLuint Shader::Compile(const std::string& shaderSource, unsigned int type) {
 }
 
 GLuint Shader::CreateProgram() {
-    
+
     GLuint vert = this->Compile(this->vertexShaderPath, GL_VERTEX_SHADER);
     GLuint frag = this->Compile(this->fragmentShaderPath, GL_FRAGMENT_SHADER);
 

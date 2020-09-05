@@ -27,10 +27,11 @@
             "problemMatcher": [
                 "$gcc"
             ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
+            // "group": {
+            //     "kind": "build",
+            //     "isDefault": true
+            // },
+            "group": "build"
         },
         {
             "type": "shell",
@@ -64,7 +65,11 @@
             "problemMatcher": [
                 "$gcc"
             ],
-            "group": "build"
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            // "group": "build"
         }
     ]
 }
