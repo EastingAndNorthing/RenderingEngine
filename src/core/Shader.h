@@ -9,10 +9,12 @@ public:
     std::string vertexShaderPath;
     std::string fragmentShaderPath;
 
-    Shader();
+    Shader(); 
 
     Shader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath, bool autoCompile = true);
 
+    Shader(const std::string& vertexShaderBasePath, bool autoCompile = true);
+    
     GLuint Compile(const std::string& shaderSource, unsigned int type);
 
     GLuint CreateProgram();

@@ -12,6 +12,15 @@ Shader::Shader(const std::string& vertexShaderPath, const std::string& fragmentS
     }
 }
 
+Shader::Shader(const std::string& vertexShaderBasePath, bool autoCompile) {
+    this->vertexShaderPath = vertexShaderBasePath + ".vert";
+    this->fragmentShaderPath = vertexShaderBasePath + ".frag";
+
+    if(autoCompile) {
+        this->CreateProgram();
+    }
+}
+
 Shader::~Shader() {
     glDeleteProgram(program);
 }
