@@ -62,7 +62,7 @@ void Renderer::Init() {
 }
 
 void Renderer::Enqueue(Mesh &mesh) {
-    printf("Adding mesh of %u bytes\n", mesh.vertexBuffer.getSize());
+    // printf("Adding mesh of %u bytes\n", mesh.vertexBuffer.getSize());
     this->renderQueue.push_back(&mesh);
 }
 

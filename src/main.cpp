@@ -9,54 +9,70 @@
 #include "core/Shader.h"
 #include "primitives/Mesh.h"
 
+#include <random>
+
 Settings g_settings;
 
 int main(int argc, char **argv) {
 
     Renderer &renderer = Renderer::Instance();
 
-    Vertex v1 = {
-        Vec3(-0.5f, -0.5f, 0.0f),
-        Vec4(1.0f, 0.0f, 0.0f, 0.0f),
-    };
+    Shader* basicShader = new Shader("shaders/Basic");
 
-    Vertex v2 = {
-        Vec3(0.5f, -0.5f, 0.0f),
-        Vec4(0.0f, 1.0f, 0.0f, 0.0f),
-    };
+    // Draw some random quads on the screen
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(-0.7, 0.7);
 
-    Vertex v3 = {
-        Vec3(0.5f,  0.5f, 0.0f),
-        Vec4(0.0f, 0.0f, 1.0f, 0.0f),
-    };
+    float quadSize = 0.05f;
 
-    Vertex v4 = {
-        Vec3(-0.5f,  0.5f, 0.0f),
-        Vec4(1.0f, 1.0f, 0.0f, 0.0f),
-    };
+    for (int i = 0; i < 16; i++) {
+        
+        double randX = dis(gen);
+        double randY = dis(gen);
 
-    std::vector<Vertex> someQuad {
-        v1, v2, v3, v4
-    };
+        Vertex v1 = {
+            Vec3(-quadSize + randX, -quadSize + randY, 0.0f),
+            Vec4(1.0f, 0.0f, 0.0f, 0.0f),
+        };
 
-    std::vector<unsigned int> someQuadIndices = {
-        0, 1, 2,
-        0, 2, 3
-    };
+        Vertex v2 = {
+            Vec3(quadSize + randX, -quadSize + randY, 0.0f),
+            Vec4(0.0f, 1.0f, 0.0f, 0.0f),
+        };
+
+        Vertex v3 = {
+            Vec3(quadSize + randX,  quadSize + randY, 0.0f),
+            Vec4(0.0f, 0.0f, 1.0f, 0.0f),
+        };
+
+        Vertex v4 = {
+            Vec3(-quadSize + randX,  quadSize + randY, 0.0f),
+            Vec4(1.0f, 1.0f, 0.0f, 0.0f),
+        };
+
+        std::vector<Vertex> someQuad {
+            v1, v2, v3, v4
+        };
+
+        std::vector<unsigned int> someQuadIndices = {
+            0, 1, 2,
+            0, 2, 3
+        };
+
+        Mesh* myQuad = new Mesh(someQuad, someQuadIndices);
+        
+        myQuad->assignShader(*basicShader);
+
+        renderer.Enqueue(*myQuad);
+    }
 
     std::vector<Vertex> someTriangle {
-        Vertex(-1,-1,0), Vertex(1,-1,1), Vertex(1,1,0),
+        Vertex(-0.5,-0.5,0), Vertex(0.5,-0.5,1), Vertex(0,0.5,0),
     };
 
-    Mesh* myQuad = new Mesh(someQuad, someQuadIndices);
     Mesh* myTriangle = new Mesh(someTriangle);
-
-    Shader* basicShader = new Shader("shaders/Basic.vert", "shaders/Basic.frag");
-    
-    myQuad->assignShader(*basicShader);
     myTriangle->assignShader(*basicShader);
-
-    renderer.Enqueue(*myQuad);
     renderer.Enqueue(*myTriangle);
 
     renderer.Clear();
