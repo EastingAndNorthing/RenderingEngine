@@ -1,5 +1,4 @@
 #include <unordered_map>
-#include <utility>
 #include "common.h"
 #include "core/Renderer.h"
 #include "util/Filesystem.h"
@@ -15,12 +14,7 @@ Renderer& Renderer::Instance() {
     return instance;
 }
 
-/*! @brief Creates a native window and starts an OpenGL context using GLFW. 
- * Loads the OpenGL library functions using GLAD. 
- *
- * @param[in] timeout The maximum amount of time, in seconds, to wait.
- *
- */
+//! @brief Creates and opens a native window and starts an OpenGL context using GLFW. Loads the OpenGL library functions using GLAD. 
 void Renderer::Init() {
     glfwInit();
 
@@ -31,34 +25,37 @@ void Renderer::Init() {
         glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     #endif
 
-    window = glfwCreateWindow(g_settings.window_width, g_settings.window_height, g_settings.window_title, NULL, NULL);
+    this->window = glfwCreateWindow(g_settings.window_width, g_settings.window_height, g_settings.window_title, NULL, NULL);
 
-    if (!window) {
+    if (!this->window) {
         printf("[ERR] GLFW window could not be created.");
         glfwTerminate();
     }
 
-    glfwMakeContextCurrent(window);
+    glfwMakeContextCurrent(this->window);
 	glfwSwapInterval(g_settings.vsync);
     
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
         printf("[ERR] Failed to initialize OpenGL context");
     }
 
-    glViewport(0, 0, g_settings.window_width, g_settings.window_height);
+    int framebufferWidth, framebufferHeight;
+    glfwGetFramebufferSize(this->window, &framebufferWidth, &framebufferHeight);
+    glViewport(0, 0, framebufferWidth, framebufferHeight);
 
     printf("[RENDERER] Initialized with OpenGL %d.%d.\n", GLVersion.major, GLVersion.minor);
     printf("[RENDERER] Supported GLSL version is %s.\n", (char *)glGetString(GL_SHADING_LANGUAGE_VERSION));
-    
-    GLuint base_vao;
-    glGenVertexArrays(1, &base_vao);
-    glBindVertexArray(base_vao);
+
 	// glEnable(GL_DEPTH_TEST);
 	// glDepthFunc(GL_LESS);
 	// glEnable(GL_STENCIL_TEST);
 	// glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 	// glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 	// glEnable(GL_CULL_FACE);
+    
+    GLuint base_vao;
+    glGenVertexArrays(1, &base_vao);
+    glBindVertexArray(base_vao);
 }
 
 void Renderer::Enqueue(Mesh &mesh) {
@@ -72,7 +69,7 @@ void Renderer::Draw() {
 
         mesh->Bind();
 
-        // Draw using an index buffer if it is available Otherwise, draw all vertices.
+        // Draw using an index buffer if available. Otherwise, simply draw all vertices.
         if(mesh->indexBuffer.getCount() > 0) {
 
             glDrawElements(
