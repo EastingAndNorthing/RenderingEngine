@@ -8,9 +8,15 @@
 #include "core/Vertex.h"
 #include "core/VertexBuffer.h"
 #include "core/IndexBuffer.h"
+#include "core/Shader.h"
+#include "core/Material.h"
 
 class Mesh {
 public: 
+
+    VertexBuffer vertexBuffer;
+    IndexBuffer indexBuffer;
+    Material material;
 
     Mesh(const VertexBuffer &vertexBuffer, const IndexBuffer &indexBuffer);
     
@@ -20,13 +26,7 @@ public:
 
     ~Mesh();
 
-    VertexBuffer vertexBuffer; // Friends with Renderer?
-    
-    IndexBuffer indexBuffer;
-
-    Shader shader;
-
-    void assignShader(const Shader &shader);
+    void assignMaterial(const Material &material);
 
     void Bind();
 

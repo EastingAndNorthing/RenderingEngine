@@ -24,12 +24,12 @@ Mesh::~Mesh() {
     // std::printf("[MESH] MOIIIIIII\n");
 }
 
-void Mesh::assignShader(const Shader &shader) {
-    this->shader = shader;
+void Mesh::assignMaterial(const Material &material) {
+    this->material = material;
 }
 
 void Mesh::Bind() {
     this->vertexBuffer.Bind();
     this->indexBuffer.Bind();
-    this->shader.Bind();
+    this->material.Bind();
 }

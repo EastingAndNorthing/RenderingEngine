@@ -1,5 +1,6 @@
 #include <string>
 #include "core/Shader.h"
+#include "core/Uniforms.h"
 #include "util/Filesystem.h"
 
 Shader::Shader() {}
@@ -82,15 +83,23 @@ GLuint Shader::CreateProgram() {
         return 0;
     }
 
-    printf("[SUCCESS] Shader compiled.\n");
+    printf("[SUCCESS] Shader ID %u compiled.\n", this->program);
 
     return this->program;
 }
 
-void Shader::Bind() {
+int Shader::getUniformLocation(const std::string& name)
+{
+    glUseProgram(this->program);
+    int location = glGetUniformLocation(this->program, "u_color");
+    assert(location != -1);
+    return location;
+}
+
+const void Shader::Bind() {
     glUseProgram(this->program);
 }
 
-void Shader::UnBind() {
+const void Shader::UnBind() {
     glUseProgram(0);
 }

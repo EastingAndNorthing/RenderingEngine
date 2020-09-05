@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
+// #include <unordered_map>
 #include "common.h"
+#include "core/Uniforms.h"
 
 class Shader {
 public:
@@ -19,12 +21,16 @@ public:
 
     GLuint CreateProgram();
 
-    void Bind();
+    int getUniformLocation(const std::string &name);
+
+    const void Bind();
     
-    void UnBind();
+    const void UnBind();
     
     ~Shader();
 
 private:
+
+    // std::unordered_map<std::string, int> uniformLocationCache;
 
 };

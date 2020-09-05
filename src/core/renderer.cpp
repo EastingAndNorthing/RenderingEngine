@@ -70,7 +70,20 @@ void Renderer::Draw() {
 
     for (auto& mesh: this->renderQueue) {
 
-        mesh->Bind();
+        // mesh->Bind();
+        mesh->material.shader.Bind();
+        mesh->vertexBuffer.Bind();
+        mesh->indexBuffer.Bind();
+
+        GLint id;
+        glGetIntegerv(GL_CURRENT_PROGRAM, &id);
+
+        // std::cout << id << std::endl;
+        // std::cout << mesh->material.shader.program << std::endl;
+
+        // int location = glGetUniformLocation(mesh->material.shader.program, "u_color");
+        // assert(location != -1);
+        // glUniform4f(location, 0.0f, 0.0f, 1.0f, 1.0f);
 
         // Draw using an index buffer if available. Otherwise, simply draw all vertices.
         if(mesh->indexBuffer.getCount() > 0) {

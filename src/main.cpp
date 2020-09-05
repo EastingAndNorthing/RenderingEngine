@@ -7,6 +7,7 @@
 #include "core/VertexBuffer.h"
 #include "core/IndexBuffer.h"
 #include "core/Shader.h"
+#include "core/Uniforms.h"
 #include "primitives/Mesh.h"
 
 #include <random>
@@ -17,14 +18,16 @@ int main(int argc, char **argv) {
 
     Renderer &renderer = Renderer::Instance();
 
-    Shader* basicShader = new Shader("shaders/Basic");
-
     // Draw some random quads on the screen
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> dis(-0.7, 0.7);
 
     float quadSize = 0.05f;
+
+    Material basicMaterial; // Creating a new material with a shader as argument breaks shader compilation?
+    Shader basicShader("shaders/Basic");
+    basicMaterial.setShader(basicShader); 
 
     for (int i = 0; i < 15; i++) {
         
@@ -62,7 +65,7 @@ int main(int argc, char **argv) {
 
         auto myQuad = std::make_unique<Mesh>(someQuad, someQuadIndices);
 
-        myQuad->assignShader(*basicShader);
+        myQuad->assignMaterial(basicMaterial);
 
         renderer.Enqueue(myQuad);
     }
@@ -72,7 +75,17 @@ int main(int argc, char **argv) {
     };
 
     auto myTriangle = std::make_unique<Mesh>(someTriangle);
-    myTriangle->assignShader(*basicShader);
+
+    Material material;
+    Shader colorShader("shaders/Color");
+    material.setShader(colorShader);
+    
+    myTriangle->assignMaterial(material);
+
+    // Uniform4f u_color("u_color", { 1.0f, 0.5f, 0.9f, 1.0f });
+    Uniform4f u_color("u_color");
+    material.setUniform(u_color);
+
     renderer.Enqueue(myTriangle);
 
     renderer.Clear();
@@ -82,6 +95,7 @@ int main(int argc, char **argv) {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        u_color.set({ 0.0f, 1.0f, 1.0f, 1.0f });
         renderer.Draw();
 
         glfwSwapBuffers(renderer.window);
