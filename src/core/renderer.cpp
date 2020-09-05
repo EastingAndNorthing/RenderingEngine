@@ -14,6 +14,10 @@ Renderer& Renderer::Instance() {
     return instance;
 }
 
+Renderer::~Renderer() {
+    std::printf("[RENDERER] MOIIIIIII\n");
+}
+
 //! @brief Creates and opens a native window and starts an OpenGL context using GLFW. Loads the OpenGL library functions using GLAD. 
 void Renderer::Init() {
     glfwInit();
@@ -58,9 +62,8 @@ void Renderer::Init() {
     glBindVertexArray(base_vao);
 }
 
-void Renderer::Enqueue(Mesh &mesh) {
-    // printf("Adding mesh of %u bytes\n", mesh.vertexBuffer.getSize());
-    this->renderQueue.push_back(&mesh);
+void Renderer::Enqueue(std::unique_ptr<Mesh> &mesh) {
+    this->renderQueue.push_back(std::move(mesh));
 }
 
 void Renderer::Draw() {

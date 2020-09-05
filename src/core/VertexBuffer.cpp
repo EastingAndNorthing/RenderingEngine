@@ -16,8 +16,6 @@ VertexBuffer::VertexBuffer(std::vector<Vertex> &vertices, int mode) {
     glGenVertexArrays(1, &this->vao);
     glBindVertexArray(this->vao);
 
-    std::cout << "Creating new VertexBuffer, ID " << this->vao << std::endl;
-
     glGenBuffers(1, &this->vbuffer);
     glBindBuffer(GL_ARRAY_BUFFER, this->vbuffer);
     glBufferData(GL_ARRAY_BUFFER, this->size, &vertices[0], mode);

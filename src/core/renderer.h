@@ -1,6 +1,6 @@
 #pragma once
 
-#include <unordered_map>
+#include <memory>
 #include <vector>
 #include "common.h"
 #include "core/Shader.h"
@@ -9,14 +9,16 @@
 class Renderer {
 public:
 	
-	Renderer(Renderer const&) = delete;
-  	~Renderer() = default;
+	Renderer(const Renderer&) = delete;
+  	// ~Renderer() = default;
+
+	~Renderer();
 
 	GLFWwindow* window;
     
 	static Renderer& Instance();
 
-	void Enqueue(Mesh &mesh);
+	void Enqueue(std::unique_ptr<Mesh> &mesh);
 
 	void Draw();
 
@@ -28,7 +30,6 @@ private:
 	
 	void Init();
 
-	// std::unordered_map<Mesh, Shader> renderQueue;
-	std::vector<Mesh*> renderQueue;
+	std::vector<std::unique_ptr<Mesh>> renderQueue;
 
 };

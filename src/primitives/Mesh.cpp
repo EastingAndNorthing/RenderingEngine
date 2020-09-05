@@ -21,6 +21,7 @@ Mesh::Mesh(std::vector<Vertex> &vertices)
 {}
 
 Mesh::~Mesh() {
+    // std::printf("[MESH] MOIIIIIII\n");
 }
 
 void Mesh::assignShader(const Shader &shader) {

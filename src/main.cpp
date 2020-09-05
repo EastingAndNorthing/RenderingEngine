@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
 
     float quadSize = 0.05f;
 
-    for (int i = 0; i < 16; i++) {
+    for (int i = 0; i < 15; i++) {
         
         double randX = dis(gen);
         double randY = dis(gen);
@@ -60,20 +60,20 @@ int main(int argc, char **argv) {
             0, 2, 3
         };
 
-        Mesh* myQuad = new Mesh(someQuad, someQuadIndices);
-        
+        auto myQuad = std::make_unique<Mesh>(someQuad, someQuadIndices);
+
         myQuad->assignShader(*basicShader);
 
-        renderer.Enqueue(*myQuad);
+        renderer.Enqueue(myQuad);
     }
 
     std::vector<Vertex> someTriangle {
         Vertex(-0.5,-0.5,0), Vertex(0.5,-0.5,1), Vertex(0,0.5,0),
     };
 
-    Mesh* myTriangle = new Mesh(someTriangle);
+    auto myTriangle = std::make_unique<Mesh>(someTriangle);
     myTriangle->assignShader(*basicShader);
-    renderer.Enqueue(*myTriangle);
+    renderer.Enqueue(myTriangle);
 
     renderer.Clear();
 
@@ -93,5 +93,6 @@ int main(int argc, char **argv) {
     glUseProgram(0);
 
     glfwTerminate();
+
     return 0;
 }
