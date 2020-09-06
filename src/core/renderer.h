@@ -1,6 +1,6 @@
 #pragma once
 
-#include <memory>
+// #include <memory>
 #include <vector>
 #include "common.h"
 #include "core/Shader.h"
@@ -9,14 +9,14 @@
 class Renderer {
 public:
 	
+	GLFWwindow* window;
+	
+	static Renderer& Instance();
+	
 	Renderer(const Renderer&) = delete;
   	// ~Renderer() = default;
 
 	~Renderer();
-
-	GLFWwindow* window;
-    
-	static Renderer& Instance();
 
 	// void Enqueue(std::unique_ptr<Mesh> &mesh);
 	void Enqueue(Mesh* mesh);
@@ -27,11 +27,11 @@ public:
 
 private:
 
+	// std::vector<std::unique_ptr<Mesh>> renderQueue;
+	std::vector<Mesh*> renderQueue = {};
+	
 	Renderer();
 	
 	void Init();
-
-	// std::vector<std::unique_ptr<Mesh>> renderQueue;
-	std::vector<Mesh*> renderQueue = {};
 
 };

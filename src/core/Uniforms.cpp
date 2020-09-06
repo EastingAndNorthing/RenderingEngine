@@ -13,8 +13,6 @@ void Uniform::Bind() {
     // std::cout << "NEEEEEEEE JUNGE" << std::endl;
 }
 
-Uniform::~Uniform() {}
-
 // Uniform4f
 Uniform4f::Uniform4f(const std::string& name, const Vec4 &values) : Uniform(name), values(values) {}
 

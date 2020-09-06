@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include <array>
 #include "core/Vec4.h"
 
 class Uniform {
@@ -12,13 +11,13 @@ public:
     int location;
 
     Uniform(const std::string& name);
-
-    ~Uniform();
+    
+    ~Uniform() = default;
 
     void bindLocation(const int location);
 
     void set();
-
+    
     virtual void Bind();
 
 };

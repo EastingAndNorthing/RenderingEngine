@@ -10,7 +10,7 @@ struct Settings
 	int vsync = 1;
 
 	Settings() {
-		std::cout << "[SETTINGS] Initialized." << std::endl;
+		std::cout << "[SETTINGS] Loaded." << std::endl;
 	}
 };
 

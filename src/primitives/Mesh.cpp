@@ -20,7 +20,9 @@ Mesh::Mesh(std::vector<Vertex> &vertices)
     : vertexBuffer(vertices), indexBuffer(), material(nullptr)
 {}
 
-Mesh::~Mesh() {}
+Mesh::~Mesh() {
+    // std::cout << "deleting Mesh" << std::endl;
+}
 
 void Mesh::assignMaterial(Material* material) {
     this->material = material;

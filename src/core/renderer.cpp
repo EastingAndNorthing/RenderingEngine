@@ -15,6 +15,11 @@ Renderer& Renderer::Instance() {
 }
 
 Renderer::~Renderer() {
+    
+    for (auto& mesh: this->renderQueue) {
+        delete mesh;
+    }
+
     std::printf("[RENDERER] MOIIIIIII\n");
 }
 

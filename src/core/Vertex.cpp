@@ -4,7 +4,6 @@
 #include "core/Vec3.h"
 
 Vertex::Vertex() {
-    std::cout << "Called default vertex constructor?" << std::endl;
     position = { 0, 0, 0 };
 }
 

@@ -27,6 +27,11 @@ VertexBuffer::VertexBuffer(std::vector<Vertex> &vertices, int mode) {
     glEnableVertexAttribArray(1);
 };
 
+VertexBuffer::~VertexBuffer() {
+    glDeleteBuffers(1, &this->vbuffer);
+    glDeleteBuffers(1, &this->vao);
+}
+
 void VertexBuffer::Bind() {
     glBindVertexArray(this->vao); 
     glBindBuffer(GL_ARRAY_BUFFER, this->vao);

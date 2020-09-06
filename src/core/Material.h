@@ -19,6 +19,8 @@ public:
 
     Material(const std::string shaderBasePath, std::vector<Uniform*>uniforms = {});
 
+    ~Material() = default;
+
     void setShader(Shader* shader);
     
     void setUniform(Uniform &uniform);

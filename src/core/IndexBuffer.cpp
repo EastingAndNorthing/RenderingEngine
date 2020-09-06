@@ -23,6 +23,10 @@ IndexBuffer::IndexBuffer(std::vector<unsigned int> &indices, int mode) {
     
 };
 
+IndexBuffer::~IndexBuffer() {
+    glDeleteBuffers(1, &this->ibo);
+}
+
 void IndexBuffer::Bind() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ibo);
 }

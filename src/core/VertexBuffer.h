@@ -7,12 +7,13 @@
 class VertexBuffer {
 public:
 
+	GLuint vao;
+
+	GLuint vbuffer;
+
 	VertexBuffer(std::vector<Vertex> &vertices, int mode = GL_STATIC_DRAW);
 
-	~VertexBuffer() = default;
-
-	GLuint vao;
-	GLuint vbuffer;
+	~VertexBuffer();
 
 	void Bind();
 

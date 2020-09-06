@@ -1,4 +1,5 @@
 #pragma once
+
 #include <string>
 #include "common.h"
 #include "core/Uniforms.h"
@@ -16,6 +17,8 @@ public:
 
     Shader(const std::string& vertexShaderBasePath, bool autoCompile = true);
     
+    ~Shader();
+    
     GLuint Compile(const std::string& shaderSource, unsigned int type);
 
     GLuint CreateProgram();
@@ -25,8 +28,6 @@ public:
     const void Bind();
     
     const void UnBind();
-    
-    ~Shader();
 
 private:
 

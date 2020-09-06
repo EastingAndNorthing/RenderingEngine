@@ -7,13 +7,13 @@
 class IndexBuffer {
 public:
 	
+	GLuint ibo;
+	
 	IndexBuffer();
 	
 	IndexBuffer(std::vector<unsigned int> &indices, int mode = GL_STATIC_DRAW);
 
-	~IndexBuffer() = default;
-
-	GLuint ibo;
+	~IndexBuffer();
 
 	void Bind();
 

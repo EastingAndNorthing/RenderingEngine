@@ -94,7 +94,7 @@ int main(int argc, char **argv) {
         glfwSwapBuffers(renderer.window);
     }
 
-    // delete mesh; // Clean up heap
+    // delete material; // Clean up heap, do this via Renderer?
     renderer.Clear();
 
     glfwTerminate();
