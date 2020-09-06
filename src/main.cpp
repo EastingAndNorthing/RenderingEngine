@@ -88,7 +88,10 @@ int main(int argc, char **argv) {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        triangle_color.set({ 0.0f, 0.3f, 0.8f, 1.0f });
+        float time = glfwGetTime();
+        float greenValue = sin(time*2) / 2.0f + 0.5f;
+
+        triangle_color.set({ 0.0f, greenValue, 0.8f, 1.0f });
         renderer.Draw();
 
         glfwSwapBuffers(renderer.window);
