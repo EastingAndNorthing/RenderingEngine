@@ -62,33 +62,35 @@ void Renderer::Init() {
     glBindVertexArray(base_vao);
 }
 
-void Renderer::Enqueue(std::unique_ptr<Mesh> &mesh) {
+// void Renderer::Enqueue(std::unique_ptr<Mesh> &mesh) {
+//     if(mesh->material != NULL) {
+//         this->renderQueue.push_back(std::move(mesh));
+//         // printf("[RENDERER] Mesh enqueued. Renderer took ownership of object.\n");
+//     } else {
+//         printf("[ERR] No material assigned to mesh, skipped enqueue.\n");
+//     }
+// }
+
+void Renderer::Enqueue(Mesh* mesh) {
     if(mesh->material != NULL) {
-        this->renderQueue.push_back(std::move(mesh));
-        // printf("[RENDERER] Mesh enqueued. Renderer took ownership of object.\n");
+        this->renderQueue.push_back(mesh);
+        printf("[RENDERER] Mesh enqueued.\n");
     } else {
         printf("[ERR] No material assigned to mesh, skipped enqueue.\n");
     }
 }
 
-void Renderer::Draw() {
 
+void Renderer::Draw() {
+    
     for (auto& mesh: this->renderQueue) {
 
         mesh->Bind();
 
-        // GLint id;
-        // glGetIntegerv(GL_CURRENT_PROGRAM, &id);
-
         // Draw using an index buffer if available. Otherwise, simply draw all vertices.
         if(mesh->indexBuffer.getCount() > 0) {
 
-            glDrawElements(
-                GL_TRIANGLES,                   // mode
-                mesh->indexBuffer.getCount(),   // count / amount of indices
-                GL_UNSIGNED_INT,                // type
-                nullptr                         // offset in buffer to start drawing
-            );
+            glDrawElements(GL_TRIANGLES, mesh->indexBuffer.getCount(), GL_UNSIGNED_INT, nullptr);
 
         } else {
 

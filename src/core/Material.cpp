@@ -6,20 +6,16 @@
 
 Material::Material() {}
 
-// Material::Material(Shader &shader)
-//     : shader(shader) 
-// {}
-
-Material::Material(Shader* shader)
+Material::Material(Shader* shader, std::vector<Uniform*>uniforms)
     : shader(shader) 
 {}
 
-// Material::Material(Shader&& shader)
-//     : shader(shader) 
-// {
-//     this->shader = shader;
-//     std::cout << "Material with Shader in constructor, GL program ID = " << this->shader.program << std::endl;
-// }
+Material::Material(const std::string shaderBasePath, std::vector<Uniform*>uniforms)
+{
+    this->shader = new Shader(shaderBasePath);
+    assert(this->shader != NULL);
+    assert(this->shader->program != 0);
+}
 
 void Material::setShader(Shader* shader) {
     this->shader = shader;

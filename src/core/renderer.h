@@ -18,7 +18,8 @@ public:
     
 	static Renderer& Instance();
 
-	void Enqueue(std::unique_ptr<Mesh> &mesh);
+	// void Enqueue(std::unique_ptr<Mesh> &mesh);
+	void Enqueue(Mesh* mesh);
 
 	void Draw();
 
@@ -30,6 +31,7 @@ private:
 	
 	void Init();
 
-	std::vector<std::unique_ptr<Mesh>> renderQueue;
+	// std::vector<std::unique_ptr<Mesh>> renderQueue;
+	std::vector<Mesh*> renderQueue = {};
 
 };

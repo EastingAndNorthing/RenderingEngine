@@ -62,27 +62,21 @@ int main(int argc, char **argv) {
             0, 2, 3
         };
 
-        auto myQuad = std::make_unique<Mesh>(someQuad, someQuadIndices);
+        Mesh* myQuad = new Mesh(someQuad, someQuadIndices);  // auto myQuad = std::make_unique<Mesh>(someQuad, someQuadIndices);
 
         myQuad->assignMaterial(&basicMaterial);
 
         renderer.Enqueue(myQuad);
     }
 
-    std::vector<Vertex> someTriangle {
-        Vertex(-0.5,-0.5,0), Vertex(0.5,-0.5,1), Vertex(0,0.5,0),
-    };
+    std::vector<Vertex> someTriangle { Vertex(-0.5,-0.5,0), Vertex(0.5,-0.5,1), Vertex(0,0.5,0) };
+    Mesh* myTriangle = new Mesh(someTriangle);  // auto myTriangle = std::make_unique<Mesh>(someTriangle);
 
-    auto myTriangle = std::make_unique<Mesh>(someTriangle);
-
-    Shader colorShader("shaders/Color");
-    Material material(&colorShader);
-    // Material material = { Shader("shaders/Color") }; // Creating a new material with a shader as argument gives getUniformLocation = -1 ??
-
-    myTriangle->assignMaterial(&material);
-
+    Material material(new Shader("shaders/Color"));
     Uniform4f triangle_color("u_color", { 1.0f, 0.5f, 0.9f, 1.0f });
     material.setUniform(triangle_color);
+
+    myTriangle->assignMaterial(&material);
     
     renderer.Enqueue(myTriangle);
 
@@ -90,10 +84,11 @@ int main(int argc, char **argv) {
 
     while (!glfwWindowShouldClose(renderer.window)) {
         glfwPollEvents();
+
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // triangle_color.set({ 0.0f, 1.0f, 1.0f, 1.0f });
+        triangle_color.set({ 0.0f, 0.3f, 0.8f, 1.0f });
         renderer.Draw();
 
         glfwSwapBuffers(renderer.window);

@@ -9,15 +9,15 @@
 class Material {
 public:
 
-    Shader* shader;
+    Shader* shader = NULL;
     
-    std::vector<Uniform*> uniforms;
+    std::vector<Uniform*> uniforms = {};
 
     Material();
 
-    Material(Shader* shader);
+    Material(Shader* shader, std::vector<Uniform*>uniforms = {});
 
-    // Material(Shader&& shader);
+    Material(const std::string shaderBasePath, std::vector<Uniform*>uniforms = {});
 
     void setShader(Shader* shader);
     
