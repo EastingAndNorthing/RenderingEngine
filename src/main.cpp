@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
 
     float quadSize = 0.05f;
 
-    Shader basicShader("shaders/Basic");
+    Shader basicShader("shaders/VertexColors");
     Material basicMaterial(&basicShader);
 
     for (int i = 0; i < 15; i++) {
