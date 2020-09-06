@@ -13,11 +13,13 @@ public:
 
     Uniform(const std::string& name);
 
+    ~Uniform();
+
     void bindLocation(const int location);
 
     void set();
 
-    void Bind();
+    virtual void Bind();
 
 };
 
@@ -30,6 +32,6 @@ public:
 
     virtual void set(const Vec4 &values = {});
 
-    virtual void Bind();
+    void Bind() override;
 
 };

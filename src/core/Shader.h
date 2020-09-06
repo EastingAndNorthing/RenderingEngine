@@ -1,6 +1,5 @@
 #pragma once
 #include <string>
-// #include <unordered_map>
 #include "common.h"
 #include "core/Uniforms.h"
 
@@ -30,7 +29,5 @@ public:
     ~Shader();
 
 private:
-
-    // std::unordered_map<std::string, int> uniformLocationCache;
 
 };

@@ -25,9 +25,8 @@ int main(int argc, char **argv) {
 
     float quadSize = 0.05f;
 
-    Material basicMaterial; // Creating a new material with a shader as argument breaks shader compilation?
     Shader basicShader("shaders/Basic");
-    basicMaterial.setShader(basicShader); 
+    Material basicMaterial(&basicShader);
 
     for (int i = 0; i < 15; i++) {
         
@@ -65,7 +64,7 @@ int main(int argc, char **argv) {
 
         auto myQuad = std::make_unique<Mesh>(someQuad, someQuadIndices);
 
-        myQuad->assignMaterial(basicMaterial);
+        myQuad->assignMaterial(&basicMaterial);
 
         renderer.Enqueue(myQuad);
     }
@@ -76,16 +75,15 @@ int main(int argc, char **argv) {
 
     auto myTriangle = std::make_unique<Mesh>(someTriangle);
 
-    Material material;
     Shader colorShader("shaders/Color");
-    material.setShader(colorShader);
+    Material material(&colorShader);
+    // Material material = { Shader("shaders/Color") }; // Creating a new material with a shader as argument gives getUniformLocation = -1 ??
+
+    myTriangle->assignMaterial(&material);
+
+    Uniform4f triangle_color("u_color", { 1.0f, 0.5f, 0.9f, 1.0f });
+    material.setUniform(triangle_color);
     
-    myTriangle->assignMaterial(material);
-
-    // Uniform4f u_color("u_color", { 1.0f, 0.5f, 0.9f, 1.0f });
-    Uniform4f u_color("u_color");
-    material.setUniform(u_color);
-
     renderer.Enqueue(myTriangle);
 
     renderer.Clear();
@@ -95,16 +93,14 @@ int main(int argc, char **argv) {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        u_color.set({ 0.0f, 1.0f, 1.0f, 1.0f });
+        // triangle_color.set({ 0.0f, 1.0f, 1.0f, 1.0f });
         renderer.Draw();
 
         glfwSwapBuffers(renderer.window);
     }
 
     // delete mesh; // Clean up heap
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glUseProgram(0);
+    renderer.Clear();
 
     glfwTerminate();
 

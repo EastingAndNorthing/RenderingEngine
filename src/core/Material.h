@@ -9,15 +9,17 @@
 class Material {
 public:
 
-    Shader shader;
+    Shader* shader;
     
     std::vector<Uniform*> uniforms;
 
     Material();
 
-    Material(Shader shader);
+    Material(Shader* shader);
 
-    void setShader(Shader &shader);
+    // Material(Shader&& shader);
+
+    void setShader(Shader* shader);
     
     void setUniform(Uniform &uniform);
 

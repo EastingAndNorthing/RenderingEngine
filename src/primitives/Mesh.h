@@ -16,7 +16,7 @@ public:
 
     VertexBuffer vertexBuffer;
     IndexBuffer indexBuffer;
-    Material material;
+    Material* material = NULL;
 
     Mesh(const VertexBuffer &vertexBuffer, const IndexBuffer &indexBuffer);
     
@@ -26,7 +26,7 @@ public:
 
     ~Mesh();
 
-    void assignMaterial(const Material &material);
+    void assignMaterial(Material* material);
 
     void Bind();
 

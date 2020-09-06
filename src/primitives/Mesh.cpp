@@ -9,27 +9,25 @@
 #include "primitives/Mesh.h"
 
 Mesh::Mesh(const VertexBuffer &vertexBuffer, const IndexBuffer &indexBuffer)
-    : vertexBuffer(vertexBuffer), indexBuffer(indexBuffer)
+    : vertexBuffer(vertexBuffer), indexBuffer(indexBuffer), material(nullptr)
 {}
 
 Mesh::Mesh(std::vector<Vertex> &vertices, std::vector<unsigned int> &indices) 
-    : vertexBuffer(vertices), indexBuffer(indices)
+    : vertexBuffer(vertices), indexBuffer(indices), material(nullptr)
 {}
 
 Mesh::Mesh(std::vector<Vertex> &vertices) 
-    : vertexBuffer(vertices), indexBuffer()
+    : vertexBuffer(vertices), indexBuffer(), material(nullptr)
 {}
 
-Mesh::~Mesh() {
-    // std::printf("[MESH] MOIIIIIII\n");
-}
+Mesh::~Mesh() {}
 
-void Mesh::assignMaterial(const Material &material) {
+void Mesh::assignMaterial(Material* material) {
     this->material = material;
 }
 
 void Mesh::Bind() {
     this->vertexBuffer.Bind();
     this->indexBuffer.Bind();
-    this->material.Bind();
+    this->material->Bind();
 }

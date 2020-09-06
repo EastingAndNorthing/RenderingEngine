@@ -91,7 +91,7 @@ GLuint Shader::CreateProgram() {
 int Shader::getUniformLocation(const std::string& name)
 {
     glUseProgram(this->program);
-    int location = glGetUniformLocation(this->program, "u_color");
+    int location = glGetUniformLocation(this->program, name.c_str());
     assert(location != -1);
     return location;
 }

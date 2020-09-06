@@ -63,27 +63,22 @@ void Renderer::Init() {
 }
 
 void Renderer::Enqueue(std::unique_ptr<Mesh> &mesh) {
-    this->renderQueue.push_back(std::move(mesh));
+    if(mesh->material != NULL) {
+        this->renderQueue.push_back(std::move(mesh));
+        // printf("[RENDERER] Mesh enqueued. Renderer took ownership of object.\n");
+    } else {
+        printf("[ERR] No material assigned to mesh, skipped enqueue.\n");
+    }
 }
 
 void Renderer::Draw() {
 
     for (auto& mesh: this->renderQueue) {
 
-        // mesh->Bind();
-        mesh->material.shader.Bind();
-        mesh->vertexBuffer.Bind();
-        mesh->indexBuffer.Bind();
+        mesh->Bind();
 
-        GLint id;
-        glGetIntegerv(GL_CURRENT_PROGRAM, &id);
-
-        // std::cout << id << std::endl;
-        // std::cout << mesh->material.shader.program << std::endl;
-
-        // int location = glGetUniformLocation(mesh->material.shader.program, "u_color");
-        // assert(location != -1);
-        // glUniform4f(location, 0.0f, 0.0f, 1.0f, 1.0f);
+        // GLint id;
+        // glGetIntegerv(GL_CURRENT_PROGRAM, &id);
 
         // Draw using an index buffer if available. Otherwise, simply draw all vertices.
         if(mesh->indexBuffer.getCount() > 0) {
