@@ -10,6 +10,7 @@ public:
     GLuint program = 0;
     std::string vertexShaderPath;
     std::string fragmentShaderPath;
+    int u_mvp_location = -1;
 
     Shader(); 
 
@@ -24,6 +25,8 @@ public:
     GLuint CreateProgram();
 
     int getUniformLocation(const std::string &name);
+
+    int getProjectionMatrixLocation();
 
     const void Bind();
     

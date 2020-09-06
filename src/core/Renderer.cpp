@@ -4,6 +4,7 @@
 #include "util/Filesystem.h"
 #include "core/Shader.h"
 #include "primitives/Mesh.h"
+#include "core/Uniforms.h"
 
 Renderer::Renderer() {
 	Init();
@@ -54,9 +55,9 @@ void Renderer::Init() {
         printf("[ERR] Failed to initialize OpenGL context");
     }
 
-    int framebufferWidth, framebufferHeight;
-    glfwGetFramebufferSize(this->window, &framebufferWidth, &framebufferHeight);
-    glViewport(0, 0, framebufferWidth, framebufferHeight);
+    // int framebufferWidth, framebufferHeight;
+    glfwGetFramebufferSize(this->window, &this->frameBufferWidth, &this->frameBufferHeight);
+    glViewport(0, 0, this->frameBufferWidth, this->frameBufferHeight);
 
     printf("[RENDERER] Initialized with OpenGL %d.%d.\n", GLVersion.major, GLVersion.minor);
     printf("[RENDERER] Supported GLSL version is %s.\n", (char *)glGetString(GL_SHADING_LANGUAGE_VERSION));
@@ -71,6 +72,21 @@ void Renderer::Init() {
     GLuint base_vao;
     glGenVertexArrays(1, &base_vao);
     glBindVertexArray(base_vao);
+
+	// this->u_mvp = glm::perspective(45.0f, (GLfloat) this->frameBufferWidth / (GLfloat) this->frameBufferWidth, 0.1f, 10000.0f);
+
+}
+
+void Renderer::Enqueue(Mesh* mesh) {
+    if(mesh->material != NULL) {
+        
+        this->renderQueue.push_back(mesh);
+        
+        printf("[RENDERER] Mesh enqueued.\n");
+        
+    } else {
+        printf("[ERR] No material assigned to mesh, skipped.\n");
+    }
 }
 
 // void Renderer::Enqueue(std::unique_ptr<Mesh> &mesh) {
@@ -82,31 +98,20 @@ void Renderer::Init() {
 //     }
 // }
 
-void Renderer::Enqueue(Mesh* mesh) {
-    if(mesh->material != NULL) {
-        this->renderQueue.push_back(mesh);
-        printf("[RENDERER] Mesh enqueued.\n");
-    } else {
-        printf("[ERR] No material assigned to mesh, skipped enqueue.\n");
-    }
-}
-
-
 void Renderer::Draw() {
+
+    // this->updateModelViewProjectionMatrix();
     
     for (auto& mesh: this->renderQueue) {
 
         mesh->Bind();
 
-        // Draw using an index buffer if available. Otherwise, simply draw all vertices.
+        glUniformMatrix4fv(mesh->material->shader->getProjectionMatrixLocation(), 1, GL_FALSE, &this->u_mvp[0][0]);
+
         if(mesh->indexBuffer.getCount() > 0) {
-
             glDrawElements(GL_TRIANGLES, mesh->indexBuffer.getCount(), GL_UNSIGNED_INT, nullptr);
-
         } else {
-
             glDrawArrays(GL_TRIANGLES, 0, mesh->vertexBuffer.getSize());
-
         }
 
     }

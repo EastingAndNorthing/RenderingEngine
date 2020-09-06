@@ -20,6 +20,7 @@
                 "-I${workspaceFolder}\\lib\\glad\\include\\",
                 "${workspaceFolder}\\lib\\glad\\src\\glad.c",
                 "-lopengl32",
+                "-I${workspaceFolder}\\lib\\glm-0.9.9.8\\",
                 "-o",
                 "${workspaceFolder}\\bin\\windows\\main.exe"
             ],

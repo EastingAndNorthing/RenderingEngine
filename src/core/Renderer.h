@@ -6,11 +6,19 @@
 #include "core/Shader.h"
 #include "primitives/Mesh.h"
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 class Renderer {
 public:
+
+	int frameBufferWidth = 0;
+	int frameBufferHeight = 0;
 	
 	GLFWwindow* window;
-	
+
+	glm::mat4 u_mvp = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
+
 	static Renderer& Instance();
 	
 	Renderer(const Renderer&) = delete;

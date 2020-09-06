@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <vector>
 #include "common.h"
 #include "core/Shader.h"
 #include "core/Material.h"
@@ -23,9 +25,13 @@ void Material::setShader(Shader* shader) {
 
 void Material::setUniform(Uniform &uniform) {
     this->shader->Bind();
-    uniform.bindLocation(this->shader->getUniformLocation(uniform.name));
-    this->uniforms.push_back(&uniform);
-    // std::cout << "Material now has " << this->uniforms.size() << " Uniforms attached." << std::endl;
+
+    if(std::find(this->uniforms.begin(), this->uniforms.end(), &uniform) == this->uniforms.end()) {
+        uniform.bindLocation(this->shader->getUniformLocation(uniform.name));
+        this->uniforms.push_back(&uniform);
+    }
+
+    std::cout << "Material now has " << this->uniforms.size() << " Uniforms attached." << std::endl;
 }
 
 void Material::Bind() {

@@ -1,4 +1,5 @@
 #include <vector>
+#include <random>
 #include "common.h"
 #include "core/Renderer.h"
 #include "core/Vec3.h"
@@ -10,7 +11,8 @@
 #include "core/Uniforms.h"
 #include "primitives/Mesh.h"
 
-#include <random>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 Settings g_settings;
 
@@ -34,22 +36,22 @@ int main(int argc, char **argv) {
         double randY = dis(gen);
 
         Vertex v1 = {
-            Vec3(-quadSize + randX, -quadSize + randY, 0.0f),
+            Vec3(-quadSize + randX, -quadSize + randY, 0.5f),
             Vec4(1.0f, 0.0f, 0.0f, 0.0f),
         };
 
         Vertex v2 = {
-            Vec3(quadSize + randX, -quadSize + randY, 0.0f),
+            Vec3(quadSize + randX, -quadSize + randY, -0.2f),
             Vec4(0.0f, 1.0f, 0.0f, 0.0f),
         };
 
         Vertex v3 = {
-            Vec3(quadSize + randX,  quadSize + randY, 0.0f),
+            Vec3(quadSize + randX,  quadSize + randY, 0.2f),
             Vec4(0.0f, 0.0f, 1.0f, 0.0f),
         };
 
         Vertex v4 = {
-            Vec3(-quadSize + randX,  quadSize + randY, 0.0f),
+            Vec3(-quadSize + randX,  quadSize + randY, -0.6f),
             Vec4(1.0f, 1.0f, 0.0f, 0.0f),
         };
 

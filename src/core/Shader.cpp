@@ -88,12 +88,19 @@ GLuint Shader::CreateProgram() {
     return this->program;
 }
 
-int Shader::getUniformLocation(const std::string& name)
-{
+int Shader::getUniformLocation(const std::string& name) {
     glUseProgram(this->program);
     int location = glGetUniformLocation(this->program, name.c_str());
-    assert(location != -1);
+    // assert(location != -1);
     return location;
+}
+
+int Shader::getProjectionMatrixLocation() {
+    if(this->u_mvp_location == -1) {
+        glUseProgram(this->program);
+        this->u_mvp_location = glGetUniformLocation(this->program, "u_mvp");
+    }
+    return this->u_mvp_location;
 }
 
 const void Shader::Bind() {
