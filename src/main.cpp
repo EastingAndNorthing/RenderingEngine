@@ -34,24 +34,25 @@ int main(int argc, char **argv) {
         
         double randX = dis(gen);
         double randY = dis(gen);
+        double randZ = dis(gen);
 
         Vertex v1 = {
-            Vec3(-quadSize + randX, -quadSize + randY, 0.5f),
+            Vec3(-quadSize + randX, -quadSize + randY, randZ),
             Vec4(1.0f, 0.0f, 0.0f, 0.0f),
         };
 
         Vertex v2 = {
-            Vec3(quadSize + randX, -quadSize + randY, -0.2f),
+            Vec3(quadSize + randX, -quadSize + randY, randZ),
             Vec4(0.0f, 1.0f, 0.0f, 0.0f),
         };
 
         Vertex v3 = {
-            Vec3(quadSize + randX,  quadSize + randY, 0.2f),
+            Vec3(quadSize + randX,  quadSize + randY, randZ),
             Vec4(0.0f, 0.0f, 1.0f, 0.0f),
         };
 
         Vertex v4 = {
-            Vec3(-quadSize + randX,  quadSize + randY, -0.6f),
+            Vec3(-quadSize + randX,  quadSize + randY, randZ),
             Vec4(1.0f, 1.0f, 0.0f, 0.0f),
         };
 
@@ -71,7 +72,7 @@ int main(int argc, char **argv) {
         renderer.Enqueue(myQuad);
     }
 
-    std::vector<Vertex> someTriangle { Vertex(-0.5,-0.5,0), Vertex(0.5,-0.5,1), Vertex(0,0.5,0) };
+    std::vector<Vertex> someTriangle { Vertex(-0.5,-0.5,0.2), Vertex(0.5,-0.5,0.2), Vertex(0,0.5,0.2) };
     Mesh* myTriangle = new Mesh(someTriangle);  // auto myTriangle = std::make_unique<Mesh>(someTriangle);
 
     Material material(new Shader("shaders/Color"));
@@ -86,9 +87,6 @@ int main(int argc, char **argv) {
 
     while (!glfwWindowShouldClose(renderer.window)) {
         glfwPollEvents();
-
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
 
         float time = glfwGetTime();
         float greenValue = sin(time*2) / 2.0f + 0.5f;

@@ -12,12 +12,12 @@
 class Renderer {
 public:
 
-	int frameBufferWidth = 0;
-	int frameBufferHeight = 0;
-	
 	GLFWwindow* window;
 
-	glm::mat4 u_mvp = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
+	int frameBufferWidth = 0;
+	int frameBufferHeight = 0;
+
+	glm::mat4 viewProjectionMatrix = glm::mat4(1.0f);
 
 	static Renderer& Instance();
 	

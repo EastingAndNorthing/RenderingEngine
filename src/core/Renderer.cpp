@@ -5,6 +5,9 @@
 #include "core/Shader.h"
 #include "primitives/Mesh.h"
 #include "core/Uniforms.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 Renderer::Renderer() {
 	Init();
@@ -62,7 +65,7 @@ void Renderer::Init() {
     printf("[RENDERER] Initialized with OpenGL %d.%d.\n", GLVersion.major, GLVersion.minor);
     printf("[RENDERER] Supported GLSL version is %s.\n", (char *)glGetString(GL_SHADING_LANGUAGE_VERSION));
 
-	// glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);
 	// glDepthFunc(GL_LESS);
 	// glEnable(GL_STENCIL_TEST);
 	// glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
@@ -72,8 +75,6 @@ void Renderer::Init() {
     GLuint base_vao;
     glGenVertexArrays(1, &base_vao);
     glBindVertexArray(base_vao);
-
-	// this->u_mvp = glm::perspective(45.0f, (GLfloat) this->frameBufferWidth / (GLfloat) this->frameBufferWidth, 0.1f, 10000.0f);
 
 }
 
@@ -100,13 +101,28 @@ void Renderer::Enqueue(Mesh* mesh) {
 
 void Renderer::Draw() {
 
-    // this->updateModelViewProjectionMatrix();
-    
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glm::mat4 proj = glm::perspective(glm::radians(g_settings.fov), (float) this->frameBufferWidth / (float) this->frameBufferHeight, 0.1f, 100.0f);
+    // glm::mat4 proj = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
+
+    const float radius = 1.5f;
+    float camX = sin(glfwGetTime()) * radius;
+    float camZ = cos(glfwGetTime()) * radius;
+    glm::mat4 view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+
+    this->viewProjectionMatrix = proj * view;
+
     for (auto& mesh: this->renderQueue) {
 
         mesh->Bind();
 
-        glUniformMatrix4fv(mesh->material->shader->getProjectionMatrixLocation(), 1, GL_FALSE, &this->u_mvp[0][0]);
+        glm::mat4 model = glm::translate(glm::mat4(1), glm::vec3(0.0f, 0.0f, 0.0f)); // object.position
+        
+        glm::mat4 mvp = this->viewProjectionMatrix * model; // projection * view * model * vec4(position, 1.0);
+        
+        glUniformMatrix4fv(mesh->material->shader->getProjectionMatrixLocation(), 1, GL_FALSE, glm::value_ptr(mvp));
 
         if(mesh->indexBuffer.getCount() > 0) {
             glDrawElements(GL_TRIANGLES, mesh->indexBuffer.getCount(), GL_UNSIGNED_INT, nullptr);
