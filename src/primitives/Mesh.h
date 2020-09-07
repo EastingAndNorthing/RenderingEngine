@@ -18,11 +18,19 @@ public:
     IndexBuffer indexBuffer;
     Material* material = NULL;
 
+    glm::vec3 position;
+    glm::vec4 rotation;
+    glm::vec3 scale;
+
+    Mesh();
+
     Mesh(const VertexBuffer &vertexBuffer, const IndexBuffer &indexBuffer);
     
     Mesh(std::vector<Vertex> &vertices, std::vector<unsigned int> &indices);
 
     Mesh(std::vector<Vertex> &vertices);
+    
+    Mesh(std::vector<Vertex> vertices);
 
     ~Mesh();
 

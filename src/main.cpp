@@ -11,6 +11,9 @@
 #include "core/Uniforms.h"
 #include "primitives/Mesh.h"
 
+#include "primitives/TetrahedronMesh.h"
+#include "primitives/BoxMesh.h"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -72,16 +75,19 @@ int main(int argc, char **argv) {
         renderer.Enqueue(myQuad);
     }
 
-    std::vector<Vertex> someTriangle { Vertex(-0.5,-0.5,0.2), Vertex(0.5,-0.5,0.2), Vertex(0,0.5,0.2) };
-    Mesh* myTriangle = new Mesh(someTriangle);  // auto myTriangle = std::make_unique<Mesh>(someTriangle);
+    // Mesh* myTriangle = new Mesh({Vertex(-0.5,-0.5,0.2), Vertex(0.5,-0.5,0.2), Vertex(0,0.5,0.2)});                   // auto myTriangle = std::make_unique<Mesh>(someTriangle);
+
+    Mesh* myBox = new TetrahedronMesh(0.4f);
 
     Material material(new Shader("shaders/Color"));
     Uniform4f triangle_color("u_color", { 1.0f, 0.5f, 0.9f, 1.0f });
     material.setUniform(triangle_color);
 
-    myTriangle->assignMaterial(&material);
+    // myTriangle->assignMaterial(&material);
+    myBox->assignMaterial(&material);
     
-    renderer.Enqueue(myTriangle);
+    // renderer.Enqueue(myTriangle);
+    renderer.Enqueue(myBox);
 
     renderer.Clear();
 

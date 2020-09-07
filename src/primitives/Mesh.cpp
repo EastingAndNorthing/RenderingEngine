@@ -12,6 +12,10 @@ Mesh::Mesh(const VertexBuffer &vertexBuffer, const IndexBuffer &indexBuffer)
     : vertexBuffer(vertexBuffer), indexBuffer(indexBuffer), material(nullptr)
 {}
 
+Mesh::Mesh() {
+    
+}
+
 Mesh::Mesh(std::vector<Vertex> &vertices, std::vector<unsigned int> &indices) 
     : vertexBuffer(vertices), indexBuffer(indices), material(nullptr)
 {}
@@ -19,6 +23,11 @@ Mesh::Mesh(std::vector<Vertex> &vertices, std::vector<unsigned int> &indices)
 Mesh::Mesh(std::vector<Vertex> &vertices) 
     : vertexBuffer(vertices), indexBuffer(), material(nullptr)
 {}
+
+Mesh::Mesh(std::vector<Vertex> vertices) 
+    : vertexBuffer(vertices), indexBuffer(), material(nullptr)
+{}
+
 
 Mesh::~Mesh() {
     // std::cout << "deleting Mesh" << std::endl;

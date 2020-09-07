@@ -9,3 +9,7 @@
 // General
 #include "general/Settings.h"
 // #include "general/log.h"
+
+// Pre-define important classes, prevents declaration errors
+class Renderer;
+class Mesh;
