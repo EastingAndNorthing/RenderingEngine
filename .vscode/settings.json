@@ -2,6 +2,7 @@
     "files.associations": {
         "xtr1common": "cpp",
         "xutility": "cpp",
-        "cassert": "cpp"
+        "cassert": "cpp",
+        "random": "cpp"
     }
 }

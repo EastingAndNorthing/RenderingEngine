@@ -23,73 +23,36 @@ int main(int argc, char **argv) {
 
     Renderer &renderer = Renderer::Instance();
 
-    // Draw some random quads on the screen
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<> dis(-0.7, 0.7);
-
-    float quadSize = 0.05f;
-
     Shader basicShader("shaders/VertexColors");
     Material basicMaterial(&basicShader);
 
+    // Draw some random quads on the screen
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> randboy(-0.7, 0.7);
+    
     for (int i = 0; i < 15; i++) {
+
+        Mesh* box = new BoxMesh(0.1f);
+
+        box->position = glm::vec3(randboy(gen), randboy(gen), randboy(gen));
         
-        double randX = dis(gen);
-        double randY = dis(gen);
-        double randZ = dis(gen);
+        box->assignMaterial(&basicMaterial);
 
-        Vertex v1 = {
-            Vec3(-quadSize + randX, -quadSize + randY, randZ),
-            Vec4(1.0f, 0.0f, 0.0f, 0.0f),
-        };
+        renderer.Enqueue(box);
 
-        Vertex v2 = {
-            Vec3(quadSize + randX, -quadSize + randY, randZ),
-            Vec4(0.0f, 1.0f, 0.0f, 0.0f),
-        };
-
-        Vertex v3 = {
-            Vec3(quadSize + randX,  quadSize + randY, randZ),
-            Vec4(0.0f, 0.0f, 1.0f, 0.0f),
-        };
-
-        Vertex v4 = {
-            Vec3(-quadSize + randX,  quadSize + randY, randZ),
-            Vec4(1.0f, 1.0f, 0.0f, 0.0f),
-        };
-
-        std::vector<Vertex> someQuad {
-            v1, v2, v3, v4
-        };
-
-        std::vector<unsigned int> someQuadIndices = {
-            0, 1, 2,
-            0, 2, 3
-        };
-
-        Mesh* myQuad = new Mesh(someQuad, someQuadIndices);  // auto myQuad = std::make_unique<Mesh>(someQuad, someQuadIndices);
-
-        myQuad->assignMaterial(&basicMaterial);
-
-        renderer.Enqueue(myQuad);
     }
 
-    // Mesh* myTriangle = new Mesh({Vertex(-0.5,-0.5,0.2), Vertex(0.5,-0.5,0.2), Vertex(0,0.5,0.2)});                   // auto myTriangle = std::make_unique<Mesh>(someTriangle);
-
-    Mesh* myBox = new TetrahedronMesh(0.4f);
+    Mesh* myTetra = new TetrahedronMesh(0.4f);
+    myTetra->rotation = glm::rotate(myTetra->rotation, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
     Material material(new Shader("shaders/Color"));
     Uniform4f triangle_color("u_color", { 1.0f, 0.5f, 0.9f, 1.0f });
     material.setUniform(triangle_color);
 
-    // myTriangle->assignMaterial(&material);
-    myBox->assignMaterial(&material);
+    myTetra->assignMaterial(&material);
     
-    // renderer.Enqueue(myTriangle);
-    renderer.Enqueue(myBox);
-
-    renderer.Clear();
+    renderer.Enqueue(myTetra);
 
     while (!glfwWindowShouldClose(renderer.window)) {
         glfwPollEvents();

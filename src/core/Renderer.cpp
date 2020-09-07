@@ -76,6 +76,10 @@ void Renderer::Init() {
     glGenVertexArrays(1, &base_vao);
     glBindVertexArray(base_vao);
 
+    // Set base projection. @TODO reset this projection matrix when resizing the window
+    this->projectionMatrix = glm::perspective(glm::radians(g_settings.fov), (float) this->frameBufferWidth / (float) this->frameBufferHeight, 0.1f, 100.0f);
+    // this->projectionMatrix = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
+
 }
 
 void Renderer::Enqueue(Mesh* mesh) {
@@ -101,26 +105,47 @@ void Renderer::Enqueue(Mesh* mesh) {
 
 void Renderer::Draw() {
 
+    // glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.f);
+    // glm::mat4 ViewTranslate = glm::translate(
+    //     glm::mat4(1.0f),
+    //     glm::vec3(0.0f, 0.0f, -Translate)
+    // );
+    // glm::mat4 ViewRotateX = glm::rotate(
+    //     ViewTranslate,
+    //     Rotate.y,
+    //     glm::vec3(-1.0f, 0.0f, 0.0f)
+    // );
+    // glm::mat4 View = glm::rotate(
+    //     ViewRotateX,
+    //     Rotate.x,
+    //     glm::vec3(0.0f, 1.0f, 0.0f)
+    // );
+    // glm::mat4 Model = glm::scale(
+    //     glm::mat4(1.0f),
+    //     glm::vec3(0.5f)
+    // );
+    // glm::mat4 MVP = Projection * View * Model;
+    // glUniformMatrix4fv(LocationMVP, 1, GL_FALSE, glm::value_ptr(MVP));
+
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glm::mat4 proj = glm::perspective(glm::radians(g_settings.fov), (float) this->frameBufferWidth / (float) this->frameBufferHeight, 0.1f, 100.0f);
-    // glm::mat4 proj = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
-
-    const float radius = 1.5f;
-    float camX = sin(glfwGetTime()) * radius;
-    float camZ = cos(glfwGetTime()) * radius;
+    // Camera
+    const float camRadius = 1.5f;
+    float camX = sin(glfwGetTime()) * camRadius;
+    float camZ = cos(glfwGetTime()) * camRadius;
     glm::mat4 view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
 
-    this->viewProjectionMatrix = proj * view;
+    glm::mat4 viewProjectionMatrix = this->projectionMatrix * view;
 
     for (auto& mesh: this->renderQueue) {
 
         mesh->Bind();
 
-        glm::mat4 model = glm::translate(glm::mat4(1), glm::vec3(0.0f, 0.0f, 0.0f)); // object.position
+        glm::mat4 model = glm::translate(glm::mat4(1), mesh->position);
+        model = model * mesh->rotation; // ?
         
-        glm::mat4 mvp = this->viewProjectionMatrix * model; // projection * view * model * vec4(position, 1.0);
+        glm::mat4 mvp = viewProjectionMatrix * model; // projection * view * model * vec4(position, 1.0);
         
         glUniformMatrix4fv(mesh->material->shader->getProjectionMatrixLocation(), 1, GL_FALSE, glm::value_ptr(mvp));
 

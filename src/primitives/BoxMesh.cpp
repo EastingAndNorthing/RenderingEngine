@@ -1,3 +1,4 @@
+#include <random>
 #include "../common.h"
 #include "BoxMesh.h"
 #include "Mesh.h"
@@ -25,7 +26,19 @@ void BoxMesh::generate(float &width, float &height, float &depth) {
         Vertex({ x_dist,  y_dist,  z_dist}), // Back
         Vertex({-x_dist,  y_dist,  z_dist}), // Back
         Vertex({-x_dist, -y_dist,  z_dist}), // Back
-    };
+    }; 
+
+    // @TODO remove test code
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> randR(0, 1);
+    std::uniform_real_distribution<> randG(0, 1);
+    std::uniform_real_distribution<> randB(0, 1);
+    
+
+    for (int i = 0; i < box.size(); i++) {
+        box[i].color = Vec4(randR(gen), randG(gen), randB(gen), 1.0);
+    }
 
     std::vector<unsigned int> indices = {
         0, 1, 2, // Front
