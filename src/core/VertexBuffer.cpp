@@ -3,11 +3,19 @@
 #include "core/Vertex.h"
 #include "core/VertexBuffer.h"
 
+VertexBuffer::VertexBuffer() {
+    
+}
+
 /*!
  * @param vertices
  * @param mode GL_STATIC_DRAW or GL_DYNAMIC_DRAW. See glBufferData() for more options.
  */
 VertexBuffer::VertexBuffer(std::vector<Vertex> &vertices, int mode) {
+    this->setVertices(vertices, mode);
+};
+
+void VertexBuffer::setVertices(std::vector<Vertex> &vertices, int mode) {
 
     this->size = vertices.size() * sizeof(Vertex);
     
@@ -25,7 +33,8 @@ VertexBuffer::VertexBuffer(std::vector<Vertex> &vertices, int mode) {
 
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*) offsetof(Vertex, color));
     glEnableVertexAttribArray(1);
-};
+
+}
 
 VertexBuffer::~VertexBuffer() {
     glDeleteBuffers(1, &this->vbuffer);

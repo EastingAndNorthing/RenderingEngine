@@ -3,6 +3,7 @@
 #include <string>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include "../common.h"
 #include "core/Vec4.h"
 
 class Uniform {

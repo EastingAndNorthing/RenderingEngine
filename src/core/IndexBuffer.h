@@ -1,19 +1,21 @@
 #pragma once
 
 #include <vector>
-#include "common.h"
+#include "../common.h"
 #include "core/Vertex.h"
 
 class IndexBuffer {
 public:
 	
-	GLuint ibo;
+	GLuint ibo = 0;
 	
 	IndexBuffer();
 	
 	IndexBuffer(std::vector<unsigned int> &indices, int mode = GL_STATIC_DRAW);
 
 	~IndexBuffer();
+
+	void setIndices(std::vector<unsigned int> &indices, int mode = GL_STATIC_DRAW);
 
 	void Bind();
 
@@ -23,6 +25,6 @@ public:
 
 private:
 
-	unsigned int count;
+	unsigned int count = 0;
 
 };

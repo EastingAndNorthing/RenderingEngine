@@ -2,7 +2,7 @@
 
 #include <string>
 #include <vector>
-#include "common.h"
+#include "../common.h"
 #include "core/Shader.h"
 #include "core/Uniforms.h"
 

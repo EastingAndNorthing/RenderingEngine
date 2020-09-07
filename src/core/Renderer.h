@@ -2,7 +2,7 @@
 
 // #include <memory>
 #include <vector>
-#include "common.h"
+#include "../common.h"
 #include "core/Shader.h"
 #include "primitives/Mesh.h"
 
