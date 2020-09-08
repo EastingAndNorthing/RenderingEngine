@@ -14,6 +14,9 @@ public:
 
 	GLFWwindow* window;
 
+	int windowWidth = 0;
+	int windowHeight = 0;
+
 	int frameBufferWidth = 0;
 	int frameBufferHeight = 0;
 
@@ -22,11 +25,11 @@ public:
 	static Renderer& Instance();
 	
 	Renderer(const Renderer&) = delete;
-  	// ~Renderer() = default;
-
+  	
 	~Renderer();
 
-	// void Enqueue(std::unique_ptr<Mesh> &mesh);
+	void setupFramebuffer();
+
 	void Enqueue(Mesh* mesh);
 
 	void Draw();
@@ -35,11 +38,8 @@ public:
 
 private:
 
-	// std::vector<std::unique_ptr<Mesh>> renderQueue;
 	std::vector<Mesh*> renderQueue = {};
 	
 	Renderer();
 	
-	void Init();
-
 };

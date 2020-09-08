@@ -8,7 +8,7 @@ struct Settings
 	int window_width = 800;
 	int window_height = 600;
 	int vsync = 1;
-	float fov = 60.0f;
+	float fov = 70.0f;
 
 	Settings() {
 		std::cout << "[SETTINGS] Loaded." << std::endl;
