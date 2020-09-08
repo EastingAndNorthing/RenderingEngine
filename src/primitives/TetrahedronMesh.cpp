@@ -13,21 +13,21 @@ void TetrahedronMesh::generate(float &size) {
     float sqrt2over3component = 0.8164965809277260327 * size;
     float oneThirdComponent = 0.333333333333333333 * size;
 
-    std::vector<Vertex> box {
-        Vertex({ sqrt8over9component, 0, -oneThirdComponent }),
-        Vertex({ -sqrt2over9component,  sqrt2over3component, -oneThirdComponent }), 
-        Vertex({ -sqrt2over9component, -sqrt2over3component, -oneThirdComponent }),
-        Vertex({ 0, 0, size }),
+    std::vector<Vertex> tetra {
+        Vertex({ 0, -oneThirdComponent, sqrt8over9component }),
+        Vertex({ sqrt2over3component, -oneThirdComponent, -sqrt2over9component }), 
+        Vertex({ -sqrt2over3component, -oneThirdComponent, -sqrt2over9component }),
+        Vertex({ 0, size, 0 }),
     };
 
     std::vector<unsigned int> indices = {
-        0, 1, 2,
+        2, 1, 0,
         1, 2, 3,
-        2, 0, 3,
-        0, 1, 3
+        0, 3, 2,
+        1, 3, 0
     };
 
-    this->vertexBuffer.setVertices(box);
+    this->vertexBuffer.setVertices(tetra);
     this->indexBuffer.setIndices(indices);
 
 }

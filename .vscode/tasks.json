@@ -3,6 +3,23 @@
     "tasks": [
         {
             "type": "shell",
+            "label": "RUN",
+            "command": "bin\\windows\\main.exe",
+            "dependsOn":["BUILD (Windows)"],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+        },
+        {
+            "type": "shell",
+            "label": "RUN",
+            "command": "bin/macos/main.app",
+            "dependsOn":["BUILD (MacOS)"],
+            "group": "test",
+        },
+        {
+            "type": "shell",
             "label": "BUILD (Windows)",
             "command": "g++",
             "args": [
@@ -28,10 +45,7 @@
             "problemMatcher": [
                 "$gcc"
             ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
+            "group": "build"
         },
         {
             "type": "shell",

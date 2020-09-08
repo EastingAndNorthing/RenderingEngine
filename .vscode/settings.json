@@ -3,6 +3,7 @@
         "xtr1common": "cpp",
         "xutility": "cpp",
         "cassert": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "vector": "cpp"
     }
 }

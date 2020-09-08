@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
     }
 
     Mesh* myTetra = new TetrahedronMesh(0.4f);
-    myTetra->rotation = glm::rotate(myTetra->rotation, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    // myTetra->rotation = glm::rotate(myTetra->rotation, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
     Material material(new Shader("shaders/Color"));
     Uniform4f triangle_color("u_color", { 1.0f, 0.5f, 0.9f, 1.0f });
@@ -58,15 +58,14 @@ int main(int argc, char **argv) {
         glfwPollEvents();
 
         float time = glfwGetTime();
-        float greenValue = sin(time*2) / 2.0f + 0.5f;
+        float oscillator = sin(time*2) / 2.0f + 0.5f;
 
-        triangle_color.set({ 0.0f, greenValue, 0.8f, 1.0f });
+        triangle_color.set({ 0.0f, oscillator, 0.8f, 1.0f });
         renderer.Draw();
 
         glfwSwapBuffers(renderer.window);
     }
 
-    // delete material; // Clean up heap, do this via Renderer?
     renderer.Clear();
 
     glfwTerminate();

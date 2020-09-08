@@ -41,18 +41,18 @@ void BoxMesh::generate(float &width, float &height, float &depth) {
     }
 
     std::vector<unsigned int> indices = {
-        0, 1, 2, // Front
-        0, 2, 3, // Front
-        1, 4, 5, // Right
-        1, 5, 2, // Right
+        2, 1, 0, // Front
+        3, 2, 0, // Front
+        1, 5, 4, // Right
+        1, 2, 5, // Right
         4, 5, 6, // Back
-        4, 7, 6, // Back
+        4, 6, 7, // Back
         7, 6, 3, // Left
-        7, 0, 3, // Left
+        7, 3, 0, // Left
         0, 1, 7, // Bottom
         1, 4, 7, // Bottom
         2, 3, 6, // Top
-        2, 5, 6, // Top
+        2, 6, 5, // Top
     };
 
     this->vertexBuffer.setVertices(box);
