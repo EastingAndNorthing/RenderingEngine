@@ -64,7 +64,7 @@ Renderer::Renderer() {
     glGenVertexArrays(1, &base_vao);
     glBindVertexArray(base_vao);
 
-    this->setupFramebuffer();
+    this->SetupFramebuffer();
 
     glfwSetWindowSizeCallback(this->window, [](GLFWwindow* window, int width, int height) {
         Renderer &renderer = Renderer::Instance();
@@ -74,12 +74,16 @@ Renderer::Renderer() {
 
     glfwSetFramebufferSizeCallback(this->window, [](GLFWwindow* window, int width, int height) {
         Renderer &renderer = Renderer::Instance();
-        renderer.setupFramebuffer();
+        renderer.SetupFramebuffer();
     });
 
 }
 
-void Renderer::setupFramebuffer() {
+bool Renderer::isActive(){
+    return !glfwWindowShouldClose(this->window);
+}
+
+void Renderer::SetupFramebuffer() {
     glfwGetFramebufferSize(this->window, &this->frameBufferWidth, &this->frameBufferHeight);
     glViewport(0, 0, this->frameBufferWidth, this->frameBufferHeight);
     this->projectionMatrix = glm::perspective(glm::radians(g_settings.fov), (float) this->frameBufferWidth / (float) this->frameBufferHeight, 0.1f, 100.0f);
@@ -87,37 +91,36 @@ void Renderer::setupFramebuffer() {
 
 void Renderer::Enqueue(Mesh* mesh) {
     if(mesh->material != NULL) {
-        
         this->renderQueue.push_back(mesh);
-        
         printf("[RENDERER] Mesh enqueued.\n");
-        
     } else {
         printf("[ERR] No material assigned to mesh, skipped.\n");
     }
 }
 
-void Renderer::Draw() {
+void Renderer::Update() {
+    glfwPollEvents();
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Camera
     const float camRadius = 1.5f;
     float camX = sin(glfwGetTime()) * camRadius;
     float camZ = cos(glfwGetTime()) * camRadius;
     glm::mat4 view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
 
-    glm::mat4 viewProjectionMatrix = this->projectionMatrix * view;
+    this->viewProjectionMatrix = this->projectionMatrix * view;
 
-    for (auto& mesh: this->renderQueue) {
+    this->DrawMeshes();
+}
+
+void Renderer::DrawMeshes() {
+    for (auto& mesh: this->meshQueue) {
 
         mesh->Bind();
 
-        glm::mat4 model = glm::translate(glm::mat4(1), mesh->position);
-        model *= mesh->rotation;
-        
-        glm::mat4 u_mvp = viewProjectionMatrix * model;
+        glm::mat4 model = glm::translate(glm::mat4(1), mesh->position) * mesh->rotation;
+        glm::mat4 u_mvp = this->viewProjectionMatrix * model;
         
         glUniformMatrix4fv(mesh->material->shader->getProjectionMatrixLocation(), 1, GL_FALSE, glm::value_ptr(u_mvp));
 
@@ -128,6 +131,8 @@ void Renderer::Draw() {
         }
 
     }
+
+    glfwSwapBuffers(this->window);
 }
 
 void Renderer::Clear() {
@@ -140,10 +145,11 @@ void Renderer::Clear() {
 }
 
 Renderer::~Renderer() {
-    
-    for (auto& mesh: this->renderQueue) {
+    for (auto& mesh: this->meshQueue) {
         delete mesh;
     }
+
+    glfwTerminate();
 
     std::printf("[RENDERER] MOIIIIIII\n");
 }

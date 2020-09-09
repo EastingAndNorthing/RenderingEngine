@@ -19,19 +19,23 @@ public:
 	int frameBufferHeight = 0;
 
 	glm::mat4 projectionMatrix = glm::mat4(1.0f);
+	glm::mat4 viewProjectionMatrix = glm::mat4(1.0f);
 
 	static Renderer& Instance();
 
 	Renderer(const Renderer&) = delete;
 	~Renderer();
-
-	void setupFramebuffer();
+	
+	bool isActive();
+	void SetupFramebuffer();
 	void Enqueue(Mesh* mesh);
-	void Draw();
+	void Update();
 	void Clear();
 
 private:
-	std::vector<Mesh*> renderQueue = {};
+	std::vector<Mesh*> meshQueue = {};
 	Renderer();
+
+	void DrawMeshes();
 	
 };
