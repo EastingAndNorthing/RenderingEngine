@@ -23,19 +23,13 @@ public:
     glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
 
     Mesh();
-
     Mesh(const VertexBuffer &vertexBuffer, const IndexBuffer &indexBuffer);
-    
     Mesh(std::vector<Vertex> &vertices, std::vector<unsigned int> &indices);
-
     Mesh(std::vector<Vertex> &vertices);
-    
     Mesh(std::vector<Vertex> vertices);
-
     ~Mesh();
 
     void assignMaterial(Material* material);
-
     void Bind();
 
 private:

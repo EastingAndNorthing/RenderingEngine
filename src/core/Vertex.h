@@ -9,11 +9,8 @@ struct Vertex {
     Vec4 color = { 0, 0, 0, 0 };
 
     Vertex();
-
     Vertex(Vec3 position, Vec4 color);
-    
     Vertex(float x = 0, float y = 0, float z = 0);
-
 	~Vertex() = default;
 
 };

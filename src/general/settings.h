@@ -2,8 +2,7 @@
 #include "../common.h"
 #include <iostream>
 
-struct Settings
-{
+struct Settings {
 	const char* window_title = "Hello World";
 	int window_width = 800;
 	int window_height = 600;

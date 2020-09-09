@@ -7,7 +7,6 @@ class BoxMesh : public Mesh {
 public:
 
     BoxMesh(float size = 1.0f);
-
     BoxMesh(float width, float height, float depth);
 
 private:
