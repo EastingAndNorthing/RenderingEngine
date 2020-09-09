@@ -91,7 +91,7 @@ void Renderer::SetupFramebuffer() {
 
 void Renderer::Enqueue(Mesh* mesh) {
     if(mesh->material != NULL) {
-        this->renderQueue.push_back(mesh);
+        this->meshQueue.push_back(mesh);
         printf("[RENDERER] Mesh enqueued.\n");
     } else {
         printf("[ERR] No material assigned to mesh, skipped.\n");
