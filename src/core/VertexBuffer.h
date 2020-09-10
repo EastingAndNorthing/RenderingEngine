@@ -8,12 +8,13 @@ class VertexBuffer {
 public:
 	GLuint vao = 0;
 	GLuint vbuffer = 0;
+	std::vector<Vertex> vertices;
 
 	VertexBuffer();
-	VertexBuffer(std::vector<Vertex> &vertices, int mode = GL_STATIC_DRAW);
+	VertexBuffer(std::vector<Vertex> vertices, int mode = GL_STATIC_DRAW);
 	~VertexBuffer();
 
-	void setVertices(std::vector<Vertex> &vertices, int mode = GL_STATIC_DRAW);
+	void setVertices(std::vector<Vertex> vertices, int mode = GL_STATIC_DRAW);
 	unsigned int getCount();
 	unsigned int getSize();
 	void Bind();

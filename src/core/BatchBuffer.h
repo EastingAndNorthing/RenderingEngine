@@ -8,9 +8,9 @@
 
 class BatchBuffer {
 public:
-    GLuint vbuffer;
     GLuint vao;
-    GLuint ibo;
+    GLuint vbuffer;
+    GLuint ibuffer;
     
     std::vector<unsigned int> indices;
     std::vector<Vertex> vertices;
@@ -20,7 +20,6 @@ public:
     BatchBuffer();
     ~BatchBuffer();
 
-    void updateBuffer();
     void addGeometry(Mesh* mesh);
     void addGeometry(std::vector<Vertex> vertices, std::vector<unsigned int> indices);
     void setMaterial(Material* material);
@@ -28,7 +27,7 @@ public:
     void UnBind();
 
 private:
-    GLuint dirtycontainer;
-    unsigned int indicesCount;
-    unsigned int vertexCount;
+    unsigned int currentVerticesSize = 0;
+    unsigned int currentIndicesSize = 0;
+    unsigned int size = 0;
 };

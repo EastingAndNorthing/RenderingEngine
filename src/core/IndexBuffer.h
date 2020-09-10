@@ -6,13 +6,14 @@
 
 class IndexBuffer {
 public:
-	GLuint ibo = 0;
+	GLuint ibuffer = 0;
+	std::vector<unsigned int> indices;
 	
 	IndexBuffer();
-	IndexBuffer(std::vector<unsigned int> &indices, int mode = GL_STATIC_DRAW);
+	IndexBuffer(std::vector<unsigned int> indices, int mode = GL_STATIC_DRAW);
 	~IndexBuffer();
 
-	void setIndices(std::vector<unsigned int> &indices, int mode = GL_STATIC_DRAW);
+	void setIndices(std::vector<unsigned int> indices, int mode = GL_STATIC_DRAW);
 	unsigned int getCount();
 	unsigned int getSize();
 	void Bind();

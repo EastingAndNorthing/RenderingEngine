@@ -54,7 +54,14 @@ BatchBuffer::BatchBuffer() {
     // glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_DYNAMIC_DRAW);
 
     glGenVertexArrays(1, &this->vao);
+    
     glGenBuffers(1, &this->vbuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, this->vbuffer);
+    glBufferData(GL_ARRAY_BUFFER, this->size, nullptr, GL_DYNAMIC_DRAW);
+
+    glGenBuffers(1, &this->ibuffer);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ibuffer);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->size, nullptr, GL_DYNAMIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*) offsetof(Vertex, position));
     glEnableVertexAttribArray(0);
@@ -62,84 +69,48 @@ BatchBuffer::BatchBuffer() {
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*) offsetof(Vertex, color));
     glEnableVertexAttribArray(1);
 
-    glGenBuffers(1, &this->ibo);
-    glGenBuffers(1, &this->dirtycontainer);
-
 }
 
 void BatchBuffer::addGeometry(Mesh* mesh) {
     
-    std::cout << "Mesh vbuffer ID: " << mesh->vertexBuffer.vbuffer << std::endl;
-    std::cout << "Dirty container ID: " << this->dirtycontainer << std::endl;
+    auto vertices = mesh->vertexBuffer.vertices;
+    auto indices = mesh->indexBuffer.indices;
 
-    this->indicesCount = mesh->vertexBuffer.getSize();
-
-    GLint size = 0;
-    glBindBuffer           (GL_ARRAY_BUFFER, mesh->vertexBuffer.vbuffer);
-    glGetBufferParameteriv (GL_COPY_READ_BUFFER, GL_BUFFER_SIZE, &size);
+    glBindBuffer(GL_ARRAY_BUFFER, this->vbuffer);
+    glBufferSubData(GL_ARRAY_BUFFER, this->currentVerticesSize, mesh->vertexBuffer.getSize(), &vertices);
     
-    std::cout << "GL_BUFFER_SIZE: " << size << std::endl;
-
-    glBindBuffer           (GL_COPY_WRITE_BUFFER, this->dirtycontainer);
-    glBufferData           (GL_COPY_WRITE_BUFFER, size, nullptr, GL_STATIC_DRAW);
-
-    glCopyBufferSubData    (GL_COPY_WRITE_BUFFER, GL_ARRAY_BUFFER, 0, 0, size);
-
-    glBindBuffer           (GL_ARRAY_BUFFER, this->dirtycontainer);
-
-    // glDeleteBuffers(1, &this->dirtycontainer);
-    // glGenBuffers(1, &this->dirtycontainer);
-    // std::cout << "Dirty: " << this->dirtycontainer << std::endl;
-
-	// other.bind(GL_COPY_READ_BUFFER);
-	// bind(GL_COPY_WRITE_BUFFER);
-	// GLint size = 0;
-	// glGetBufferParameteriv(GL_COPY_READ_BUFFER, GL_BUFFER_SIZE, &size);
-	// if (size != 0) {
-	// 	glBufferData(GL_COPY_WRITE_BUFFER, size, nullptr, GL_STATIC_DRAW);
-	// 	glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, size);
-	// }
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ibuffer);
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, this->currentIndicesSize, mesh->indexBuffer.getSize(), &indices);
     
-    // glGenBuffers(1, &this->vbuffer);
-    // glDeleteBuffers(1, &this->vbuffer);
-    
-    // std::vector<Vertex> vbufferData;
-    // std::vector<Vertex> ibufferData;
-    // glBindBuffer(GL_ARRAY_BUFFER, ibo);
-    // glGetBufferSubData(GL_ARRAY_BUFFER, 0, vbufferData);
-    
-    // glBindBuffer(GL_ARRAY_BUFFER, ibo);
-    // glGetBufferSubData(GL_ARRAY_BUFFER, 0, ibufferData);
-
+    this->currentVerticesSize += mesh->vertexBuffer.getSize();
+    this->currentIndicesSize += mesh->indexBuffer.getSize();
 }
 
-void BatchBuffer::addGeometry(std::vector<Vertex> vertices, std::vector<unsigned int> indices) {
-    this->vertices.insert(this->vertices.end(), vertices.begin(), this->vertices.end());
-    this->indices.insert(this->indices.end(), indices.begin(), this->indices.end());
-}
+// void BatchBuffer::addGeometry(std::vector<Vertex> vertices, std::vector<unsigned int> indices) {
+//     this->vertices.insert(this->vertices.end(), vertices.begin(), this->vertices.end());
+//     this->indices.insert(this->indices.end(), indices.begin(), this->indices.end());
+// }
 
 void BatchBuffer::setMaterial(Material* material) {
-    
+    this->material = material;
 }
 
 void BatchBuffer::Bind() {
+    this->material->Bind();
     glBindVertexArray(this->vao); 
     glBindBuffer(GL_ARRAY_BUFFER, this->vao);
-    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ibo);
-
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ibuffer);
     // Testing
-    glDrawElements(GL_TRIANGLES, this->indicesCount, GL_UNSIGNED_INT, nullptr);
-    // GLuint size = 0;
-    // glDrawArrays(GL_TRIANGLES, 0, 3);
-
+    glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, nullptr);
 }
 
 void BatchBuffer::UnBind() {
-    
+    glBindVertexArray(0); 
+    glBindBuffer(GL_ARRAY_BUFFER, this->vbuffer);
 }
 
 BatchBuffer::~BatchBuffer() {
     glDeleteBuffers(1, &this->vbuffer);
+    glDeleteBuffers(1, &this->ibuffer);
     glDeleteBuffers(1, &this->vao);
-    glDeleteBuffers(1, &this->ibo);
 }

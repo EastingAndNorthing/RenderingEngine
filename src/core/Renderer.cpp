@@ -111,8 +111,7 @@ void Renderer::BeginLoop() {
 
     this->viewProjectionMatrix = this->projectionMatrix * view;
 
-    // this->DrawMeshes();
-
+    this->DrawMeshes();
 }
 
 void Renderer::EndLoop() {

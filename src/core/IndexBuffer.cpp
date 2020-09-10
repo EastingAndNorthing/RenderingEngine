@@ -4,32 +4,30 @@
 #include "core/IndexBuffer.h"
 
 IndexBuffer::IndexBuffer()
-    : count(0) 
-{
-    this->count = 0;
-}
+{}
 
 /*!
  * @param indices
  * @param mode GL_STATIC_DRAW or GL_DYNAMIC_DRAW. See glBufferData() for more options.
  */
-IndexBuffer::IndexBuffer(std::vector<unsigned int> &indices, int mode) {
+IndexBuffer::IndexBuffer(std::vector<unsigned int> indices, int mode) {
     this->setIndices(indices, mode);
 };
 
-void IndexBuffer::setIndices(std::vector<unsigned int> &indices, int mode) {
-
+void IndexBuffer::setIndices(std::vector<unsigned int> indices, int mode) {
+    
+    this->indices = indices;
     this->count = indices.size();
     this->size = this->count * sizeof(unsigned int);
 
-    glGenBuffers(1, &this->ibo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glGenBuffers(1, &this->ibuffer);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibuffer);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->getSize(), &indices[0], mode);
 
 }
 
 void IndexBuffer::Bind() {
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ibo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ibuffer);
 }
 
 void IndexBuffer::Unbind() {
@@ -45,5 +43,5 @@ unsigned int IndexBuffer::getSize() {
 }
 
 IndexBuffer::~IndexBuffer() {
-    glDeleteBuffers(1, &this->ibo);
+    glDeleteBuffers(1, &this->ibuffer);
 }

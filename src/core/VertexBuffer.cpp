@@ -11,12 +11,13 @@ VertexBuffer::VertexBuffer() {
  * @param vertices
  * @param mode GL_STATIC_DRAW or GL_DYNAMIC_DRAW. See glBufferData() for more options.
  */
-VertexBuffer::VertexBuffer(std::vector<Vertex> &vertices, int mode) {
+VertexBuffer::VertexBuffer(std::vector<Vertex> vertices, int mode) {
     this->setVertices(vertices, mode);
 };
 
-void VertexBuffer::setVertices(std::vector<Vertex> &vertices, int mode) {
+void VertexBuffer::setVertices(std::vector<Vertex> vertices, int mode) {
 
+    this->vertices = vertices;
     this->count = vertices.size();
     this->size = this->count * sizeof(Vertex);
     
@@ -39,7 +40,7 @@ void VertexBuffer::setVertices(std::vector<Vertex> &vertices, int mode) {
 
 void VertexBuffer::Bind() {
     glBindVertexArray(this->vao); 
-    glBindBuffer(GL_ARRAY_BUFFER, this->vao);
+    glBindBuffer(GL_ARRAY_BUFFER, this->vao); ////// uhhhhhhm, not using this->vbuffer? 
 }
 
 void VertexBuffer::Unbind() {
