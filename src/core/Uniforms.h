@@ -10,14 +10,12 @@ class Uniform {
 public:
 
     std::string name;
-
     int location;
 
     Uniform(const std::string& name);
     ~Uniform() = default;
 
     void bindLocation(const int location);
-
     virtual void Bind();
     void set();
 

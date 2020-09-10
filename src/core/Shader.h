@@ -24,7 +24,4 @@ public:
     
     const void Bind();
     const void UnBind();
-
-private:
-
 };

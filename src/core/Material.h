@@ -20,7 +20,4 @@ public:
     void setShader(Shader* shader);
     void setUniform(Uniform &uniform);
     void Bind();
-
-private:
-
 };

@@ -17,7 +17,8 @@ VertexBuffer::VertexBuffer(std::vector<Vertex> &vertices, int mode) {
 
 void VertexBuffer::setVertices(std::vector<Vertex> &vertices, int mode) {
 
-    this->size = vertices.size() * sizeof(Vertex);
+    this->count = vertices.size();
+    this->size = this->count * sizeof(Vertex);
     
     // Generate and bind a vertex array object. This makes a connection between a buffer and a vertex layout (attribute locations)
     // @TODO Benchmark if using separate vao's is less efficient than having 1 global vao. 
@@ -36,11 +37,6 @@ void VertexBuffer::setVertices(std::vector<Vertex> &vertices, int mode) {
 
 }
 
-VertexBuffer::~VertexBuffer() {
-    glDeleteBuffers(1, &this->vbuffer);
-    glDeleteBuffers(1, &this->vao);
-}
-
 void VertexBuffer::Bind() {
     glBindVertexArray(this->vao); 
     glBindBuffer(GL_ARRAY_BUFFER, this->vao);
@@ -50,6 +46,15 @@ void VertexBuffer::Unbind() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
+unsigned int VertexBuffer::getCount() {
+    return this->count;
+}
+
 unsigned int VertexBuffer::getSize() {
     return this->size;
+}
+
+VertexBuffer::~VertexBuffer() {
+    glDeleteBuffers(1, &this->vbuffer);
+    glDeleteBuffers(1, &this->vao);
 }

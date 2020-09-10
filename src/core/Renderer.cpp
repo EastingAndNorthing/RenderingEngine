@@ -53,7 +53,7 @@ Renderer::Renderer() {
     printf("[RENDERER] Initialized with OpenGL %d.%d.\n", GLVersion.major, GLVersion.minor);
     printf("[RENDERER] Supported GLSL version is %s.\n", (char *)glGetString(GL_SHADING_LANGUAGE_VERSION));
 
-	glEnable(GL_CULL_FACE);
+	// glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 	// glDepthFunc(GL_LESS);
 	// glEnable(GL_STENCIL_TEST);
@@ -98,7 +98,7 @@ void Renderer::Enqueue(Mesh* mesh) {
     }
 }
 
-void Renderer::Update() {
+void Renderer::BeginLoop() {
     glfwPollEvents();
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -111,7 +111,12 @@ void Renderer::Update() {
 
     this->viewProjectionMatrix = this->projectionMatrix * view;
 
-    this->DrawMeshes();
+    // this->DrawMeshes();
+
+}
+
+void Renderer::EndLoop() {
+    glfwSwapBuffers(this->window);
 }
 
 void Renderer::DrawMeshes() {
@@ -129,10 +134,7 @@ void Renderer::DrawMeshes() {
         } else {
             glDrawArrays(GL_TRIANGLES, 0, mesh->vertexBuffer.getSize());
         }
-
     }
-
-    glfwSwapBuffers(this->window);
 }
 
 void Renderer::Clear() {

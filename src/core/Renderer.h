@@ -29,7 +29,8 @@ public:
 	bool isActive();
 	void SetupFramebuffer();
 	void Enqueue(Mesh* mesh);
-	void Update();
+	void BeginLoop();
+	void EndLoop();
 	void Clear();
 
 private:

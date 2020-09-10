@@ -20,15 +20,12 @@ IndexBuffer::IndexBuffer(std::vector<unsigned int> &indices, int mode) {
 void IndexBuffer::setIndices(std::vector<unsigned int> &indices, int mode) {
 
     this->count = indices.size();
+    this->size = this->count * sizeof(unsigned int);
 
     glGenBuffers(1, &this->ibo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->count * sizeof(unsigned int), &indices[0], mode);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->getSize(), &indices[0], mode);
 
-}
-
-IndexBuffer::~IndexBuffer() {
-    glDeleteBuffers(1, &this->ibo);
 }
 
 void IndexBuffer::Bind() {
@@ -41,4 +38,12 @@ void IndexBuffer::Unbind() {
 
 unsigned int IndexBuffer::getCount() {
     return this->count;
+}
+
+unsigned int IndexBuffer::getSize() {
+    return this->size;
+}
+
+IndexBuffer::~IndexBuffer() {
+    glDeleteBuffers(1, &this->ibo);
 }
