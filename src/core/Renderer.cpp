@@ -54,7 +54,7 @@ Renderer::Renderer() {
     printf("[RENDERER] Supported GLSL version is %s.\n", (char *)glGetString(GL_SHADING_LANGUAGE_VERSION));
 
 	// glEnable(GL_CULL_FACE);
-	glEnable(GL_DEPTH_TEST);
+	// glEnable(GL_DEPTH_TEST);
 	// glDepthFunc(GL_LESS);
 	// glEnable(GL_STENCIL_TEST);
 	// glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
@@ -129,7 +129,7 @@ void Renderer::DrawMeshes() {
         glUniformMatrix4fv(mesh->material->shader->getProjectionMatrixLocation(), 1, GL_FALSE, glm::value_ptr(u_mvp));
 
         if(mesh->indexBuffer.getCount() > 0) {
-            glDrawElements(GL_TRIANGLES, mesh->indexBuffer.getCount(), GL_UNSIGNED_INT, nullptr);
+            glDrawElements(GL_TRIANGLES, mesh->indexBuffer.getCount(), GL_UNSIGNED_INT, 0);
         } else {
             glDrawArrays(GL_TRIANGLES, 0, mesh->vertexBuffer.getSize());
         }

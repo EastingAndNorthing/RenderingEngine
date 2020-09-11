@@ -1,67 +1,28 @@
 #include "core/BatchBuffer.h"
+#include "core/Vertex.h"
 #include "primitives/Mesh.h"
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 
 BatchBuffer::BatchBuffer() {
-    
-    // int size = 1024;
+    this->generateBuffers();
+}
 
-    // float x_dist = 1.0/2;
-    // float y_dist = 1.0/2;
-    // float z_dist = 1.0/2;
-    
-    // std::vector<Vertex> box {
-    //     Vertex({-x_dist, -y_dist, -z_dist}), // Front
-    //     Vertex({ x_dist, -y_dist, -z_dist}), // Front
-    //     Vertex({ x_dist,  y_dist, -z_dist}), // Front
-    //     Vertex({-x_dist,  y_dist, -z_dist}), // Front
-    //     Vertex({ x_dist, -y_dist,  z_dist}), // Back
-    //     Vertex({ x_dist,  y_dist,  z_dist}), // Back
-    //     Vertex({-x_dist,  y_dist,  z_dist}), // Back
-    //     Vertex({-x_dist, -y_dist,  z_dist}), // Back
-    // }; 
+void BatchBuffer::generateBuffers() {
 
-    // std::vector<unsigned int> indices = {
-    //     2, 1, 0, // Front
-    //     3, 2, 0, // Front
-    //     1, 5, 4, // Right
-    //     1, 2, 5, // Right
-    //     4, 5, 6, // Back
-    //     4, 6, 7, // Back
-    //     7, 6, 3, // Left
-    //     7, 3, 0, // Left
-    //     0, 1, 7, // Bottom
-    //     1, 4, 7, // Bottom
-    //     2, 3, 6, // Top
-    //     2, 6, 5, // Top
-    // };
+    std::cout << "Generating new BatchBuffer" << std::endl;
 
-    // glGenVertexArrays(1, &this->vao);
-    // glBindVertexArray(this->vao);
-
-    // glGenBuffers(1, &this->vbuffer);
-    // glBindBuffer(GL_ARRAY_BUFFER, this->vbuffer);
-    // glBufferData(GL_ARRAY_BUFFER, size, &vertices[0], GL_DYNAMIC_DRAW);
-    
-    // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*) offsetof(Vertex, position));
-    // glEnableVertexAttribArray(0);
-
-    // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*) offsetof(Vertex, color));
-    // glEnableVertexAttribArray(1);
-
-    // glGenBuffers(1, &this->ibo);
-    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    // glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_DYNAMIC_DRAW);
+    glDeleteBuffers(1, &this->vbuffer);
+    glDeleteBuffers(1, &this->ibuffer);
+    glDeleteBuffers(1, &this->vao);
 
     glGenVertexArrays(1, &this->vao);
-    
+    glBindVertexArray(this->vao);
+
     glGenBuffers(1, &this->vbuffer);
     glBindBuffer(GL_ARRAY_BUFFER, this->vbuffer);
     glBufferData(GL_ARRAY_BUFFER, this->size, nullptr, GL_DYNAMIC_DRAW);
-
-    glGenBuffers(1, &this->ibuffer);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ibuffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->size, nullptr, GL_DYNAMIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*) offsetof(Vertex, position));
     glEnableVertexAttribArray(0);
@@ -69,21 +30,36 @@ BatchBuffer::BatchBuffer() {
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*) offsetof(Vertex, color));
     glEnableVertexAttribArray(1);
 
+    glGenBuffers(1, &this->ibuffer);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ibuffer);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->size, nullptr, GL_DYNAMIC_DRAW);
+
+    std::cout << this->verticesCount << std::endl;
+    std::cout << this->verticesSize << std::endl;
+    std::cout << this->indicesCount << std::endl;
+    std::cout << this->indicesSize << std::endl;
+
 }
 
 void BatchBuffer::addGeometry(Mesh* mesh) {
-    
-    auto vertices = mesh->vertexBuffer.vertices;
-    auto indices = mesh->indexBuffer.indices;
 
+    auto meshVertices = mesh->vertexBuffer.vertices;
+    auto meshIndices = mesh->indexBuffer.indices;
+
+    this->vertices.insert(this->vertices.end(), meshVertices.begin(), meshVertices.end());
+    this->indices.insert(this->indices.end(), meshIndices.begin(), meshIndices.end());      // Should probably increment all indices
+    
+    glBindVertexArray(this->vao);
     glBindBuffer(GL_ARRAY_BUFFER, this->vbuffer);
-    glBufferSubData(GL_ARRAY_BUFFER, this->currentVerticesSize, mesh->vertexBuffer.getSize(), &vertices);
+    glBufferSubData(GL_ARRAY_BUFFER, this->verticesSize, mesh->vertexBuffer.getSize(), &meshVertices[0]);
     
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ibuffer);
-    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, this->currentIndicesSize, mesh->indexBuffer.getSize(), &indices);
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, this->indicesSize, mesh->indexBuffer.getSize(), &meshIndices[0]);
     
-    this->currentVerticesSize += mesh->vertexBuffer.getSize();
-    this->currentIndicesSize += mesh->indexBuffer.getSize();
+    this->verticesCount += meshVertices.size();
+    this->verticesSize += meshVertices.size() * sizeof(Vertex);
+    this->indicesCount += meshIndices.size();
+    this->indicesSize += meshIndices.size() * sizeof(unsigned int);
 }
 
 // void BatchBuffer::addGeometry(std::vector<Vertex> vertices, std::vector<unsigned int> indices) {
@@ -98,10 +74,17 @@ void BatchBuffer::setMaterial(Material* material) {
 void BatchBuffer::Bind() {
     this->material->Bind();
     glBindVertexArray(this->vao); 
-    glBindBuffer(GL_ARRAY_BUFFER, this->vao);
+    glBindBuffer(GL_ARRAY_BUFFER, this->vbuffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ibuffer);
+
     // Testing
-    glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, nullptr);
+    // // How to handle u_mvp? Use glBufferSubData() each frame, bake vertex locations?
+    // glm::mat4 model = glm::translate(glm::mat4(1), mesh->position) * mesh->rotation;
+    // glm::mat4 u_mvp = model;
+    // glUniformMatrix4fv(this->material->shader->getProjectionMatrixLocation(), 1, GL_FALSE, glm::value_ptr(u_mvp));
+    
+    std::cout << this->indicesCount << std::endl;
+    glDrawElements(GL_TRIANGLES, this->indicesCount, GL_UNSIGNED_INT, 0);
 }
 
 void BatchBuffer::UnBind() {

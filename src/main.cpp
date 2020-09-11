@@ -37,23 +37,22 @@ int main() {
     BatchBuffer batchBuffer;
     batchBuffer.setMaterial(&basicMaterial);
     
-    for (int i = 0; i < 15; i++) {
+    for (int i = 0; i < 2; i++) {
         Mesh* box = new BoxMesh(0.1f);
         box->position = glm::vec3(randboy(gen), randboy(gen), randboy(gen));
         box->assignMaterial(&basicMaterial);
-        renderer.Enqueue(box);
+        // renderer.Enqueue(box);
         batchBuffer.addGeometry(box);
     }
 
     Mesh* myTetra = new TetrahedronMesh(0.2f);
     // // myTetra->rotation = glm::rotate(myTetra->rotation, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
     myTetra->assignMaterial(&basicMaterial);
-    renderer.Enqueue(myTetra);
+    // renderer.Enqueue(myTetra);
 
     while (renderer.isActive()) {
         renderer.BeginLoop();
 
-        // basicMaterial.Bind();
         // // myTetra->Bind();
         batchBuffer.Bind();
 

@@ -21,7 +21,7 @@ void IndexBuffer::setIndices(std::vector<unsigned int> indices, int mode) {
     this->size = this->count * sizeof(unsigned int);
 
     glGenBuffers(1, &this->ibuffer);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibuffer);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ibuffer);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->getSize(), &indices[0], mode);
 
 }

@@ -27,7 +27,10 @@ public:
     void UnBind();
 
 private:
-    unsigned int currentVerticesSize = 0;
-    unsigned int currentIndicesSize = 0;
-    unsigned int size = 0;
+    void generateBuffers();
+    unsigned int verticesCount = 0;
+    unsigned int verticesSize = 0;
+    unsigned int indicesCount = 0;
+    unsigned int indicesSize = 0;
+    unsigned int size = 1024;
 };
