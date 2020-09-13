@@ -83,8 +83,8 @@ void BatchBuffer::Bind() {
     // glm::mat4 u_mvp = model;
     // glUniformMatrix4fv(this->material->shader->getProjectionMatrixLocation(), 1, GL_FALSE, glm::value_ptr(u_mvp));
     
-    std::cout << this->indicesCount << std::endl;
-    glDrawElements(GL_TRIANGLES, this->indicesCount, GL_UNSIGNED_INT, 0);
+    // std::cout << this->indicesCount << std::endl;
+    // glDrawElements(GL_TRIANGLES, this->indicesCount, GL_UNSIGNED_INT, 0);
 }
 
 void BatchBuffer::UnBind() {

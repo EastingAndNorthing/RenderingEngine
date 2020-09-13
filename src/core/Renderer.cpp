@@ -54,7 +54,7 @@ Renderer::Renderer() {
     printf("[RENDERER] Supported GLSL version is %s.\n", (char *)glGetString(GL_SHADING_LANGUAGE_VERSION));
 
 	// glEnable(GL_CULL_FACE);
-	// glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);
 	// glDepthFunc(GL_LESS);
 	// glEnable(GL_STENCIL_TEST);
 	// glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
@@ -123,8 +123,7 @@ void Renderer::DrawMeshes() {
 
         mesh->Bind();
 
-        glm::mat4 model = glm::translate(glm::mat4(1), mesh->position) * mesh->rotation;
-        glm::mat4 u_mvp = this->viewProjectionMatrix * model;
+        glm::mat4 u_mvp = this->viewProjectionMatrix * mesh->getWorldPositionMatrix();
         
         glUniformMatrix4fv(mesh->material->shader->getProjectionMatrixLocation(), 1, GL_FALSE, glm::value_ptr(u_mvp));
 
