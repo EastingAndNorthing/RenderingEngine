@@ -64,28 +64,27 @@ std::string Filesystem::getBasePath() {
         } while (shouldContinue);
 
         std::string path = &buf[0];
-        std::string executable = "main.exe";
 
     #endif
 
     // Make relative
-    std::string::size_type i = path.find(executable);
+    // std::string::size_type i = path.find(executable);
+    // if (i != std::string::npos)
+    //     path.erase(i, executable.length());
 
-    if (i != std::string::npos)
-        path.erase(i, executable.length());
+    path = path.substr(0, path.find_last_of("/\\")); // Make relative
 
     return path;
 }
 
 std::string Filesystem::getFileContents(const std::string& relativePath) {
     
-    // stream.open("main.app.dSYM/Contents/...");
+    // MacOS "main.app.dSYM/Contents/..."
     std::ifstream stream(basePath + relativePath);
-    std::string contents((std::istreambuf_iterator<char>(stream)),
-                            std::istreambuf_iterator<char>());
+    std::string contents((std::istreambuf_iterator<char>(stream)), std::istreambuf_iterator<char>());
     
     if (!stream.is_open()) {
-        printf("[ERROR] [FILESYSTEM] Shader '%s' could not be opened.\n", relativePath.c_str());
+        printf("[ERROR] [FILESYSTEM] File '%s' could not be opened.\n", relativePath.c_str());
         return 0;
     }
 

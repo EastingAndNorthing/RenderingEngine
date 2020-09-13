@@ -24,9 +24,9 @@ int main() {
 
     Renderer &renderer = Renderer::Instance();
 
-    Material vertexColorMaterial("shaders/VertexColors");
-    Material basicMaterial("shaders/Basic");
-    Material colorMaterial("shaders/Color");
+    Material vertexColorMaterial("/shaders/VertexColors");
+    Material basicMaterial("/shaders/Basic");
+    Material colorMaterial("/shaders/Color");
 
     Uniform4f triangle_color("u_color", { 1.0f, 0.5f, 0.9f, 1.0f });
     colorMaterial.setUniform(triangle_color);
