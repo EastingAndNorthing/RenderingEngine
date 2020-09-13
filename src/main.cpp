@@ -27,11 +27,9 @@ int main() {
     Material vertexColorMaterial("shaders/VertexColors");
     Material basicMaterial("shaders/Basic");
     Material colorMaterial("shaders/Color");
+
     Uniform4f triangle_color("u_color", { 1.0f, 0.5f, 0.9f, 1.0f });
     colorMaterial.setUniform(triangle_color);
-
-    BatchBuffer batchBuffer;
-    batchBuffer.setMaterial(&basicMaterial);
 
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -42,19 +40,14 @@ int main() {
         box->setPosition(glm::vec3(randboy(gen), randboy(gen), randboy(gen)));
         box->assignMaterial(&vertexColorMaterial);
         renderer.Enqueue(box);
-        // batchBuffer.addGeometry(box);
     }
 
     Mesh* myTetra = new TetrahedronMesh(0.5f);
-    // myTetra->rotate(90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
-
     myTetra->assignMaterial(&colorMaterial);
     renderer.Enqueue(myTetra);
 
     while (renderer.isActive()) {
         renderer.BeginLoop();
-
-        batchBuffer.Bind();
 
         float time = glfwGetTime();
         float oscillator = sin(time*2) / 2.0f + 0.5f;
