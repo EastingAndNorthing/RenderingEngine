@@ -3,6 +3,7 @@
 #include "core/Renderer.h"
 #include "util/Filesystem.h"
 #include "core/Shader.h"
+#include "core/Camera.h"
 #include "primitives/Mesh.h"
 #include "core/Uniforms.h"
 #include <glm/glm.hpp>
@@ -18,6 +19,8 @@ Renderer::Renderer() {
 
     this->windowWidth = g_settings.window_width;
     this->windowHeight = g_settings.window_height;
+
+    this->camera = new Camera();
 
     glfwInit();
 
@@ -85,8 +88,10 @@ bool Renderer::isActive(){
 
 void Renderer::SetupFramebuffer() {
     glfwGetFramebufferSize(this->window, &this->frameBufferWidth, &this->frameBufferHeight);
+    
     glViewport(0, 0, this->frameBufferWidth, this->frameBufferHeight);
-    this->projectionMatrix = glm::perspective(glm::radians(g_settings.fov), (float) this->frameBufferWidth / (float) this->frameBufferHeight, 0.1f, 100.0f);
+
+    this->camera->setProjection(this->frameBufferWidth, this->frameBufferHeight);
 }
 
 void Renderer::Enqueue(Mesh* mesh) {
@@ -104,12 +109,7 @@ void Renderer::BeginLoop() {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    const float camRadius = 1.5f;
-    float camX = sin(glfwGetTime()) * camRadius;
-    float camZ = cos(glfwGetTime()) * camRadius;
-
-    this->viewMatrix = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
-    this->viewProjectionMatrix = this->projectionMatrix * this->viewMatrix;
+    this->camera->update();
 
     this->DrawMeshes();
 }
@@ -124,10 +124,10 @@ void Renderer::DrawMeshes() {
         mesh->Bind();
         
         glUniformMatrix4fv(mesh->material->shader->getUniformLocation("u_modelViewMatrix"), 1, GL_FALSE, 
-            glm::value_ptr(this->viewMatrix * mesh->getWorldPositionMatrix())
+            glm::value_ptr(this->camera->viewMatrix * mesh->getWorldPositionMatrix())
         );
         glUniformMatrix4fv(mesh->material->shader->getUniformLocation("u_modelViewProjectionMatrix"), 1, GL_FALSE, 
-            glm::value_ptr(this->viewProjectionMatrix * mesh->getWorldPositionMatrix())
+            glm::value_ptr(this->camera->viewProjectionMatrix * mesh->getWorldPositionMatrix())
         );
 
         if(mesh->indexBuffer.getCount() > 0) {

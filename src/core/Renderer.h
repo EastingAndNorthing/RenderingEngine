@@ -4,6 +4,7 @@
 #include <vector>
 #include "../common.h"
 #include "core/Shader.h"
+#include "core/Camera.h"
 #include "primitives/Mesh.h"
 
 #include <glm/glm.hpp>
@@ -12,15 +13,12 @@
 class Renderer {
 public:
 	GLFWwindow* window;
+	Camera* camera;
 
 	int windowWidth = 0;
 	int windowHeight = 0;
 	int frameBufferWidth = 0;
 	int frameBufferHeight = 0;
-	
-	glm::mat4 viewMatrix = glm::mat4(1.0f);
-	glm::mat4 projectionMatrix = glm::mat4(1.0f);
-	glm::mat4 viewProjectionMatrix = glm::mat4(1.0f);
 
 	static Renderer& Instance();
 

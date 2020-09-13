@@ -2,6 +2,7 @@
 #include <random>
 #include "common.h"
 #include "core/Renderer.h"
+#include "core/Camera.h"
 #include "core/Vec3.h"
 #include "core/Vec4.h"
 #include "core/Vertex.h"
@@ -39,10 +40,10 @@ int main() {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> randboy(-0.7, 0.7);
-    
+
     for (int i = 0; i < 15; i++) {
         // Mesh* box = new BoxMesh(0.1f);
-        Mesh* sphere = new SphereMesh(0.25f);
+        Mesh* sphere = new SphereMesh(0.25f, 24);
         sphere->setPosition(glm::vec3(randboy(gen), randboy(gen), randboy(gen)));
         sphere->assignMaterial(&phongShader);
         renderer.Enqueue(sphere);
@@ -52,8 +53,12 @@ int main() {
     myTetra->assignMaterial(&colorMaterial);
     renderer.Enqueue(myTetra);
 
+    Camera* cam = renderer.camera;
+    cam->autoRotation = true;
+
     while (renderer.isActive()) {
         renderer.BeginLoop();
+
 
         float time = glfwGetTime();
         float oscillator = sin(time*2) / 2.0f + 0.5f;
