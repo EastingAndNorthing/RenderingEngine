@@ -1,5 +1,6 @@
 #pragma once
 
+#include <unordered_map>
 #include <string>
 #include "../common.h"
 #include "core/Uniforms.h"
@@ -20,8 +21,11 @@ public:
     GLuint CreateProgram();
 
     int getUniformLocation(const std::string &name);
-    int getProjectionMatrixLocation();
+    // int getProjectionMatrixLocation();
     
     const void Bind();
     const void UnBind();
+
+private:
+    std::unordered_map<std::string, int> uniformLocationCache = {};
 };

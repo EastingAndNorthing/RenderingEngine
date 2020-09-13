@@ -1,10 +1,12 @@
 #pragma once
 
 #include <string>
+#include "../common.h"
+#include "core/Vec3.h"
+#include "core/Vec4.h"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include "../common.h"
-#include "core/Vec4.h"
 
 class Uniform {
 public:
@@ -20,6 +22,18 @@ public:
     void set();
 
 };
+
+
+class Uniform3f : public Uniform {
+public:
+    Vec3 values;
+
+    Uniform3f(const std::string& name, const Vec3 &values = {});
+
+    virtual void set(const Vec3 &values = {});
+    void Bind() override;
+};
+
 
 class Uniform4f : public Uniform {
 public:

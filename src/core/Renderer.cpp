@@ -125,7 +125,8 @@ void Renderer::DrawMeshes() {
 
         glm::mat4 u_mvp = this->viewProjectionMatrix * mesh->getWorldPositionMatrix();
         
-        glUniformMatrix4fv(mesh->material->shader->getProjectionMatrixLocation(), 1, GL_FALSE, glm::value_ptr(u_mvp));
+        glUniformMatrix4fv(mesh->material->shader->getUniformLocation("u_modelViewMatrix"), 1, GL_FALSE, glm::value_ptr(mesh->getWorldPositionMatrix()));
+        glUniformMatrix4fv(mesh->material->shader->getUniformLocation("u_mvp"), 1, GL_FALSE, glm::value_ptr(u_mvp));
 
         if(mesh->indexBuffer.getCount() > 0) {
             glDrawElements(GL_TRIANGLES, mesh->indexBuffer.getCount(), GL_UNSIGNED_INT, 0);
