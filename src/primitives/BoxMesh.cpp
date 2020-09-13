@@ -18,14 +18,14 @@ void BoxMesh::generate(float &width, float &height, float &depth) {
     float z_dist = depth/2;
     
     std::vector<Vertex> box {
-        Vertex({-x_dist, -y_dist, -z_dist}), // Front
-        Vertex({ x_dist, -y_dist, -z_dist}), // Front
-        Vertex({ x_dist,  y_dist, -z_dist}), // Front
-        Vertex({-x_dist,  y_dist, -z_dist}), // Front
-        Vertex({ x_dist, -y_dist,  z_dist}), // Back
-        Vertex({ x_dist,  y_dist,  z_dist}), // Back
-        Vertex({-x_dist,  y_dist,  z_dist}), // Back
-        Vertex({-x_dist, -y_dist,  z_dist}), // Back
+        Vertex(Vec3(-x_dist, -y_dist, -z_dist)), // Front
+        Vertex(Vec3( x_dist, -y_dist, -z_dist)), // Front
+        Vertex(Vec3( x_dist,  y_dist, -z_dist)), // Front
+        Vertex(Vec3(-x_dist,  y_dist, -z_dist)), // Front
+        Vertex(Vec3( x_dist, -y_dist,  z_dist)), // Back
+        Vertex(Vec3( x_dist,  y_dist,  z_dist)), // Back
+        Vertex(Vec3(-x_dist,  y_dist,  z_dist)), // Back
+        Vertex(Vec3(-x_dist, -y_dist,  z_dist)), // Back
     }; 
 
     // @TODO remove test code
@@ -34,7 +34,6 @@ void BoxMesh::generate(float &width, float &height, float &depth) {
     std::uniform_real_distribution<> randR(0, 1);
     std::uniform_real_distribution<> randG(0, 1);
     std::uniform_real_distribution<> randB(0, 1);
-    
 
     for (int i = 0; i < box.size(); i++) {
         box[i].color = Vec4(randR(gen), randG(gen), randB(gen), 1.0);

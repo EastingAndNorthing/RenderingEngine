@@ -1,4 +1,5 @@
 #include "../common.h"
+#include "core/Vec3.h"
 #include "TetrahedronMesh.h"
 #include "Mesh.h"
 
@@ -14,10 +15,10 @@ void TetrahedronMesh::generate(float &size) {
     float oneThirdComponent = 0.333333333333333333 * size;
 
     std::vector<Vertex> tetra {
-        Vertex({ 0, -oneThirdComponent, sqrt8over9component }),
-        Vertex({ sqrt2over3component, -oneThirdComponent, -sqrt2over9component }), 
-        Vertex({ -sqrt2over3component, -oneThirdComponent, -sqrt2over9component }),
-        Vertex({ 0, size, 0 }),
+        Vertex(Vec3(0, -oneThirdComponent, sqrt8over9component)),
+        Vertex(Vec3(sqrt2over3component, -oneThirdComponent, -sqrt2over9component)), 
+        Vertex(Vec3(-sqrt2over3component, -oneThirdComponent, -sqrt2over9component)),
+        Vertex(Vec3(0, size, 0)),
     };
 
     std::vector<unsigned int> indices = {

@@ -74,7 +74,7 @@ void BatchBuffer::setMaterial(Material* material) {
 void BatchBuffer::Bind() {
     this->material->Bind();
     glBindVertexArray(this->vao); 
-    glBindBuffer(GL_ARRAY_BUFFER, this->vbuffer);
+    // glBindBuffer(GL_ARRAY_BUFFER, this->vbuffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ibuffer);
 
     // Testing
