@@ -8,10 +8,8 @@
             "dependsOn": [
                 "BUILD (Windows)"
             ],
-            "group": {
-                "kind": "test",
-                "isDefault": true
-            }
+            "group": "test",
+            "problemMatcher": []
         },
         {
             "type": "shell",
@@ -20,7 +18,11 @@
             "dependsOn": [
                 "BUILD (MacOS)"
             ],
-            "group": "test"
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "problemMatcher": []
         },
         {
             "type": "shell",
@@ -79,6 +81,7 @@
                 "-lglfw3",
                 "-I${workspaceFolder}/lib/glad/include/",
                 "${workspaceFolder}/lib/glad/src/glad.c",
+                "-I${workspaceFolder}/lib/glm-0.9.9.8/",
                 "-o",
                 "${workspaceFolder}/bin/macos/main.app"
             ],
