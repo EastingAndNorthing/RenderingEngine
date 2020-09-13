@@ -17,7 +17,8 @@ public:
 	int windowHeight = 0;
 	int frameBufferWidth = 0;
 	int frameBufferHeight = 0;
-
+	
+	glm::mat4 viewMatrix = glm::mat4(1.0f);
 	glm::mat4 projectionMatrix = glm::mat4(1.0f);
 	glm::mat4 viewProjectionMatrix = glm::mat4(1.0f);
 

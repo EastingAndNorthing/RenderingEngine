@@ -7,12 +7,12 @@
 Vertex::Vertex() {}
 
 Vertex::Vertex(Vec3 position, Vec3 normal, Vec4 color)
-    : position(position), color(color)
+    : position(position), normal(normal), color(color)
 {}
 
-Vertex::Vertex(float x, float y, float z)
-    : position { x, y, z }
-{}
+// Vertex::Vertex(float x, float y, float z)
+//     : position { x, y, z }
+// {}
 
 void Vertex::setAttribPointers() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*) offsetof(Vertex, position));

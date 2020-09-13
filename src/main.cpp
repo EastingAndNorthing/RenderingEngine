@@ -24,12 +24,16 @@ int main() {
 
     Renderer &renderer = Renderer::Instance();
 
-    Material vertexColorMaterial("/shaders/VertexColors");
     Material basicMaterial("/shaders/Basic");
+    Material vertexColorMaterial("/shaders/VertexColors");
     Material colorMaterial("/shaders/Color");
+    Material phongShader("/shaders/Phong");
 
     Uniform4f triangle_color("u_color", { 1.0f, 0.5f, 0.9f, 1.0f });
     colorMaterial.setUniform(triangle_color);
+
+    Uniform3f lightDirection("u_lightDirection", Vec3(0.0f, 0.0f, 2.0f));
+    phongShader.setUniform(lightDirection);
 
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -38,7 +42,7 @@ int main() {
     for (int i = 0; i < 15; i++) {
         Mesh* box = new BoxMesh(0.1f);
         box->setPosition(glm::vec3(randboy(gen), randboy(gen), randboy(gen)));
-        box->assignMaterial(&vertexColorMaterial);
+        box->assignMaterial(&phongShader);
         renderer.Enqueue(box);
     }
 

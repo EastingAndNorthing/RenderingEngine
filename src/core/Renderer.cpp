@@ -107,9 +107,9 @@ void Renderer::BeginLoop() {
     const float camRadius = 1.5f;
     float camX = sin(glfwGetTime()) * camRadius;
     float camZ = cos(glfwGetTime()) * camRadius;
-    glm::mat4 view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
 
-    this->viewProjectionMatrix = this->projectionMatrix * view;
+    this->viewMatrix = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+    this->viewProjectionMatrix = this->projectionMatrix * this->viewMatrix;
 
     this->DrawMeshes();
 }
@@ -122,11 +122,13 @@ void Renderer::DrawMeshes() {
     for (auto& mesh: this->meshQueue) {
 
         mesh->Bind();
-
-        glm::mat4 u_mvp = this->viewProjectionMatrix * mesh->getWorldPositionMatrix();
         
-        glUniformMatrix4fv(mesh->material->shader->getUniformLocation("u_modelViewMatrix"), 1, GL_FALSE, glm::value_ptr(mesh->getWorldPositionMatrix()));
-        glUniformMatrix4fv(mesh->material->shader->getUniformLocation("u_mvp"), 1, GL_FALSE, glm::value_ptr(u_mvp));
+        glUniformMatrix4fv(mesh->material->shader->getUniformLocation("u_modelViewMatrix"), 1, GL_FALSE, 
+            glm::value_ptr(this->viewMatrix * mesh->getWorldPositionMatrix())
+        );
+        glUniformMatrix4fv(mesh->material->shader->getUniformLocation("u_modelViewProjectionMatrix"), 1, GL_FALSE, 
+            glm::value_ptr(this->viewProjectionMatrix * mesh->getWorldPositionMatrix())
+        );
 
         if(mesh->indexBuffer.getCount() > 0) {
             glDrawElements(GL_TRIANGLES, mesh->indexBuffer.getCount(), GL_UNSIGNED_INT, 0);

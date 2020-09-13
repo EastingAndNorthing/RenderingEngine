@@ -18,14 +18,14 @@ void BoxMesh::generate(float &width, float &height, float &depth) {
     float z_dist = depth/2;
     
     std::vector<Vertex> box {
-        Vertex(Vec3(-x_dist, -y_dist, -z_dist)), // Front
-        Vertex(Vec3( x_dist, -y_dist, -z_dist)), // Front
-        Vertex(Vec3( x_dist,  y_dist, -z_dist)), // Front
-        Vertex(Vec3(-x_dist,  y_dist, -z_dist)), // Front
-        Vertex(Vec3( x_dist, -y_dist,  z_dist)), // Back
-        Vertex(Vec3( x_dist,  y_dist,  z_dist)), // Back
-        Vertex(Vec3(-x_dist,  y_dist,  z_dist)), // Back
-        Vertex(Vec3(-x_dist, -y_dist,  z_dist)), // Back
+        Vertex(Vec3(-x_dist, -y_dist, -z_dist), Vec3(1.0f, 0.0f, 0.0f)), // Front
+        Vertex(Vec3( x_dist, -y_dist, -z_dist), Vec3(1.0f, 1.0f, 0.0f)), // Front
+        Vertex(Vec3( x_dist,  y_dist, -z_dist), Vec3(1.0f, 0.0f, 1.0f)), // Front
+        Vertex(Vec3(-x_dist,  y_dist, -z_dist), Vec3(0.0f, 1.0f, 0.0f)), // Front
+        Vertex(Vec3( x_dist, -y_dist,  z_dist), Vec3(0.0f, 0.0f, 1.0f)), // Back
+        Vertex(Vec3( x_dist,  y_dist,  z_dist), Vec3(0.0f, 1.0f, 0.0f)), // Back
+        Vertex(Vec3(-x_dist,  y_dist,  z_dist), Vec3(1.0f, 0.0f, 1.0f)), // Back
+        Vertex(Vec3(-x_dist, -y_dist,  z_dist), Vec3(1.0f, 0.0f, 1.0f)), // Back
     }; 
 
     // @TODO remove test code
