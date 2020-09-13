@@ -14,6 +14,7 @@
 
 #include "primitives/TetrahedronMesh.h"
 #include "primitives/BoxMesh.h"
+#include "primitives/SphereMesh.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -40,10 +41,11 @@ int main() {
     std::uniform_real_distribution<> randboy(-0.7, 0.7);
     
     for (int i = 0; i < 15; i++) {
-        Mesh* box = new BoxMesh(0.1f);
-        box->setPosition(glm::vec3(randboy(gen), randboy(gen), randboy(gen)));
-        box->assignMaterial(&phongShader);
-        renderer.Enqueue(box);
+        // Mesh* box = new BoxMesh(0.1f);
+        Mesh* sphere = new SphereMesh(0.25f);
+        sphere->setPosition(glm::vec3(randboy(gen), randboy(gen), randboy(gen)));
+        sphere->assignMaterial(&phongShader);
+        renderer.Enqueue(sphere);
     }
 
     Mesh* myTetra = new TetrahedronMesh(0.5f);

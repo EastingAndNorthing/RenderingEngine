@@ -4,8 +4,8 @@
 
 struct Settings {
 	const char* window_title = "Hello World";
-	int window_width = 800;
-	int window_height = 600;
+	int window_width = 1280;
+	int window_height = 720;
 	int vsync = 1;
 	float fov = 70.0f;
 

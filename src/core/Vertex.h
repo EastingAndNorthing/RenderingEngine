@@ -11,7 +11,7 @@ struct Vertex {
 
     Vertex();
     Vertex(Vec3 position = {}, Vec3 normal = {}, Vec4 color = {});
-    // Vertex(float x = 0, float y = 0, float z = 0);
+    Vertex(float x = 0, float y = 0, float z = 0);
 	~Vertex() = default;
 
     static void setAttribPointers();

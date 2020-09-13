@@ -133,7 +133,8 @@ void Renderer::DrawMeshes() {
         if(mesh->indexBuffer.getCount() > 0) {
             glDrawElements(GL_TRIANGLES, mesh->indexBuffer.getCount(), GL_UNSIGNED_INT, 0);
         } else {
-            glDrawArrays(GL_TRIANGLES, 0, mesh->vertexBuffer.getSize());
+            glDrawArrays(GL_TRIANGLES, 0, mesh->vertexBuffer.getCount());
+            // glDrawArrays(GL_POINTS, 0, mesh->vertexBuffer.getCount());
         }
     }
 }

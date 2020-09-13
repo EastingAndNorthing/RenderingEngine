@@ -10,7 +10,7 @@ in VS_OUT {
 uniform vec3 diffuseAlbedo = vec3(0.780392, 0.568627, 0.113725);
 uniform vec3 specularAlbedo = vec3(0.5, 0.5, 0.5);
 
-uniform float shininess = 128.0;
+uniform float shininess = 628.0;
 uniform float rimPower = 1.0;
 
 uniform int specularOn = 1;

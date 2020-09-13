@@ -1,5 +1,6 @@
 #pragma once
 #include <cassert>
+#define _USE_MATH_DEFINES
 
 // OpenGL libraries
 #include <glad/glad.h>
