@@ -1,7 +1,5 @@
 #pragma once
 
-// #include <memory>
-#include <vector>
 #include "../common.h"
 #include "core/Shader.h"
 #include "core/Camera.h"

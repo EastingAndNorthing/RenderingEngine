@@ -14,11 +14,22 @@ Camera::~Camera() {
 }
 
 void Camera::update() {
+
+    double _time = glfwGetTime();
+
     if(this->autoRotation) {
         this->autoRotate();
     } else {
         this->viewMatrix = glm::lookAt(this->position, this->lookAtPos, glm::vec3(0.0, 1.0, 0.0));
+        // glm::lookAt(this->position, this->lookAtPos, glm::vec3(0.0, 1.0, 0.0))
+
+        double dt = _time - this->time;
+
+        
+
     }
+    
+    this->time = _time;
 
     this->viewProjectionMatrix = this->projectionMatrix * this->viewMatrix;
 }

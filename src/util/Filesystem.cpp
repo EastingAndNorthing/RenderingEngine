@@ -1,7 +1,4 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
+#include "common.h"
 #include "util/Filesystem.h"
 
 #ifdef __APPLE__

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-#include <vector>
 #include "../common.h"
 #include "core/Shader.h"
 #include "core/Uniforms.h"

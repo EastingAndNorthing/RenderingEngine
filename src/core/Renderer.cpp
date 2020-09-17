@@ -6,6 +6,7 @@
 #include "core/Camera.h"
 #include "primitives/Mesh.h"
 #include "core/Uniforms.h"
+#include "input/WindowEventHandler.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -79,6 +80,9 @@ Renderer::Renderer() {
         Renderer &renderer = Renderer::Instance();
         renderer.SetupFramebuffer();
     });
+
+    WindowEventHandler &WindowEventHandler = WindowEventHandler::Instance();
+    WindowEventHandler.bindWindow(this->window);
 
 }
 

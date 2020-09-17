@@ -1,4 +1,3 @@
-#include <vector>
 #include <random>
 #include "common.h"
 #include "core/Renderer.h"
@@ -20,11 +19,24 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "input/Mouse.h"
+#include "input/WindowEventHandler.h"
+
 Settings g_settings;
+
+void dikkemoeder() {
+    std::cout << "wowowowowowow " << std::endl;
+}
 
 int main() {
 
     Renderer &renderer = Renderer::Instance();
+    WindowEventHandler &WindowEventHandler = WindowEventHandler::Instance();
+    WindowEventHandler.bindWindow(renderer.window);
+
+    WindowEventHandler.addMousePositionCallback(dikkemoeder);
+
+    // Mouse &mouse = Mouse::Instance();
 
     Material basicMaterial("/shaders/Basic");
     Material vertexColorMaterial("/shaders/VertexColors");

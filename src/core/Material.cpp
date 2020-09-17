@@ -1,5 +1,4 @@
 #include <algorithm>
-#include <vector>
 #include "common.h"
 #include "core/Shader.h"
 #include "core/Material.h"
@@ -31,14 +30,13 @@ void Material::setUniform(Uniform &uniform) {
         this->uniforms.push_back(&uniform);
     }
 
-    std::cout << "Material now has " << this->uniforms.size() << " Uniforms attached." << std::endl;
+    // std::cout << "Material now has " << this->uniforms.size() << " Uniforms attached." << std::endl;
 }
 
 void Material::Bind() {
 
     this->shader->Bind();
 
-    // for (auto& uniform: this->uniforms) does not load the correct bind() method. 'auto' loads the base class instead of derived class... 
     for (int i = 0; i < this->uniforms.size(); i++) {
         this->uniforms[i]->Bind(); 
     }

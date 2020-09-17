@@ -1,4 +1,3 @@
-#include <vector>
 #include "common.h"
 #include "core/Vertex.h"
 #include "core/IndexBuffer.h"

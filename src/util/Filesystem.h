@@ -1,7 +1,7 @@
 #pragma once
 
+#include "common.h"
 #include <fstream>
-#include <string>
 #include <sstream>
 
 #ifdef __APPLE__

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <vector>
 #include "common.h"
 #include "core/Renderer.h"
 #include "core/Vec3.h"

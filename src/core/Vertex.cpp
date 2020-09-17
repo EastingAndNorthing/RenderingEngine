@@ -1,5 +1,3 @@
-#include <vector>
-#include <iostream>
 #include "common.h"
 #include "core/Vertex.h"
 #include "core/Vec3.h"

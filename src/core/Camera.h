@@ -41,4 +41,6 @@ private:
 
     glm::mat4 viewProjectionMatrix = glm::mat4(1.0f);
     
+    double time = 0;
+
 };

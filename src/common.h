@@ -1,13 +1,14 @@
 #pragma once
-#include <cassert>
 #define _USE_MATH_DEFINES
+#include <vector>
+#include <cassert>
+#include <iostream>
+#include <string>
 
-// OpenGL libraries
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #define GLAD_DEBUG
 
-// General
 #include "general/Settings.h"
 // #include "general/log.h"
 
