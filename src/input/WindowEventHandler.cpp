@@ -1,34 +1,49 @@
 #include "common.h"
-#include "WindowEventHandler.h"
+#include "input/WindowEventHandler.h"
+#include "core/Renderer.h"
 
-WindowEventHandler& WindowEventHandler::Instance(){
-    static WindowEventHandler instance;
-    return instance;
-}
+namespace WindowEventHandler {
 
-WindowEventHandler::WindowEventHandler() {}
-WindowEventHandler::~WindowEventHandler() {}
+    GLFWwindow* window;
 
-void WindowEventHandler::bindWindow(GLFWwindow* window) {
-    this->window = window;
-    glfwSetWindowUserPointer(this->window, reinterpret_cast<void*>(this));
-    glfwSetCursorPosCallback(this->window, WindowEventHandlerFunctions::mouse_callback);
-}
+    bool initialized = false;
 
-// https://stackoverflow.com/questions/15128444/c-calling-a-function-from-a-vector-of-function-pointers-inside-a-class-where-t
-template<typename Function>
-void WindowEventHandler::addMousePositionCallback(Function && fn) {
-    mousePosCallStack.push_back(std::forward<Function>(fn)); 
-}
+    void init(GLFWwindow* window, bool initMouse, bool initKeyboard) {
+        if(!initialized) {
+            
+            glfwSetWindowSizeCallback(window, WindowEventHandler::onWindowResize);
+            glfwSetFramebufferSizeCallback(window, WindowEventHandler::onFrameBufferResize);
 
-void WindowEventHandler::_mousePosCallback(double xpos, double ypos) {
-    for(auto && fn : mousePosCallStack)
-        fn();
-}
+            if(initMouse) {
+                glfwSetMouseButtonCallback(window, WindowEventHandler::onMouseButtonClick);
+                glfwSetCursorPosCallback(window, WindowEventHandler::onMouseMove);
+            }
 
-namespace WindowEventHandlerFunctions {
-    static void mouse_callback(GLFWwindow* window, double xpos, double ypos){
-        WindowEventHandler* windowEventHandler = reinterpret_cast<WindowEventHandler *>(glfwGetWindowUserPointer(window));
-        windowEventHandler->_mousePosCallback(xpos, ypos);
+            initialized = true;
+        }
+    }
+
+    void onWindowResize(GLFWwindow* window, int width, int height) {
+        Renderer &renderer = Renderer::Instance();
+        renderer.windowWidth = width;
+        renderer.windowHeight = height;
+    }
+
+    void onFrameBufferResize(GLFWwindow* window, int width, int height) {
+        Renderer &renderer = Renderer::Instance();
+        renderer.SetupFramebuffer(width, height);
+    }
+
+    static void onMouseMove(GLFWwindow* window, double xpos, double ypos){
+        Mouse &mouse = Mouse::Instance();
+        mouse.update(window, xpos, ypos);
+    }
+
+    static void onMouseButtonClick(GLFWwindow* window, int button, int action, int mods) {
+        if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        } else {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        }
     }
 }

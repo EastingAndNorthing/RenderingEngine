@@ -24,19 +24,9 @@
 
 Settings g_settings;
 
-void dikkemoeder() {
-    std::cout << "wowowowowowow " << std::endl;
-}
-
 int main() {
 
     Renderer &renderer = Renderer::Instance();
-    WindowEventHandler &WindowEventHandler = WindowEventHandler::Instance();
-    WindowEventHandler.bindWindow(renderer.window);
-
-    WindowEventHandler.addMousePositionCallback(dikkemoeder);
-
-    // Mouse &mouse = Mouse::Instance();
 
     Material basicMaterial("/shaders/Basic");
     Material vertexColorMaterial("/shaders/VertexColors");
@@ -70,7 +60,6 @@ int main() {
 
     while (renderer.isActive()) {
         renderer.BeginLoop();
-
 
         float time = glfwGetTime();
         float oscillator = sin(time*2) / 2.0f + 0.5f;

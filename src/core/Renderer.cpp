@@ -51,38 +51,19 @@ Renderer::Renderer() {
         printf("[ERR] Failed to initialize OpenGL context");
     }
 
-    glfwGetFramebufferSize(this->window, &this->frameBufferWidth, &this->frameBufferHeight);
-    glViewport(0, 0, this->frameBufferWidth, this->frameBufferHeight);
+    this->SetupFramebuffer(this->frameBufferWidth, this->frameBufferHeight);
 
     printf("[RENDERER] Initialized with OpenGL %d.%d.\n", GLVersion.major, GLVersion.minor);
-    printf("[RENDERER] Supported GLSL version is %s.\n", (char *)glGetString(GL_SHADING_LANGUAGE_VERSION));
+    printf("[RENDERER] Supported GLSL version is %s.\n", (char*) glGetString(GL_SHADING_LANGUAGE_VERSION));
 
-	// glEnable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 	// glDepthFunc(GL_LESS);
 	// glEnable(GL_STENCIL_TEST);
 	// glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 	// glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-    
-    GLuint base_vao;
-    glGenVertexArrays(1, &base_vao);
-    glBindVertexArray(base_vao);
 
-    this->SetupFramebuffer();
-
-    glfwSetWindowSizeCallback(this->window, [](GLFWwindow* window, int width, int height) {
-        Renderer &renderer = Renderer::Instance();
-        renderer.windowWidth = width;
-        renderer.windowHeight = height;
-    });
-
-    glfwSetFramebufferSizeCallback(this->window, [](GLFWwindow* window, int width, int height) {
-        Renderer &renderer = Renderer::Instance();
-        renderer.SetupFramebuffer();
-    });
-
-    WindowEventHandler &WindowEventHandler = WindowEventHandler::Instance();
-    WindowEventHandler.bindWindow(this->window);
+    WindowEventHandler::init(this->window, true);
 
 }
 
@@ -90,8 +71,14 @@ bool Renderer::isActive(){
     return !glfwWindowShouldClose(this->window);
 }
 
-void Renderer::SetupFramebuffer() {
-    glfwGetFramebufferSize(this->window, &this->frameBufferWidth, &this->frameBufferHeight);
+void Renderer::SetupFramebuffer(int width, int height) {
+
+    this->frameBufferWidth = width;
+    this->frameBufferHeight = height;
+
+    if(width ==0 || height == 0) {
+        glfwGetFramebufferSize(this->window, &this->frameBufferWidth, &this->frameBufferHeight);
+    }
     
     glViewport(0, 0, this->frameBufferWidth, this->frameBufferHeight);
 
@@ -150,6 +137,10 @@ void Renderer::Clear() {
     glBindVertexArray(0);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
+}
+
+Camera* Renderer::getCamera() {
+    return this->camera;
 }
 
 Renderer::~Renderer() {

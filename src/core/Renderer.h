@@ -24,11 +24,14 @@ public:
 	~Renderer();
 	
 	bool isActive();
-	void SetupFramebuffer();
+	void SetupFramebuffer(int width, int height);
+	
 	void Enqueue(Mesh* mesh);
 	void BeginLoop();
 	void EndLoop();
 	void Clear();
+
+	Camera* getCamera();
 
 private:
 	std::vector<Mesh*> meshQueue = {};

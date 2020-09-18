@@ -4,35 +4,14 @@
 #include "common.h"
 #include "input/Mouse.h"
 
-class WindowEventHandler {
-public:
+namespace WindowEventHandler {
     
-	static WindowEventHandler& Instance();
+    void init(GLFWwindow* window, bool initMouse = false, bool initKeyboard = false);
 
-	WindowEventHandler(const WindowEventHandler&) = delete;
-    ~WindowEventHandler();
-
-    void bindWindow(GLFWwindow* window);
-
-    template<typename Function>
-    void addMousePositionCallback(Function && fn) ;
-
-    void _mousePosCallback(double xpos, double ypos);
+    static void onWindowResize(GLFWwindow* window, int width, int height);
+    static void onFrameBufferResize(GLFWwindow* window, int width, int height);
     
-    friend Mouse;
-    friend void Mouse::update(); 
-
-private:
-    WindowEventHandler();
-
-    GLFWwindow* window;
-
-    std::vector<std::function<void()>> mousePosCallStack;
-
-    WindowEventHandler(GLFWwindow* window);
-
-};
-
-namespace WindowEventHandlerFunctions {
-    static void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+    static void onMouseMove(GLFWwindow* window, double xpos, double ypos);
+    static void onMouseButtonClick(GLFWwindow* window, int button, int action, int mods);
+    
 };

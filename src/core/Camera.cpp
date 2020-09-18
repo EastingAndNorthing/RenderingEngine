@@ -9,9 +9,7 @@ Camera::Camera() {
     this->projectionMatrix = glm::perspective(glm::radians(g_settings.fov), (float) this->frameBufferWidth / (float) this->frameBufferHeight, 0.1f, 100.0f);
 }
 
-Camera::~Camera() {
-    
-}
+Camera::~Camera() {}
 
 void Camera::update() {
 
