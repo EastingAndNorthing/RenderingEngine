@@ -10,7 +10,7 @@
 #include <GLFW/glfw3.h>
 #define GLAD_DEBUG
 
-#include "general/Settings.h"
+#include "general/settings.h"
 // #include "general/log.h"
 
 // Pre-define important classes, prevents declaration errors

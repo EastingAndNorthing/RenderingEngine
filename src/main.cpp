@@ -56,7 +56,7 @@ int main() {
     renderer.Enqueue(myTetra);
 
     Camera* cam = renderer.camera;
-    cam->autoRotation = true;
+    // cam->autoRotation = true;
 
     while (renderer.isActive()) {
         renderer.BeginLoop();

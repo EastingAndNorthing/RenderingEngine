@@ -21,8 +21,6 @@ Renderer::Renderer() {
     this->windowWidth = g_settings.window_width;
     this->windowHeight = g_settings.window_height;
 
-    this->camera = new Camera();
-
     glfwInit();
 
     #ifdef __APPLE__
@@ -50,6 +48,8 @@ Renderer::Renderer() {
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
         printf("[ERR] Failed to initialize OpenGL context");
     }
+
+    this->camera = new Camera(this->window); // Requires the framebuffer to be set up.
 
     this->SetupFramebuffer(this->frameBufferWidth, this->frameBufferHeight);
 
