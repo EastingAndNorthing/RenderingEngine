@@ -11,28 +11,28 @@ Mouse::Mouse() {}
 Mouse::~Mouse() {}
 
 Vec2 Mouse::getDelta() {
-    return this->pos;
-}
 
-Vec2 Mouse::getScreenCoords() {
-    return Vec2(
-        (pos.x / windowWidth) * 2 - 1,
-        (pos.y / windowHeight) * 2 - 1
-    );
-}
+    double _time = glfwGetTime();
 
-void Mouse::update(GLFWwindow* window, double xpos, double ypos) {
+    double dt = _time - this->time;
+    float posDelta = this->sensitivity * dt;
     
+    double dx = this->sensitivity * (pos.x - this->lastPos.x);
+    double dy = this->sensitivity * (pos.y - this->lastPos.y);
+
+    return Vec2(dx, dy);
+}
+
+void Mouse::update(GLFWwindow* window) {
+
+    glfwGetCursorPos(window, &this->absolutePos.x, &this->absolutePos.y);
     glfwGetWindowSize(window, &this->windowWidth, &this->windowHeight);
 
     this->lastPos.x = this->pos.x;
     this->lastPos.y = this->pos.y;
 
-    this->pos.x = xpos;
-    this->pos.y = ypos;
-
-    // Vec2 relativePos = this->getScreenCoords();
-    // std::cout << relativePos.x << " " << relativePos.y << std::endl;
+    this->pos.x = (this->absolutePos.x / this->windowWidth) * 2 - 1;
+    this->pos.y = (this->absolutePos.y / this->windowHeight) * 2 - 1;
 
     this->time = glfwGetTime();
 }

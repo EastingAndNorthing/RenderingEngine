@@ -19,7 +19,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "input/Mouse.h"
 #include "input/WindowEventHandler.h"
 
 Settings g_settings;

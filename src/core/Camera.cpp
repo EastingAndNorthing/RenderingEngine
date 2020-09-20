@@ -17,6 +17,7 @@ Camera::~Camera() {}
 void Camera::update() {
 
     double _time = glfwGetTime();
+    Mouse &mouse = Mouse::Instance();
 
     if(this->autoRotation) {
         this->autoRotate();
@@ -24,23 +25,36 @@ void Camera::update() {
 
         double dt = _time - this->time;
         float posDelta = this->speed * dt;
-        
-        glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f); 
-        glm::vec3 cameraDirection = glm::normalize(this->position - this->lookAtPos);
-        glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-        glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
-        glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
 
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-            this->position += posDelta * cameraFront;
+            this->position += posDelta * this->front;
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-            this->position -= posDelta * cameraFront;
+            this->position -= posDelta * this->front;
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-            this->position -= glm::normalize(glm::cross(cameraFront, cameraUp)) * posDelta;
+            this->position -= glm::normalize(glm::cross(this->front, this->up)) * posDelta;
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-            this->position += glm::normalize(glm::cross(cameraFront, cameraUp)) * posDelta;
+            this->position += glm::normalize(glm::cross(this->front, this->up)) * posDelta;
 
-        this->viewMatrix = glm::lookAt(this->position, this->position + cameraFront, cameraUp);
+        Vec2 mouseDelta = mouse.getDelta();
+
+        this->eulerRotation.x += mouseDelta.x;
+        this->eulerRotation.y -= mouseDelta.y;
+
+        if (this->eulerRotation.y > 89.5f)
+            this->eulerRotation.y = 89.5f;
+        if (this->eulerRotation.y < -89.5f)
+            this->eulerRotation.y = -89.5f;
+
+        glm::vec3 _front;
+        _front.x = cos(glm::radians(this->eulerRotation.x)) * cos(glm::radians(this->eulerRotation.y));
+        _front.y = sin(glm::radians(this->eulerRotation.y));
+        _front.z = sin(glm::radians(this->eulerRotation.x)) * cos(glm::radians(this->eulerRotation.y));
+
+        this->front = glm::normalize(_front);
+        this->right = glm::normalize(glm::cross(this->front, glm::vec3(0.0f, 1.0f, 0.0f)));
+        this->up    = glm::normalize(glm::cross(this->right, this->front));
+
+        this->viewMatrix = glm::lookAt(this->position, this->position + this->front, this->up);
 
     }
     

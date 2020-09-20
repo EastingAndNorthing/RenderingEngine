@@ -64,6 +64,7 @@ Renderer::Renderer() {
 	// glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
     WindowEventHandler::init(this->window, true);
+    WindowEventHandler::onFrame(this->window);
 
 }
 
@@ -95,7 +96,8 @@ void Renderer::Enqueue(Mesh* mesh) {
 }
 
 void Renderer::BeginLoop() {
-    glfwPollEvents();
+
+    WindowEventHandler::onFrame(this->window);
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
