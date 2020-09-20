@@ -13,8 +13,9 @@
 #include "primitives/Mesh.h"
 
 #include "primitives/TetrahedronMesh.h"
-#include "primitives/BoxMesh.h"
 #include "primitives/SphereMesh.h"
+#include "primitives/PlaneMesh.h"
+#include "primitives/BoxMesh.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -27,26 +28,25 @@ int main() {
 
     Renderer &renderer = Renderer::Instance();
 
-    Material basicMaterial("/shaders/Basic");
-    Material vertexColorMaterial("/shaders/VertexColors");
+    // Material basicMaterial("/shaders/Basic");
+    // Material vertexColorMaterial("/shaders/VertexColors");
     Material colorMaterial("/shaders/Color");
-    Material phongShader("/shaders/Phong");
+    
+    Material phongMaterial("/shaders/Phong");
+    Uniform3f* lightDirection = new Uniform3f("u_lightDirection", Vec3(0.5f, 0.0f, 2.0f));
+    phongMaterial.setUniform(lightDirection);
 
-    Uniform4f triangle_color("u_color", { 1.0f, 0.5f, 0.9f, 1.0f });
+    Uniform4f* triangle_color = new Uniform4f("u_color", { 1.0f, 0.5f, 0.9f, 1.0f });
     colorMaterial.setUniform(triangle_color);
-
-    Uniform3f lightDirection("u_lightDirection", Vec3(0.0f, 0.0f, 2.0f));
-    phongShader.setUniform(lightDirection);
 
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_real_distribution<> randboy(-0.7, 0.7);
+    std::uniform_real_distribution<> randboy(-1, 1);
 
     for (int i = 0; i < 15; i++) {
-        // Mesh* box = new BoxMesh(0.1f);
         Mesh* sphere = new SphereMesh(0.25f, 24);
-        sphere->setPosition(glm::vec3(randboy(gen), randboy(gen), randboy(gen)));
-        sphere->assignMaterial(&phongShader);
+        sphere->setPosition(randboy(gen), 0.8f + randboy(gen) * 0.5, randboy(gen));
+        sphere->assignMaterial(&phongMaterial);
         renderer.Enqueue(sphere);
     }
 
@@ -54,16 +54,33 @@ int main() {
     myTetra->assignMaterial(&colorMaterial);
     renderer.Enqueue(myTetra);
 
-    Camera* cam = renderer.camera;
-    // cam->autoRotation = true;
+    Mesh* floor = new PlaneMesh(255.0f);
+    floor->setRotation(-90.0f, 0.0f, 0.0f);
+    floor->setPosition(0.0f, -0.166f, 0.0f);
+
+    Material floorMaterial("/shaders/Phong", {
+        new Uniform3f("ambient", Vec3(0.2f, 0.3f, 0.3f)),
+        new Uniform3f("diffuseAlbedo", Vec3(0.2f, 0.3f, 0.3f)),
+        new Uniform3f("specularAlbedo", Vec3(0.2f, 0.2f, 0.2f)),
+        new Uniform3f("rimColor", Vec3(0.2f, 0.3f, 0.3f)),
+        new Uniform1i("rimLightOn", 1),
+        new Uniform1f("shininess", 20.0f),
+        new Uniform1f("rimPower", 200.0f),
+        lightDirection
+    });
+    floor->assignMaterial(&floorMaterial);
+
+    renderer.Enqueue(floor);
 
     while (renderer.isActive()) {
         renderer.BeginLoop();
 
         float time = glfwGetTime();
-        float oscillator = sin(time*2) / 2.0f + 0.5f;
-        triangle_color.set({ 0.0f, oscillator, 0.8f, 1.0f });
+        float oscillator = sin(time*1.5) / 2.0f + 0.5f;
         
+        triangle_color->set({ 0.0f, oscillator, 0.8f, 1.0f });
+        lightDirection->set({ oscillator * 4.0f - 2.0f, 1.0f, 0.0f });
+
         renderer.EndLoop();
     }
 

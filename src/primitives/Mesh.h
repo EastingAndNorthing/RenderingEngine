@@ -27,8 +27,9 @@ public:
     void assignMaterial(Material* material);
     void Bind();
     
-    void setPosition(glm::vec3 position);
-    void setScale(glm::vec3 scale);
+    void setPosition(float x, float y, float z);
+    void setScale(float x, float y, float z);
+    void setRotation(float x, float y, float z);
     void translate(glm::vec3 translation);
     void rotate(float angle, glm::vec3 direction);
 

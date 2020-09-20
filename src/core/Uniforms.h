@@ -23,6 +23,25 @@ public:
 
 };
 
+class Uniform1i : public Uniform {
+public:
+    int value;
+
+    Uniform1i(const std::string& name, const int &value = 0);
+
+    virtual void set(const int &value = 0);
+    void Bind() override;
+};
+
+class Uniform1f : public Uniform {
+public:
+    float value;
+
+    Uniform1f(const std::string& name, const float &value = 0.0f);
+
+    virtual void set(const float &value = 0.0f);
+    void Bind() override;
+};
 
 class Uniform3f : public Uniform {
 public:

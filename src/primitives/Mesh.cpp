@@ -40,13 +40,20 @@ void Mesh::Bind() {
     this->material->Bind();
 }
 
-void Mesh::setPosition(glm::vec3 position) {
+void Mesh::setPosition(float x, float y, float z) {
     this->worldPosMatrixNeedsUpdate = true;
-    this->_position = position;
+    this->_position = glm::vec3(x, y, z);
 }
 
 glm::vec3 Mesh::getPosition() {
     return this->_position;
+}
+
+void Mesh::setRotation(float x, float y, float z) {
+    this->worldPosMatrixNeedsUpdate = true;
+    this->_rotation = glm::rotate(this->_rotation, glm::radians(x), glm::vec3(1.0f, 0.0f, 0.0f));
+    this->_rotation = glm::rotate(this->_rotation, glm::radians(y), glm::vec3(0.0f, 1.0f, 0.0f));
+    this->_rotation = glm::rotate(this->_rotation, glm::radians(z), glm::vec3(0.0f, 0.0f, 1.0f));
 }
 
 void Mesh::rotate(float angle, glm::vec3 direction) {

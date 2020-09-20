@@ -10,7 +10,35 @@ void Uniform::bindLocation(const int location) {
     this->location = location;
 }
 
+// Uniform::~Uniform() {
+//     std::cout << "doeiiii" << std::endl;
+// }
+
 void Uniform::Bind() {}
+
+// Uniform1i ////////////////////////////////////////////////////////////
+Uniform1i::Uniform1i(const std::string& name, const int &value) : Uniform(name), value(value) {}
+
+void Uniform1i::Bind() {
+    glUniform1i(this->location, this->value);
+}
+
+void Uniform1i::set(const int &value) {
+    this->value = value;
+    this->Bind();
+}
+
+// Uniform1f ////////////////////////////////////////////////////////////
+Uniform1f::Uniform1f(const std::string& name, const float &value) : Uniform(name), value(value) {}
+
+void Uniform1f::Bind() {
+    glUniform1f(this->location, this->value);
+}
+
+void Uniform1f::set(const float &value) {
+    this->value = value;
+    this->Bind();
+}
 
 // Uniform3f ////////////////////////////////////////////////////////////
 Uniform3f::Uniform3f(const std::string& name, const Vec3 &values) : Uniform(name), values(values) {}

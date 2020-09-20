@@ -4,40 +4,43 @@
 #include "core/Material.h"
 #include "core/Uniforms.h"
 
-
 Material::Material() {}
 
-Material::Material(Shader* shader, std::vector<Uniform*>uniforms)
-    : shader(shader) 
-{}
+Material::Material(Shader* shader, std::vector<Uniform*> uniforms)
+    : shader(shader)
+{
+    for (int i = 0; i < uniforms.size(); i++)
+        this->setUniform(uniforms[i]);
+}
 
-Material::Material(const std::string shaderBasePath, std::vector<Uniform*>uniforms)
+Material::Material(const std::string shaderBasePath, std::vector<Uniform*> uniforms)
 {
     this->shader = new Shader(shaderBasePath);
     assert(this->shader != NULL);
     assert(this->shader->program != 0);
+
+    for (int i = 0; i < uniforms.size(); i++)
+        this->setUniform(uniforms[i]);
 }
 
 void Material::setShader(Shader* shader) {
     this->shader = shader;
 }
 
-void Material::setUniform(Uniform &uniform) {
+void Material::setUniform(Uniform* uniform) {
     this->shader->Bind();
 
-    if(std::find(this->uniforms.begin(), this->uniforms.end(), &uniform) == this->uniforms.end()) {
-        uniform.bindLocation(this->shader->getUniformLocation(uniform.name));
-        this->uniforms.push_back(&uniform);
+    if(this->uniforms.find(uniform->name) == this->uniforms.end()) {
+        uniforms[uniform->name] = uniform;
     }
-
-    // std::cout << "Material now has " << this->uniforms.size() << " Uniforms attached." << std::endl;
 }
 
 void Material::Bind() {
 
     this->shader->Bind();
 
-    for (int i = 0; i < this->uniforms.size(); i++) {
-        this->uniforms[i]->Bind(); 
+    for (const auto & [ key, uniform ] : this->uniforms) {
+        uniform->bindLocation(this->shader->getUniformLocation(uniform->name));
+        uniform->Bind();
     }
 }
