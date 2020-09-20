@@ -16,7 +16,7 @@ public:
     float frameBufferWidth;
     float frameBufferHeight;
     
-    float speed = 2.5f;
+    float speed = 2.0f;
     float fov = g_settings.fov;
     float zoomspeed = 0.05f;
 

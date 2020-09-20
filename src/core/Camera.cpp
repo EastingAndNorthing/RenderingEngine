@@ -8,9 +8,7 @@
 
 Camera::Camera(GLFWwindow* window) 
     : window(window)
-{
-    this->projectionMatrix = glm::perspective(glm::radians(g_settings.fov), (float) this->frameBufferWidth / (float) this->frameBufferHeight, 0.001f, 100.0f);
-}
+{}
 
 Camera::~Camera() {}
 
@@ -26,13 +24,18 @@ void Camera::update() {
         double dt = _time - this->time;
         float posDelta = this->speed * dt;
 
-        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) 
+            posDelta *= 2;
+        if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) 
+            posDelta *= 0.333;
+
+        if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
             this->position += posDelta * this->front;
-        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
             this->position -= posDelta * this->front;
-        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
             this->position -= glm::normalize(glm::cross(this->front, this->up)) * posDelta;
-        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
             this->position += glm::normalize(glm::cross(this->front, this->up)) * posDelta;
 
         Vec2 mouseDelta = mouse.getDelta();
@@ -66,7 +69,7 @@ void Camera::update() {
 void Camera::setProjection(float frameBufferWidth, float frameBufferHeight) {
     this->frameBufferWidth = frameBufferWidth;
     this->frameBufferHeight = frameBufferHeight;
-    this->projectionMatrix = glm::perspective(glm::radians(this->fov), (float) this->frameBufferWidth / (float) this->frameBufferHeight, 0.1f, 100.0f);
+    this->projectionMatrix = glm::perspective(glm::radians(this->fov), (float) this->frameBufferWidth / (float) this->frameBufferHeight, 0.001f, 100.0f);
 }
 
 void Camera::autoRotate() {
