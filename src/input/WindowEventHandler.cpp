@@ -19,7 +19,6 @@ namespace WindowEventHandler {
             if(initMouse) {
                 glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
                 glfwSetMouseButtonCallback(window, WindowEventHandler::onMouseButtonClick);
-                // glfwSetCursorPosCallback(window, WindowEventHandler::onMouseMove);
             }
 
             initialized = true;
@@ -42,16 +41,15 @@ namespace WindowEventHandler {
         renderer.SetupFramebuffer(width, height);
     }
 
-    // static void onMouseMove(GLFWwindow* window, double xpos, double ypos){
-    //     Mouse &mouse = Mouse::Instance();
-    //     mouse.update(window, xpos, ypos);
-    // }
-
     static void onMouseButtonClick(GLFWwindow* window, int button, int action, int mods) {
+        Renderer &renderer = Renderer::Instance();
+        
         if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            renderer.camera->autoRotate = false;
         } else {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            renderer.camera->autoRotate = true;
         }
     }
 }

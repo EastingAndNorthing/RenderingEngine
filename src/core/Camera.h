@@ -9,10 +9,6 @@
 class Camera {
 public:
 
-    enum ProjectionType {
-        Perspective, Orthographic
-    };
-
     float frameBufferWidth;
     float frameBufferHeight;
     
@@ -20,7 +16,7 @@ public:
     float fov = g_settings.fov;
     float zoomspeed = 0.05f;
 
-    bool autoRotation = false;
+    bool autoRotate = true;
 
     glm::vec3 position = glm::vec3(0.0f, 0.0f, 2.0f);
     glm::vec3 lookAtPos = glm::vec3(0.0f);
@@ -33,8 +29,6 @@ public:
     Camera(GLFWwindow* window);
     ~Camera();
 
-    void setEulerAngles(float x, float y, float z);
-    void autoRotate();
     void update();
     void setProjection(float frameBufferWidth, float frameBufferHeight);
 
@@ -49,5 +43,7 @@ private:
     glm::mat4 viewProjectionMatrix = glm::mat4(1.0f);
     
     double time = 0;
+
+    void _autoRotate();
 
 };
