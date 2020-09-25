@@ -2,10 +2,6 @@
 #include "core/Camera.h"
 #include "input/Mouse.h"
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
 Camera::Camera(GLFWwindow* window) 
     : window(window)
 {}

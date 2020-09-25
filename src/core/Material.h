@@ -9,14 +9,18 @@ class Material {
 public:
     Shader* shader = NULL;
     
-    std::unordered_map<std::string, Uniform*> uniforms = {};
+    std::unordered_map<std::string, IUniform*> uniforms = {};
 
     Material();
-    Material(Shader* shader, std::vector<Uniform*> uniforms = {});
-    Material(const std::string shaderBasePath, std::vector<Uniform*> uniforms = {});
+    Material(const std::string shaderBasePath, std::vector<IUniform*> uniforms = {});
     ~Material() = default;
 
     void setShader(Shader* shader);
-    void setUniform(Uniform* uniform);
+
+    void setUniform(IUniform* uniform);
+
+    // template <typename T = int>
+    // void set(std::string name, T value);
+
     void Bind();
 };

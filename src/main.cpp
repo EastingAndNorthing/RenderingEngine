@@ -17,11 +17,6 @@
 #include "primitives/PlaneMesh.h"
 #include "primitives/BoxMesh.h"
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
-#include "input/WindowEventHandler.h"
-
 Settings g_settings;
 
 int main() {
@@ -30,18 +25,17 @@ int main() {
 
     // Material basicMaterial("/shaders/Basic");
     // Material vertexColorMaterial("/shaders/VertexColors");
+
     Material colorMaterial("/shaders/Color");
-    
     Material phongMaterial("/shaders/Phong");
-    Uniform3f* lightDirection = new Uniform3f("u_lightDirection", Vec3(0.5f, 0.0f, 2.0f));
+    
+    auto triangle_color = new Uniform<Vec4>("u_color", { 1.0f, 0.5f, 0.9f, 1.0f });
+    auto lightDirection = new Uniform<Vec3>("u_lightDirection", Vec3(0.5f, 0.0f, 2.0f));
+
+    colorMaterial.setUniform(triangle_color);
     phongMaterial.setUniform(lightDirection);
 
-    Uniform4f* triangle_color = new Uniform4f("u_color", { 1.0f, 0.5f, 0.9f, 1.0f });
-    colorMaterial.setUniform(triangle_color);
-
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<> randboy(-1, 1);
+    std::random_device rd; std::mt19937 gen(rd()); std::uniform_real_distribution<> randboy(-1, 1);
 
     for (int i = 0; i < 15; i++) {
         Mesh* sphere = new SphereMesh(0.25f, 24);
@@ -59,18 +53,20 @@ int main() {
     floor->setPosition(0.0f, -0.166f, 0.0f);
 
     Material floorMaterial("/shaders/Phong", {
-        new Uniform3f("ambient", Vec3(0.2f, 0.3f, 0.3f)),
-        new Uniform3f("diffuseAlbedo", Vec3(0.2f, 0.3f, 0.3f)),
-        new Uniform3f("specularAlbedo", Vec3(0.2f, 0.2f, 0.2f)),
-        new Uniform3f("rimColor", Vec3(0.2f, 0.3f, 0.3f)),
-        new Uniform1i("rimLightOn", 1),
-        new Uniform1f("shininess", 20.0f),
-        new Uniform1f("rimPower", 200.0f),
+        new Uniform<Vec3>("ambient", Vec3(0.2f, 0.3f, 0.3f)),
+        new Uniform<Vec3>("diffuseAlbedo", Vec3(0.2f, 0.3f, 0.3f)),
+        new Uniform<Vec3>("specularAlbedo", Vec3(0.2f, 0.2f, 0.2f)),
+        new Uniform<Vec3>("rimColor", Vec3(0.2f, 0.3f, 0.3f)),
+        new Uniform<int>("rimLightOn", 1),
+        new Uniform<float>("shininess", 20.0f),
+        new Uniform<float>("rimPower", 200.0f),
         lightDirection
     });
     floor->assignMaterial(&floorMaterial);
 
     renderer.Enqueue(floor);
+
+    // colorMaterial.set("u_color", { 0.0f, 0.0f, 1.0f }); 
 
     while (renderer.isActive()) {
         renderer.BeginLoop();

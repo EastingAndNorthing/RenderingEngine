@@ -10,6 +10,10 @@
 #include <GLFW/glfw3.h>
 #define GLAD_DEBUG
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include "general/settings.h"
 // #include "general/log.h"
 

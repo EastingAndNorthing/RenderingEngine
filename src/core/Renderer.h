@@ -1,12 +1,13 @@
 #pragma once
 
+#include <unordered_map>
 #include "../common.h"
+#include "util/Filesystem.h"
 #include "core/Shader.h"
-#include "core/Camera.h"
+#include "core/Uniforms.h"
 #include "primitives/Mesh.h"
-
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include "input/WindowEventHandler.h"
+#include "core/Camera.h"
 
 class Renderer {
 public:

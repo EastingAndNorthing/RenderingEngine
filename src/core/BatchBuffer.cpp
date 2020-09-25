@@ -1,9 +1,4 @@
 #include "core/BatchBuffer.h"
-#include "core/Vertex.h"
-#include "primitives/Mesh.h"
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
 
 BatchBuffer::BatchBuffer() {
     this->generateBuffers();
