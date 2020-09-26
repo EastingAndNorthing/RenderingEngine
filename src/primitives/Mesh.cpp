@@ -30,8 +30,8 @@ Mesh::Mesh(std::vector<Vertex> vertices)
 Mesh::~Mesh()
 {}
 
-void Mesh::assignMaterial(Material* material) {
-    this->material = material;
+void Mesh::assignMaterial(Material &material) {
+    this->material = &material;
 }
 
 void Mesh::Bind() {

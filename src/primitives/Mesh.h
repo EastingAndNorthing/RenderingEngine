@@ -24,7 +24,7 @@ public:
     Mesh(std::vector<Vertex> vertices);
     ~Mesh();
 
-    void assignMaterial(Material* material);
+    void assignMaterial(Material &material);
     void Bind();
     
     void setPosition(float x, float y, float z);

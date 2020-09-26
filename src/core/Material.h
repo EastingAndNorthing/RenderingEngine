@@ -17,10 +17,22 @@ public:
 
     void setShader(Shader* shader);
 
-    void setUniform(IUniform* uniform);
+    template <typename T = int>
+    void setUniform(const std::string &name, T value) {
+        if (uniforms.find(name) == uniforms.end()) {
+            this->assignUniform(new Uniform<T>(name, value));
+        } else {
+            static_cast<Uniform<T>*>(this->uniforms.at(name))->set(value);
+        }
+    }
 
-    // template <typename T = int>
-    // void set(std::string name, T value);
+    template <typename T = int>
+    Uniform<T>* getUniform(const std::string &name) {
+        return static_cast<Uniform<T>*>(this->uniforms.at(name));
+    }
 
     void Bind();
+
+    void assignUniform(IUniform* uniform);
+private:
 };

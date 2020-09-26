@@ -29,23 +29,22 @@ int main() {
     Material colorMaterial("/shaders/Color");
     Material phongMaterial("/shaders/Phong");
     
-    auto triangle_color = new Uniform<Vec4>("u_color", { 1.0f, 0.5f, 0.9f, 1.0f });
     auto lightDirection = new Uniform<Vec3>("u_lightDirection", Vec3(0.5f, 0.0f, 2.0f));
+    phongMaterial.assignUniform(lightDirection);
 
-    colorMaterial.setUniform(triangle_color);
-    phongMaterial.setUniform(lightDirection);
+    auto lightdir = phongMaterial.getUniform<Vec3>("u_lightDirection");
 
     std::random_device rd; std::mt19937 gen(rd()); std::uniform_real_distribution<> randboy(-1, 1);
 
     for (int i = 0; i < 15; i++) {
         Mesh* sphere = new SphereMesh(0.25f, 24);
         sphere->setPosition(randboy(gen), 0.8f + randboy(gen) * 0.5, randboy(gen));
-        sphere->assignMaterial(&phongMaterial);
+        sphere->assignMaterial(phongMaterial);
         renderer.Enqueue(sphere);
     }
 
     Mesh* myTetra = new TetrahedronMesh(0.5f);
-    myTetra->assignMaterial(&colorMaterial);
+    myTetra->assignMaterial(colorMaterial);
     renderer.Enqueue(myTetra);
 
     Mesh* floor = new PlaneMesh(255.0f);
@@ -62,11 +61,8 @@ int main() {
         new Uniform<float>("rimPower", 200.0f),
         lightDirection
     });
-    floor->assignMaterial(&floorMaterial);
-
+    floor->assignMaterial(floorMaterial);
     renderer.Enqueue(floor);
-
-    // colorMaterial.set("u_color", { 0.0f, 0.0f, 1.0f }); 
 
     while (renderer.isActive()) {
         renderer.BeginLoop();
@@ -74,8 +70,8 @@ int main() {
         float time = glfwGetTime();
         float oscillator = sin(time*1.5) / 2.0f + 0.5f;
         
-        triangle_color->set({ 0.0f, oscillator, 0.8f, 1.0f });
-        lightDirection->set({ oscillator * 4.0f - 2.0f, 1.0f, 0.0f });
+        colorMaterial.setUniform("u_color", Vec4(0.0f, oscillator, 0.8f, 1.0f)); 
+        lightdir->set({ oscillator * 4.0f - 2.0f, 1.0f, 0.0f });
 
         renderer.EndLoop();
     }
