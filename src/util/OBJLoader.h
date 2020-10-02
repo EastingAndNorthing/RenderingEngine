@@ -8,7 +8,7 @@ class OBJLoader {
 public:
 
     OBJLoader();
-    OBJLoader(std::string filepath);
+    OBJLoader(const std::string& filepath);
     ~OBJLoader();
 
 };

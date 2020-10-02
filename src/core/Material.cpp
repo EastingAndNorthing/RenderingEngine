@@ -4,7 +4,7 @@
 
 Material::Material() {}
 
-Material::Material(const std::string shaderBasePath, std::vector<IUniform*> uniforms) {
+Material::Material(const std::string& shaderBasePath, std::vector<IUniform*> uniforms) {
     this->shader = new Shader(shaderBasePath);
     assert(this->shader != NULL);
     assert(this->shader->program != 0);

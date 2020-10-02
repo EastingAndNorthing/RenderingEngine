@@ -20,7 +20,7 @@ public:
     GLuint Compile(const std::string& shaderSource, unsigned int type);
     GLuint CreateProgram();
 
-    int getUniformLocation(const std::string &name);
+    int getUniformLocation(const std::string& name);
     // int getProjectionMatrixLocation();
     
     const void Bind();
