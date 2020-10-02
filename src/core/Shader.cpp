@@ -83,7 +83,7 @@ GLuint Shader::CreateProgram() {
         return 0;
     }
 
-    printf("[SUCCESS] Shader ID %u compiled.\n", this->program);
+    // printf("[SUCCESS] Shader ID %u compiled.\n", this->program);
 
     return this->program;
 }

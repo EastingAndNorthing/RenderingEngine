@@ -14,8 +14,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "general/settings.h"
-// #include "general/log.h"
+#include "general/Settings.h"
+
+#define LOG_LEVEL NOTICE
+#include "general/Log.h"
 
 // Pre-define important classes, prevents declaration errors
 class Renderer;

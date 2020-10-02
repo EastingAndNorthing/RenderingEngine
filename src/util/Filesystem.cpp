@@ -9,7 +9,6 @@
 
 Filesystem::Filesystem() {
     basePath = Filesystem::getBasePath();
-    printf("[INFO] Filesystem initialized in %s\n", basePath.c_str());
 }
 
 Filesystem& Filesystem::Instance() {
@@ -81,7 +80,7 @@ std::string Filesystem::getFileContents(const std::string& relativePath) {
     std::string contents((std::istreambuf_iterator<char>(stream)), std::istreambuf_iterator<char>());
     
     if (!stream.is_open()) {
-        printf("[ERROR] [FILESYSTEM] File '%s' could not be opened.\n", relativePath.c_str());
+        printf("[FS ERROR] File '%s' could not be opened.\n", relativePath.c_str());
         return 0;
     }
 

@@ -1,5 +1,18 @@
 #include "core/Renderer.h"
 
+static void GlDebugMsg(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam) {
+    switch(severity) {
+        case GL_DEBUG_SEVERITY_HIGH:
+            break;
+        case GL_DEBUG_SEVERITY_MEDIUM:
+            break;
+        case GL_DEBUG_SEVERITY_LOW:
+            break;
+        case GL_DEBUG_SEVERITY_NOTIFICATION:
+            break;
+    }
+}
+
 Renderer& Renderer::Instance() {
     static Renderer instance;
     return instance;
@@ -27,7 +40,7 @@ Renderer::Renderer() {
     this->window = glfwCreateWindow(this->windowWidth, this->windowHeight, g_settings.window_title, NULL, NULL);
 
     if (!this->window) {
-        printf("[ERR] GLFW window could not be created.");
+        Log("GLFW window could not be created.", LogLevel::ERROR);
         glfwTerminate();
     }
 
@@ -35,15 +48,20 @@ Renderer::Renderer() {
 	glfwSwapInterval(g_settings.vsync);
     
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
-        printf("[ERR] Failed to initialize OpenGL context");
+        Log("Failed to initialize OpenGL context.", LogLevel::ERROR);
+        glfwTerminate();
     }
 
     this->camera = new Camera(this->window); // Requires the framebuffer to be set up.
 
     this->SetupFramebuffer(this->frameBufferWidth, this->frameBufferHeight);
 
-    printf("[RENDERER] Initialized with OpenGL %d.%d.\n", GLVersion.major, GLVersion.minor);
-    printf("[RENDERER] Supported GLSL version is %s.\n", (char*) glGetString(GL_SHADING_LANGUAGE_VERSION));
+    printf("Initialized with OpenGL %d.%d.\n", GLVersion.major, GLVersion.minor);
+    printf("Supported GLSL version is %s.\n", (char*) glGetString(GL_SHADING_LANGUAGE_VERSION));
+
+    glDebugMessageCallback(GlDebugMsg, nullptr);
+    glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
@@ -78,9 +96,9 @@ void Renderer::SetupFramebuffer(int width, int height) {
 void Renderer::Enqueue(Mesh* mesh) {
     if(mesh->material != NULL) {
         this->meshQueue.push_back(mesh);
-        printf("[RENDERER] Mesh enqueued.\n");
+        Log("Mesh enqueued.", LogLevel::DEBUG);
     } else {
-        printf("[ERR] No material assigned to mesh, skipped.\n");
+        Log("No material assigned to mesh, skipped.", LogLevel::ERROR);
     }
 }
 
@@ -141,5 +159,5 @@ Renderer::~Renderer() {
 
     glfwTerminate();
 
-    std::printf("[RENDERER] MOIIIIIII\n");
+    Log("[RENDERER] MOIIIIIII\n", LogLevel::DEBUG);
 }
