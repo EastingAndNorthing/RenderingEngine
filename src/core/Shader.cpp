@@ -31,7 +31,7 @@ GLuint Shader::Compile(const std::string& shaderSource, unsigned int type) {
     Filesystem &fs = Filesystem::Instance();
     std::string shader_str = fs.getFileContents(shaderSource);
 
-    printf("[INFO] Compiling shader: '%s'...\n", shaderSource.c_str());
+    // printf("[NOTICE] Compiling shader: '%s'...\n", shaderSource.c_str());
 
     GLuint shaderId = glCreateShader(type);
     const char* src = shader_str.c_str();
@@ -47,7 +47,7 @@ GLuint Shader::Compile(const std::string& shaderSource, unsigned int type) {
         
         char* message = (char*) alloca(length * sizeof(char));
         glGetShaderInfoLog(shaderId, length, &length, message);
-        printf("[ERR] Could not compile shader: '%s'. \nOpenGL: %s", shaderSource.c_str(), message);
+        printf("[ERROR] Could not compile shader: '%s'. \nOpenGL: %s", shaderSource.c_str(), message);
         
         glDeleteShader(shaderId);
         return 0;
@@ -79,7 +79,7 @@ GLuint Shader::CreateProgram() {
         GLsizei log_length = 0;
         GLchar message[1024];
         glGetProgramInfoLog(this->program, 1024, &log_length, message);
-        printf("[ERR] Shader linking error: %s\n", message);
+        printf("[ERROR] Shader linking error: %s\n", message);
         return 0;
     }
 

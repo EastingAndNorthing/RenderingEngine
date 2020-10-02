@@ -1,18 +1,5 @@
 #include "core/Renderer.h"
 
-static void GlDebugMsg(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam) {
-    switch(severity) {
-        case GL_DEBUG_SEVERITY_HIGH:
-            break;
-        case GL_DEBUG_SEVERITY_MEDIUM:
-            break;
-        case GL_DEBUG_SEVERITY_LOW:
-            break;
-        case GL_DEBUG_SEVERITY_NOTIFICATION:
-            break;
-    }
-}
-
 Renderer& Renderer::Instance() {
     static Renderer instance;
     return instance;
@@ -96,7 +83,7 @@ void Renderer::SetupFramebuffer(int width, int height) {
 void Renderer::Enqueue(Mesh* mesh) {
     if(mesh->material != NULL) {
         this->meshQueue.push_back(mesh);
-        Log("Mesh enqueued.", LogLevel::DEBUG);
+        // Log("Mesh enqueued.", LogLevel::DEBUG);
     } else {
         Log("No material assigned to mesh, skipped.", LogLevel::ERROR);
     }
@@ -160,4 +147,21 @@ Renderer::~Renderer() {
     glfwTerminate();
 
     Log("[RENDERER] MOIIIIIII\n", LogLevel::DEBUG);
+}
+
+static void GlDebugMsg(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam) {
+    switch(severity) {
+        case GL_DEBUG_SEVERITY_HIGH:
+            Log(message, LogLevel::ERROR);
+            break;
+        case GL_DEBUG_SEVERITY_MEDIUM:
+            Log(message, LogLevel::ERROR);
+            break;
+        case GL_DEBUG_SEVERITY_LOW:
+            Log(message, LogLevel::ERROR);
+            break;
+        case GL_DEBUG_SEVERITY_NOTIFICATION:
+            // Log(message, LogLevel::DEBUG);
+            break;
+    }
 }

@@ -16,7 +16,7 @@
 
 #include "general/Settings.h"
 
-#define LOG_LEVEL NOTICE
+#define LOG_LEVEL DEBUG
 #include "general/Log.h"
 
 // Pre-define important classes, prevents declaration errors
