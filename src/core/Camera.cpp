@@ -1,5 +1,6 @@
 #include "common.h"
 #include "core/Camera.h"
+#include "core/Time.h"
 #include "input/Mouse.h"
 
 Camera::Camera(GLFWwindow* window) 
@@ -10,15 +11,14 @@ Camera::~Camera() {}
 
 void Camera::update() {
 
-    double _time = glfwGetTime();
     Mouse &mouse = Mouse::Instance();
+    Time &time = Time::Instance();
 
     if(this->autoRotate) {
-        this->_autoRotate();
+        this->_autoRotate(time.time);
     } else {
 
-        double dt = _time - this->time;
-        float posDelta = this->speed * dt;
+        float posDelta = this->speed * time.dt;
 
         if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) 
             posDelta *= 2;
@@ -57,8 +57,6 @@ void Camera::update() {
 
     }
     
-    this->time = _time;
-
     this->viewProjectionMatrix = this->projectionMatrix * this->viewMatrix;
 }
 
@@ -68,11 +66,11 @@ void Camera::setProjection(float frameBufferWidth, float frameBufferHeight) {
     this->projectionMatrix = glm::perspective(glm::radians(this->fov), (float) this->frameBufferWidth / (float) this->frameBufferHeight, 0.001f, 100.0f);
 }
 
-void Camera::_autoRotate() {
+void Camera::_autoRotate(double &time) {
     const float camRadius = glm::distance(this->position, this->lookAtPos);
 
-    this->position.x = sin(this->time) * camRadius;
-    this->position.z = cos(this->time) * camRadius;
+    this->position.x = sin(time) * camRadius;
+    this->position.z = cos(time) * camRadius;
     this->position.y = 0;
 
     this->viewMatrix = glm::lookAt(this->position, glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));

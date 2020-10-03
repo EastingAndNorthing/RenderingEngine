@@ -1,6 +1,4 @@
-#include "common.h"
 #include "input/WindowEventHandler.h"
-#include "core/Renderer.h"
 
 namespace WindowEventHandler {
 
@@ -9,6 +7,7 @@ namespace WindowEventHandler {
     bool initialized = false;
 
     Mouse &mouse = Mouse::Instance();
+    Time &time = Time::Instance();
 
     void init(GLFWwindow* window, bool initMouse, bool initKeyboard) {
         if(!initialized) {
@@ -27,7 +26,8 @@ namespace WindowEventHandler {
 
     void onFrame(GLFWwindow* window) {
         glfwPollEvents();
-        mouse.update(window);
+        time.update();
+        mouse.update(window, time.dt);
     }
 
     static void onWindowResize(GLFWwindow* window, int width, int height) {

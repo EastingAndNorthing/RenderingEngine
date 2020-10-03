@@ -22,6 +22,7 @@ Settings g_settings;
 int main() {
 
     Renderer &renderer = Renderer::Instance();
+    Time &time = Time::Instance();
 
     // Material basicMaterial("/shaders/Basic");
     // Material vertexColorMaterial("/shaders/VertexColors");
@@ -49,7 +50,7 @@ int main() {
 
     Mesh* floor = new PlaneMesh(255.0f);
     floor->setRotation(-90.0f, 0.0f, 0.0f);
-    floor->setPosition(0.0f, -0.166f, 0.0f);
+    floor->setPosition(0.0f, -0.2f, 0.0f);
 
     Material floorMaterial("/shaders/Phong", {
         new Uniform<Vec3>("ambient", Vec3(0.2f, 0.3f, 0.3f)),
@@ -67,8 +68,7 @@ int main() {
     while (renderer.isActive()) {
         renderer.BeginLoop();
 
-        float time = glfwGetTime();
-        float oscillator = sin(time*1.5) / 2.0f + 0.5f;
+        float oscillator = sin(time.time*1.5) / 2.0f + 0.5f;
         
         colorMaterial.setUniform("u_color", Vec4(0.0f, oscillator, 0.8f, 1.0f)); 
         lightdir->set({ oscillator * 4.0f - 2.0f, 1.0f, 0.0f });

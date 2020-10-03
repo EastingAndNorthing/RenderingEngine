@@ -3,6 +3,8 @@
 #include <functional>
 #include "common.h"
 #include "input/Mouse.h"
+#include "core/Renderer.h"
+#include "core/Time.h"
 
 namespace WindowEventHandler {
 

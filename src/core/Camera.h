@@ -40,6 +40,6 @@ private:
     
     double time = 0;
 
-    void _autoRotate();
+    void _autoRotate(double &time);
 
 };

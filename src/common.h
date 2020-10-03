@@ -20,5 +20,7 @@
 #include "general/Log.h"
 
 // Pre-define important classes, prevents declaration errors
+class Mouse;
+class Time;
 class Renderer;
 class Mesh;

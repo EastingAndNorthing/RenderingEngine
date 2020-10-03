@@ -15,15 +15,15 @@ public:
 	static Mouse& Instance();
 
 	Mouse(const Mouse&) = delete;
-    ~Mouse();
+    ~Mouse() = default;
 
     Vec2 getDelta();
 
-    void update(GLFWwindow* window);
+    void update(GLFWwindow* window, double& dt);
 
 private:
 
-    Mouse();
+    Mouse() = default;
 
     int windowWidth;
     int windowHeight;
@@ -31,6 +31,6 @@ private:
     Vec2 lastPos = { 0, 0 };
     Vec2 deltaPosOffset = { 0, 0 };
 
-    double time = 0;
+    double deltaTime = 0;
 
 };
