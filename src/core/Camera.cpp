@@ -67,11 +67,14 @@ void Camera::setProjection(float frameBufferWidth, float frameBufferHeight) {
 }
 
 void Camera::_autoRotate(double &time) {
+    
+    this->lookAtPos = glm::vec3(0.0f, 1.0f, 0.0f);
+
     const float camRadius = glm::distance(this->position, this->lookAtPos);
 
     this->position.x = sin(time) * camRadius;
     this->position.z = cos(time) * camRadius;
-    this->position.y = 0;
+    this->position.y = 1.0f;
 
     this->viewMatrix = glm::lookAt(this->position, glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
 }

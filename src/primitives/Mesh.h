@@ -6,14 +6,14 @@
 #include "core/IndexBuffer.h"
 #include "core/Material.h"
 
-#include "physics/RigidBody.h"
-
 class Mesh {
 public: 
 
     VertexBuffer vertexBuffer;
     IndexBuffer indexBuffer;
     Material* material = NULL;
+    
+    bool managedByRigidBody = false;
 
     Mesh();
     Mesh(const VertexBuffer &vertexBuffer, const IndexBuffer &indexBuffer);
@@ -39,11 +39,12 @@ public:
 
 private:
     friend RigidBody;
+    
+    glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::mat4 rotation = glm::mat4(1.0f);
+    glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
 
-    bool worldPosMatrixNeedsUpdate = true;
+    bool _worldPosMatrixNeedsUpdate = true;
 
     glm::mat4 _worldPositionMatrix = glm::mat4(1.0f);
-    glm::vec3 _position = glm::vec3(0.0f, 0.0f, 0.0f);
-    glm::mat4 _rotation = glm::mat4(1.0f);
-    glm::vec3 _scale = glm::vec3(1.0f, 1.0f, 1.0f);
 };

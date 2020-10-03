@@ -11,6 +11,8 @@
 #include "core/Shader.h"
 #include "core/Uniforms.h"
 #include "primitives/Mesh.h"
+#include "physics/PhysicsHandler.h"
+#include "physics/RigidBody.h"
 
 #include "primitives/TetrahedronMesh.h"
 #include "primitives/SphereMesh.h"
@@ -21,8 +23,9 @@ Settings g_settings;
 
 int main() {
 
-    Renderer &renderer = Renderer::Instance();
     Time &time = Time::Instance();
+    Renderer &renderer = Renderer::Instance();
+    PhysicsHandler &physicsHandler = PhysicsHandler::Instance();
 
     // Material basicMaterial("/shaders/Basic");
     // Material vertexColorMaterial("/shaders/VertexColors");
@@ -33,24 +36,26 @@ int main() {
     auto lightDirection = new Uniform<Vec3>("u_lightDirection", Vec3(0.5f, 0.0f, 2.0f));
     phongMaterial.assignUniform(lightDirection);
 
-    auto lightdir = phongMaterial.getUniform<Vec3>("u_lightDirection");
+    std::random_device rd; std::mt19937 gen(rd()); std::uniform_real_distribution<> randboy(-5, 5);
 
-    std::random_device rd; std::mt19937 gen(rd()); std::uniform_real_distribution<> randboy(-1, 1);
-
-    for (int i = 0; i < 15; i++) {
-        Mesh* sphere = new SphereMesh(0.25f, 24);
-        sphere->setPosition(randboy(gen), 0.8f + randboy(gen) * 0.5, randboy(gen));
+    for (int i = 0; i < 25; i++) {
+        Mesh* sphere = new SphereMesh(0.5f, 24);
+        sphere->setPosition(randboy(gen), 3.0f + randboy(gen) * 2.0, randboy(gen));
         sphere->assignMaterial(phongMaterial);
         renderer.Enqueue(sphere);
+
+        RigidBody* sphereBody = new RigidBody(sphere);
+        sphereBody->boundingBox = glm::vec3(0.5f);
+        physicsHandler.Enqueue(sphereBody);
     }
 
-    Mesh* myTetra = new TetrahedronMesh(0.5f);
+    Mesh* myTetra = new TetrahedronMesh(1.0f);
+    myTetra->setPosition(0.0f, 0.4f, 0.0f);
     myTetra->assignMaterial(colorMaterial);
     renderer.Enqueue(myTetra);
 
     Mesh* floor = new PlaneMesh(255.0f);
     floor->setRotation(-90.0f, 0.0f, 0.0f);
-    floor->setPosition(0.0f, -0.2f, 0.0f);
 
     Material floorMaterial("/shaders/Phong", {
         new Uniform<Vec3>("ambient", Vec3(0.2f, 0.3f, 0.3f)),
@@ -68,10 +73,12 @@ int main() {
     while (renderer.isActive()) {
         renderer.BeginLoop();
 
+        physicsHandler.update();
+
         float oscillator = sin(time.time*1.5) / 2.0f + 0.5f;
         
         colorMaterial.setUniform("u_color", Vec4(0.0f, oscillator, 0.8f, 1.0f)); 
-        lightdir->set({ oscillator * 4.0f - 2.0f, 1.0f, 0.0f });
+        lightDirection->set({ oscillator * 4.0f - 2.0f, 1.0f, 0.0f });
 
         renderer.EndLoop();
     }

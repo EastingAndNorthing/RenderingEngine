@@ -6,10 +6,6 @@ VertexBuffer::VertexBuffer() {
     
 }
 
-/*!
- * @param vertices
- * @param mode GL_STATIC_DRAW or GL_DYNAMIC_DRAW. See glBufferData() for more options.
- */
 VertexBuffer::VertexBuffer(std::vector<Vertex> vertices, int mode) {
     this->setVertices(vertices, mode);
 };
@@ -51,5 +47,4 @@ unsigned int VertexBuffer::getSize() {
 VertexBuffer::~VertexBuffer() {
     glDeleteBuffers(1, &this->vbuffer);
     glDeleteBuffers(1, &this->vao);
-    std::printf("I'm a good boy");
 }
