@@ -1,7 +1,5 @@
-#include <random>
-#include "../common.h"
-#include "BoxMesh.h"
-#include "Mesh.h"
+#include "primitives/Mesh.h"
+#include "primitives/BoxMesh.h"
 
 BoxMesh::BoxMesh(float size) : Mesh() {
     this->generate(size, size, size);
@@ -32,16 +30,16 @@ void BoxMesh::generate(float &width, float &height, float &depth) {
         // Vertex(Vec3(-x_dist, -y_dist,  z_dist), Vec3(0.0f, 0.0f, 0.0f)), // Back
     }; 
 
-    // @TODO remove test code
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<> randR(0, 1);
-    std::uniform_real_distribution<> randG(0, 1);
-    std::uniform_real_distribution<> randB(0, 1);
+    // // @TODO remove test code
+    // std::random_device rd;
+    // std::mt19937 gen(rd());
+    // std::uniform_real_distribution<> randR(0, 1);
+    // std::uniform_real_distribution<> randG(0, 1);
+    // std::uniform_real_distribution<> randB(0, 1);
 
-    for (int i = 0; i < geometry.size(); i++) {
-        geometry[i].color = Vec4(randR(gen), randG(gen), randB(gen), 1.0);
-    }
+    // for (int i = 0; i < geometry.size(); i++) {
+    //     geometry[i].color = Vec4(randR(gen), randG(gen), randB(gen), 1.0);
+    // }
 
     this->vertexBuffer.setVertices(geometry);
 

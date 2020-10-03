@@ -1,6 +1,5 @@
 #pragma once
 
-#include "common.h"
 #include "primitives/Mesh.h"
 
 class PlaneMesh : public Mesh {

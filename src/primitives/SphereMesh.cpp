@@ -1,8 +1,5 @@
-#include <math.h>
-#include "../common.h"
-#include "SphereMesh.h"
-#include "Mesh.h"
-
+#include "primitives/Mesh.h"
+#include "primitives/SphereMesh.h"
 
 SphereMesh::SphereMesh(float size, unsigned int segments) : Mesh() {
     this->generate(size, segments);

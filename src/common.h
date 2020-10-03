@@ -23,4 +23,3 @@
 class Mouse;
 class Time;
 class Renderer;
-class Mesh;

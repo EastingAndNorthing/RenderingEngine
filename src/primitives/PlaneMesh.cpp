@@ -1,7 +1,5 @@
-#include <random>
-#include "../common.h"
-#include "PlaneMesh.h"
-#include "Mesh.h"
+#include "primitives/Mesh.h"
+#include "primitives/PlaneMesh.h"
 
 PlaneMesh::PlaneMesh(float size) : Mesh() {
     this->generate(size, size);

@@ -1,14 +1,12 @@
 #pragma once
 
 #include "common.h"
-#include "core/Renderer.h"
-#include "core/Vec3.h"
-#include "core/Vec4.h"
 #include "core/Vertex.h"
 #include "core/VertexBuffer.h"
 #include "core/IndexBuffer.h"
-#include "core/Shader.h"
 #include "core/Material.h"
+
+#include "physics/RigidBody.h"
 
 class Mesh {
 public: 
@@ -40,6 +38,8 @@ public:
     glm::mat4 getWorldPositionMatrix();
 
 private:
+    friend RigidBody;
+
     bool worldPosMatrixNeedsUpdate = true;
 
     glm::mat4 _worldPositionMatrix = glm::mat4(1.0f);

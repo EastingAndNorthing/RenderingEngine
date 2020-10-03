@@ -51,4 +51,5 @@ unsigned int VertexBuffer::getSize() {
 VertexBuffer::~VertexBuffer() {
     glDeleteBuffers(1, &this->vbuffer);
     glDeleteBuffers(1, &this->vao);
+    std::printf("I'm a good boy");
 }

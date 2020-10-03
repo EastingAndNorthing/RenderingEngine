@@ -1,7 +1,5 @@
-#include "../common.h"
-#include "core/Vec3.h"
-#include "TetrahedronMesh.h"
-#include "Mesh.h"
+#include "primitives/Mesh.h"
+#include "primitives/TetrahedronMesh.h"
 
 TetrahedronMesh::TetrahedronMesh(float size) : Mesh() {
     this->generate(size);

@@ -1,11 +1,3 @@
-#include <vector>
-#include "common.h"
-#include "core/Renderer.h"
-#include "core/Vec3.h"
-#include "core/Vec4.h"
-#include "core/Vertex.h"
-#include "core/VertexBuffer.h"
-#include "core/IndexBuffer.h"
 #include "primitives/Mesh.h"
 
 Mesh::Mesh(const VertexBuffer &vertexBuffer, const IndexBuffer &indexBuffer)
