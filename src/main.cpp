@@ -38,16 +38,16 @@ int main() {
 
     std::random_device rd; std::mt19937 gen(rd()); std::uniform_real_distribution<> randboy(0, 10);
 
-    for (int i = 0; i < 25; i++) {
-        Mesh* sphere = new SphereMesh(0.5f, 24);
-        sphere->setPosition(randboy(gen) - 5, 0.5f + randboy(gen) * 2.0, randboy(gen) - 5);
-        sphere->assignMaterial(phongMaterial);
-        renderer.Enqueue(sphere);
+    for (int i = 0; i < 24; i++) {
+        Mesh* mesh = new SphereMesh(0.5f, 4);
+        mesh->setPosition(randboy(gen) - 5, 1.0f + randboy(gen), randboy(gen) - 5);
+        mesh->assignMaterial(phongMaterial);
+        renderer.Enqueue(mesh);
 
-        RigidBody* sphereBody = new RigidBody(sphere);
-        sphereBody->boundingBox = glm::vec3(0.5f);
-        sphereBody->mass = randboy(gen) / 2;
-        physicsHandler.Enqueue(sphereBody);
+        RigidBody* rigidBod = new RigidBody(mesh);
+        rigidBod->boundingBox = glm::vec3(0.5f);
+        rigidBod->mass = randboy(gen) / 2;
+        physicsHandler.Enqueue(rigidBod);
     }
 
     Mesh* myTetra = new TetrahedronMesh(1.0f);
@@ -73,11 +73,15 @@ int main() {
 
     while (renderer.isActive()) {
         renderer.BeginLoop();
-
         physicsHandler.update();
 
+        if(time.time < 2) {
+            for (auto& body: physicsHandler.bodies) {
+                body->applyForce(glm::vec3(5 - randboy(gen), 0, 5 - randboy(gen)));
+            }
+        }
+
         float oscillator = sin(time.time*1.5) / 2.0f + 0.5f;
-        
         colorMaterial.setUniform("u_color", Vec4(0.0f, oscillator, 0.8f, 1.0f)); 
         lightDirection->set({ oscillator * 4.0f - 2.0f, 1.0f, 0.0f });
 

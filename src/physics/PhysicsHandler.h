@@ -15,8 +15,9 @@ public:
 
     void update();
 
+	std::vector<RigidBody*> bodies = {};
+    
 private:
     PhysicsHandler();
 
-	std::vector<RigidBody*> bodies = {};
 };

@@ -35,7 +35,7 @@ public:
     float mass = 1.0f;
     float staticFriction = 0.6f;
     float dynamicFriction = 0.2f;
-    float bounciness = 0.2f;
+    float bounciness = 0.1f;
 
     RigidBody(Mesh* mesh);
     ~RigidBody() = default;
