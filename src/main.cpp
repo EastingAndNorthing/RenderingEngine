@@ -36,16 +36,17 @@ int main() {
     auto lightDirection = new Uniform<Vec3>("u_lightDirection", Vec3(0.5f, 0.0f, 2.0f));
     phongMaterial.assignUniform(lightDirection);
 
-    std::random_device rd; std::mt19937 gen(rd()); std::uniform_real_distribution<> randboy(-5, 5);
+    std::random_device rd; std::mt19937 gen(rd()); std::uniform_real_distribution<> randboy(0, 10);
 
     for (int i = 0; i < 25; i++) {
         Mesh* sphere = new SphereMesh(0.5f, 24);
-        sphere->setPosition(randboy(gen), 3.0f + randboy(gen) * 2.0, randboy(gen));
+        sphere->setPosition(randboy(gen) - 5, 0.5f + randboy(gen) * 2.0, randboy(gen) - 5);
         sphere->assignMaterial(phongMaterial);
         renderer.Enqueue(sphere);
 
         RigidBody* sphereBody = new RigidBody(sphere);
         sphereBody->boundingBox = glm::vec3(0.5f);
+        sphereBody->mass = randboy(gen) / 2;
         physicsHandler.Enqueue(sphereBody);
     }
 

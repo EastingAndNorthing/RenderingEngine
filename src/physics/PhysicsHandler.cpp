@@ -25,7 +25,7 @@ void PhysicsHandler::update() {
     
     for (auto& body: this->bodies) {
 
-        body->update(time.time, time.dt, g);
+        body->update(time.time, time.dt);
 
     }
 }

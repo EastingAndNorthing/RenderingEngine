@@ -6,8 +6,6 @@
 class PhysicsHandler {
 public:
 
-    float g = -9.81;
-
 	static PhysicsHandler& Instance();
 	PhysicsHandler(const PhysicsHandler&) = delete;
     ~PhysicsHandler() = default;

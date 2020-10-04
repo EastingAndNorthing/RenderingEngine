@@ -20,7 +20,7 @@ public:
     Mesh(std::vector<Vertex> &vertices, std::vector<unsigned int> &indices);
     Mesh(std::vector<Vertex> &vertices);
     Mesh(std::vector<Vertex> vertices);
-    ~Mesh();
+    virtual ~Mesh();
 
     void assignMaterial(Material &material);
     void Bind();

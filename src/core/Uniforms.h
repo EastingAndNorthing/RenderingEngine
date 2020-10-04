@@ -14,6 +14,8 @@ public:
     IUniform(const std::string& name)
         : name(name) {};
 
+    virtual ~IUniform() = default;
+
     virtual void Bind() {};
 
 protected:

@@ -11,9 +11,6 @@ public:
     
     std::unordered_map<std::string, IUniform*> uniforms = {};
 
-    float staticFriction = 0.2;
-    float dynamicFriction = 0.5;
-
     Material();
     Material(const std::string& shaderBasePath, std::vector<IUniform*> uniforms = {});
     ~Material() = default;
