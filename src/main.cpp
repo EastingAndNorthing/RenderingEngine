@@ -14,11 +14,6 @@
 #include "physics/PhysicsHandler.h"
 #include "physics/RigidBody.h"
 
-#include "primitives/TetrahedronMesh.h"
-#include "primitives/SphereMesh.h"
-#include "primitives/PlaneMesh.h"
-#include "primitives/BoxMesh.h"
-
 Settings g_settings;
 
 int main() {
@@ -38,9 +33,10 @@ int main() {
 
     std::random_device rd; std::mt19937 gen(rd()); std::uniform_real_distribution<> randboy(0, 10);
 
-    for (int i = 0; i < 24; i++) {
-        Mesh* mesh = new SphereMesh(0.5f, 4);
-        mesh->setPosition(randboy(gen) - 5, 1.0f + randboy(gen), randboy(gen) - 5);
+    for (int i = 0; i < 1; i++) {
+        Mesh* mesh = new SphereMesh(0.5f, 22);
+        // mesh->setPosition(randboy(gen) - 5, 1.0f + randboy(gen), randboy(gen) - 5);
+        mesh->setPosition(0, 1.0f + randboy(gen), 0);
         mesh->assignMaterial(phongMaterial);
         renderer.Enqueue(mesh);
 
@@ -70,16 +66,21 @@ int main() {
     });
     floor->assignMaterial(floorMaterial);
     renderer.Enqueue(floor);
+    
+    RigidBody* floorCollider = new RigidBody(floor);
+    floorCollider->boundingBox = glm::vec3(225.0f, 0.5f, 225.0f);
+    floorCollider->isDynamic = false;
+    physicsHandler.Enqueue(floorCollider);
 
     while (renderer.isActive()) {
         renderer.BeginLoop();
         physicsHandler.update();
 
-        if(time.time < 2) {
-            for (auto& body: physicsHandler.bodies) {
-                body->applyForce(glm::vec3(5 - randboy(gen), 0, 5 - randboy(gen)));
-            }
-        }
+        // if(time.time < 2) {
+        //     for (auto& body: physicsHandler.bodies) {
+        //         body->applyForce(glm::vec3(5 - randboy(gen), 0, 5 - randboy(gen)));
+        //     }
+        // }
 
         float oscillator = sin(time.time*1.5) / 2.0f + 0.5f;
         colorMaterial.setUniform("u_color", Vec4(0.0f, oscillator, 0.8f, 1.0f)); 

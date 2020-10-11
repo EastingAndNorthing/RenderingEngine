@@ -25,7 +25,22 @@ void PhysicsHandler::update() {
     
     for (auto& body: this->bodies) {
 
+        this->handleCollisions(body);
+
         body->update(time.time, time.dt);
 
     }
+}
+
+void PhysicsHandler::handleCollisions(RigidBody* body) {
+
+    // This could be inefficient, checking the same body pairs multiple times. Consider setting a 'isChecked' boolean?
+    for (auto otherBody: this->bodies) {
+
+        if (body != otherBody) {
+            body->handleCollision(otherBody);
+        }
+
+    }
+
 }

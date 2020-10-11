@@ -2,9 +2,10 @@
 
 #include "common.h"
 #include "primitives/Mesh.h"
+#include "physics/Collider.h"
 
 enum CollisionType {
-    Box, Sphere, MeshGeometry
+    Plane, Box, Sphere, MeshGeometry
 };
 
 struct RigidBodyForce {
@@ -16,7 +17,11 @@ class RigidBody {
 public:
 
     Mesh* mesh;
+    Collider collider;
+
     CollisionType collisionType = Box;
+
+    bool isDynamic = true;
 
     glm::vec3 boundingBox = glm::vec3(1.0f, 1.0f, 1.0f);
 
@@ -44,8 +49,8 @@ public:
     void applyForce(glm::vec3 force, glm::vec3 position = glm::vec3(0.0f));
     
     void update(double &time, double &deltaTime);
+    void handleCollision(const RigidBody* otherGeometry);
 
 private:
     void updateGeometry();
-    void handleCollision();
 };

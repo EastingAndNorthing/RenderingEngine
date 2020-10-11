@@ -5,6 +5,7 @@
 #include "core/VertexBuffer.h"
 #include "core/IndexBuffer.h"
 #include "core/Material.h"
+#include "primitives/PrimitiveGenerator.h"
 
 class Mesh {
 public: 
@@ -48,3 +49,8 @@ private:
 
     glm::mat4 _worldPositionMatrix = glm::mat4(1.0f);
 };
+
+#include "primitives/BoxMesh.h"
+#include "primitives/PlaneMesh.h"
+#include "primitives/SphereMesh.h"
+#include "primitives/TetrahedronMesh.h"
