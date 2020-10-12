@@ -20,6 +20,4 @@ public:
 private:
     PhysicsHandler();
 
-    void handleCollisions(RigidBody* body);
-
 };

@@ -1,8 +1,6 @@
 #include "Collider.h"
 
-Collider::Collider() {
-
-    PrimitiveMesh geometry = PrimitiveGenerator::Box::generate(0.5f, 0.5f, 0.5f);
+void Collider::setPolygons(const PrimitiveMesh& geometry) {
 
     if(geometry.indices.size() > 0) {
         
@@ -12,7 +10,7 @@ Collider::Collider() {
             }
         };
 
-    } else {
+    } else if (geometry.vertices.size() > 0) {
 
         // for (int i = 0; i < geometry.vertices.size(); i += 3) {
         //     if( (i+2) < geometry.vertices.size()) {
@@ -21,4 +19,20 @@ Collider::Collider() {
         // }
 
     }
+}
+
+BoxCollider::BoxCollider(const glm::vec3 &size) {
+    this->colliderType = ColliderType::Box;
+    this->setPolygons(PrimitiveGenerator::Box::generate(size.x, size.y, size.z));
+}
+
+PlaneCollider::PlaneCollider(const glm::vec2 &size, const glm::vec3 &normal) {
+    this->colliderType = ColliderType::Plane;
+    this->size = size;
+    this->normal = normal;
+}
+
+SphereCollider::SphereCollider(const float &radius) {
+    this->colliderType = ColliderType::Sphere;
+    this->radius = radius;
 }

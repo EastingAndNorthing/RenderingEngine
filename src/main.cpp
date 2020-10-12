@@ -41,7 +41,8 @@ int main() {
         renderer.Enqueue(mesh);
 
         RigidBody* rigidBod = new RigidBody(mesh);
-        rigidBod->boundingBox = glm::vec3(0.5f);
+        // rigidBod->boundingBox = glm::vec3(0.5f);
+        rigidBod->collider = SphereCollider(0.5f);
         rigidBod->mass = randboy(gen) / 2;
         physicsHandler.Enqueue(rigidBod);
     }
@@ -68,7 +69,8 @@ int main() {
     renderer.Enqueue(floor);
     
     RigidBody* floorCollider = new RigidBody(floor);
-    floorCollider->boundingBox = glm::vec3(225.0f, 0.5f, 225.0f);
+    // floorCollider->boundingBox = glm::vec3(225.0f, 0.5f, 225.0f);
+    floorCollider->collider = PlaneCollider(glm::vec2(255.0f, 255.0f));
     floorCollider->isDynamic = false;
     physicsHandler.Enqueue(floorCollider);
 

@@ -64,20 +64,6 @@ void RigidBody::update(double &time, double &deltaTime) {
     }
 }
 
-void RigidBody::handleCollision(const RigidBody* otherGeometry) {
-
-
-    if(glm::distance(this->position, otherGeometry->position) < 1.0f) {
-
-        std::cout << "WATCH OUT!!\n";
-
-        for(auto& polygon: otherGeometry->collider.polygons) {
-            
-        }
-    }
-
-}
-
 void RigidBody::updateGeometry() {
     this->mesh->_worldPosMatrixNeedsUpdate = true;
     this->mesh->position = this->position;
