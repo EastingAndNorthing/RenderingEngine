@@ -32,7 +32,7 @@ PlaneCollider::PlaneCollider(const glm::vec2 &size, const glm::vec3 &normal) {
     this->normal = normal;
 }
 
-SphereCollider::SphereCollider(const float &radius) {
+SphereCollider::SphereCollider(const float &diameter) {
     this->colliderType = ColliderType::Sphere;
-    this->radius = radius;
+    this->radius = diameter/2;
 }

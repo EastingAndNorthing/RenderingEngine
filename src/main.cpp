@@ -33,16 +33,15 @@ int main() {
 
     std::random_device rd; std::mt19937 gen(rd()); std::uniform_real_distribution<> randboy(0, 10);
 
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < 25; i++) {
         Mesh* mesh = new SphereMesh(0.5f, 22);
-        // mesh->setPosition(randboy(gen) - 5, 1.0f + randboy(gen), randboy(gen) - 5);
-        mesh->setPosition(0, 1.0f + randboy(gen), 0);
+        mesh->setPosition(randboy(gen) - 5, 1.0f + randboy(gen), randboy(gen) - 5);
+        // mesh->setPosition(1.0f, 1.0f + randboy(gen), 0);
         mesh->assignMaterial(phongMaterial);
         renderer.Enqueue(mesh);
 
         RigidBody* rigidBod = new RigidBody(mesh);
-        // rigidBod->boundingBox = glm::vec3(0.5f);
-        rigidBod->collider = SphereCollider(0.5f);
+        rigidBod->collider = new SphereCollider(0.5f);
         rigidBod->mass = randboy(gen) / 2;
         physicsHandler.Enqueue(rigidBod);
     }
@@ -69,8 +68,7 @@ int main() {
     renderer.Enqueue(floor);
     
     RigidBody* floorCollider = new RigidBody(floor);
-    // floorCollider->boundingBox = glm::vec3(225.0f, 0.5f, 225.0f);
-    floorCollider->collider = PlaneCollider(glm::vec2(255.0f, 255.0f));
+    floorCollider->collider = new PlaneCollider(glm::vec2(255.0f, 255.0f));
     floorCollider->isDynamic = false;
     physicsHandler.Enqueue(floorCollider);
 
@@ -78,11 +76,11 @@ int main() {
         renderer.BeginLoop();
         physicsHandler.update();
 
-        // if(time.time < 2) {
-        //     for (auto& body: physicsHandler.bodies) {
-        //         body->applyForce(glm::vec3(5 - randboy(gen), 0, 5 - randboy(gen)));
-        //     }
-        // }
+        if(time.time < 2) {
+            for (auto& body: physicsHandler.bodies) {
+                body->applyForce(glm::vec3(5 - randboy(gen), 0, 5 - randboy(gen)));
+            }
+        }
 
         float oscillator = sin(time.time*1.5) / 2.0f + 0.5f;
         colorMaterial.setUniform("u_color", Vec4(0.0f, oscillator, 0.8f, 1.0f)); 

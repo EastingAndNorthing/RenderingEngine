@@ -20,4 +20,6 @@ public:
 private:
     PhysicsHandler();
 
+    void collideSpherePlane(RigidBody* sphereBody, RigidBody* planeBody);
+
 };

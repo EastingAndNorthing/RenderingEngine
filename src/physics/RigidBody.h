@@ -13,7 +13,7 @@ class RigidBody {
 public:
 
     Mesh* mesh;
-    Collider collider;
+    Collider* collider;
 
     bool isDynamic = true;
 
@@ -34,7 +34,7 @@ public:
     float mass = 1.0f;
     float staticFriction = 0.6f;
     float dynamicFriction = 0.2f;
-    float bounciness = 0.1f;
+    float bounciness = 0.2f;
 
     RigidBody(Mesh* mesh);
     ~RigidBody() = default;

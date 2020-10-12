@@ -41,20 +41,6 @@ void RigidBody::update(double &time, double &deltaTime) {
             }
         }
 
-        // if((this->position.y - this->boundingBox.y/2) <= 0) {
-        //     this->position.y = this->boundingBox.y/2;
-        //     this->velocity.y *= -this->bounciness;
-        //     this->acceleration.y = 0;
-
-        //     this->velocity.x *= 0.95;
-        //     this->velocity.z *= 0.95;
-
-        //     // glm::vec3 normalForce = this->externalForces[0].force;
-        //     // glm::vec3 perpendicular = glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), this->velocity);
-        //     // float mu = (glm::length(this->velocity) > 0.1) ? this->dynamicFriction : this->staticFriction;
-        //     // this->velocity -= 1000 * mu * normalForce * (float) deltaTime;
-        // }
-
         this->velocity += this->acceleration * (float) deltaTime;
         this->position += this->velocity * (float) deltaTime;
 
