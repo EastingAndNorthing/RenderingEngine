@@ -59,21 +59,26 @@ void PhysicsHandler::update() {
 
 void PhysicsHandler::collideSpherePlane(RigidBody* A, RigidBody* B) {
 
-    auto sC = static_cast<SphereCollider*>(A->collider);
-    auto pC = static_cast<PlaneCollider*>(B->collider);
+    auto SC = static_cast<SphereCollider*>(A->collider);
+    auto PC = static_cast<PlaneCollider*>(B->collider);
 
     // if(glm::distance(A->position, B->position) <= sC->radius) { // Need point-to-plane distance
-    if((A->position.y - sC->radius) <= B->position.y) {
-        this->ElasticCollision(A, B, pC->normal);
+    float signedDistance = A->position.y - B->position.y - SC->radius;
+
+    if(signedDistance <= this->minCollisionDistance) {
+        this->ElasticCollision(A, B, PC->normal);
+        // A->position.y = SC->radius; // This line causes spheres to overlap, and somehow preventing bouncing
     }
 }
 
 void PhysicsHandler::collideSphereSphere(RigidBody* A, RigidBody* B) {
 
-    auto sCA = static_cast<SphereCollider*>(A->collider);
-    auto sCB = static_cast<SphereCollider*>(B->collider);
+    auto SCA = static_cast<SphereCollider*>(A->collider);
+    auto SCB = static_cast<SphereCollider*>(B->collider);
 
-    if(glm::distance(A->position, B->position) <= (sCA->radius + sCB->radius) ) {
+    float signedDistance = glm::distance(A->position, B->position) - SCA->radius - SCB->radius;
+
+    if(signedDistance <= this->minCollisionDistance) {
         glm::vec3 collisionPlane = A->position - B->position;
         this->ElasticCollision(A, B, A->position - B->position);
     }
