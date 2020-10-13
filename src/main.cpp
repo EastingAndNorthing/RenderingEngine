@@ -33,10 +33,10 @@ int main() {
 
     std::random_device rd; std::mt19937 gen(rd()); std::uniform_real_distribution<> randboy(0, 10);
 
-    for (int i = 0; i < 25; i++) {
+    for (int i = 0; i < 2; i++) {
         Mesh* mesh = new SphereMesh(0.5f, 22);
-        mesh->setPosition(randboy(gen) - 5, 1.0f + randboy(gen), randboy(gen) - 5);
-        // mesh->setPosition(1.0f, 1.0f + randboy(gen), 0);
+        // mesh->setPosition(randboy(gen) - 5, 1.0f + randboy(gen), randboy(gen) - 5);
+        mesh->setPosition(1.0f, 1.0f + i, randboy(gen)/10);
         mesh->assignMaterial(phongMaterial);
         renderer.Enqueue(mesh);
 
@@ -68,12 +68,14 @@ int main() {
     renderer.Enqueue(floor);
     
     RigidBody* floorCollider = new RigidBody(floor);
-    floorCollider->collider = new PlaneCollider(glm::vec2(255.0f, 255.0f));
+    floorCollider->collider = new PlaneCollider(glm::vec2(255.0f, 255.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    floorCollider->bounciness = 1.0f;
     floorCollider->isDynamic = false;
     physicsHandler.Enqueue(floorCollider);
 
     while (renderer.isActive()) {
         renderer.BeginLoop();
+        
         physicsHandler.update();
 
         if(time.time < 2) {

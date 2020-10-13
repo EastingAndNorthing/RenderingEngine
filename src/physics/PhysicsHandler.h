@@ -6,6 +6,8 @@
 class PhysicsHandler {
 public:
 
+    float minCollisionDistance = 0.001f;
+
 	static PhysicsHandler& Instance();
 	PhysicsHandler(const PhysicsHandler&) = delete;
     ~PhysicsHandler() = default;
@@ -20,6 +22,9 @@ public:
 private:
     PhysicsHandler();
 
-    void collideSpherePlane(RigidBody* sphereBody, RigidBody* planeBody);
+    void collideSpherePlane(RigidBody* sphere, RigidBody* plane);
+    void collideSphereSphere(RigidBody* A, RigidBody* B);
+
+    void ElasticCollision(RigidBody* A, RigidBody* B, const glm::vec3 collisionPlane = glm::vec3(0.0f));
 
 };

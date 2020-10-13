@@ -44,7 +44,7 @@ void RigidBody::update(double &time, double &deltaTime) {
         this->velocity += this->acceleration * (float) deltaTime;
         this->position += this->velocity * (float) deltaTime;
 
-        if(glm::length(this->velocity) >= 0.0000001) {
+        if(glm::length(this->velocity) >= this->sleepVelocity) {
             this->updateGeometry();
         }
     }

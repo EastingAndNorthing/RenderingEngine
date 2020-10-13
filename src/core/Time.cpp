@@ -8,5 +8,5 @@ Time& Time::Instance() {
 void Time::update() {
     this->prevTime = time;
     this->time = glfwGetTime();
-    this->dt = this->time - this->prevTime;
+    this->dt = (this->time - this->prevTime) * this->timeScale;
 }

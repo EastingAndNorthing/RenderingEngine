@@ -34,7 +34,7 @@ public:
     float mass = 1.0f;
     float staticFriction = 0.6f;
     float dynamicFriction = 0.2f;
-    float bounciness = 0.2f;
+    float bounciness = 0.85f;        // https://en.m.wikipedia.org/wiki/Coefficient_of_restitution
 
     RigidBody(Mesh* mesh);
     ~RigidBody() = default;
@@ -45,5 +45,7 @@ public:
     void update(double &time, double &deltaTime);
 
 private:
+    float sleepVelocity = 0.000001f;
+
     void updateGeometry();
 };
