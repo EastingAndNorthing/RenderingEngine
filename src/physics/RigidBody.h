@@ -45,7 +45,7 @@ public:
     void updatePhysics(const double &deltaTime);
 
 private:
-    float sleepVelocity = 0.000001f;
+    float sleepVelocity = 0.1f;
 
     void updateGeometry();
 };
