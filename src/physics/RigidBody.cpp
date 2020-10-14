@@ -21,13 +21,13 @@ void RigidBody::applyForce(RigidBodyForce force) {
     this->externalForces.push_back(force);
 }
 
-void RigidBody::update(double &time, double &deltaTime) {
+void RigidBody::updatePhysics(const double &deltaTime) {
 
     if(this->isDynamic) {
         
-        this->acceleration.x = 0;
-        this->acceleration.y = 0;
-        this->acceleration.z = 0;
+        this->acceleration.x = 0.0f;
+        this->acceleration.y = 0.0f;
+        this->acceleration.z = 0.0f;
 
         for (auto force: this->externalForces) {
             this->acceleration += force.force / this->mass; // F = ma

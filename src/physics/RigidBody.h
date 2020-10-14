@@ -5,36 +5,36 @@
 #include "physics/Collider.h"
 
 struct RigidBodyForce {
-    glm::vec3 force = glm::vec3(0.0f);
+    glm::vec3 force    = glm::vec3(0.0f);
     glm::vec3 position = glm::vec3(0.0f);
 };
 
 class RigidBody {
 public:
 
-    Mesh* mesh;
-    Collider* collider;
+    Mesh* mesh;                                             // Non-physical mesh that is rendered to the screen
+    Collider* collider;                                     // Physics representation of shape. https://en.m.wikipedia.org/wiki/Convex_hull
 
-    bool isDynamic = true;
+    bool isDynamic = true;                                  // Whether physics apply to this object
 
-    glm::vec3 boundingBox = glm::vec3(1.0f, 1.0f, 1.0f);
+    glm::vec3 boundingBox = glm::vec3(1.0f, 1.0f, 1.0f);    // https://en.m.wikipedia.org/wiki/Bounding_volume
 
     glm::vec3 position = glm::vec3(0.0f);
     glm::vec3 velocity = glm::vec3(0.0f);
     glm::vec3 acceleration = glm::vec3(0.0f, 0.0f, 0.0f);
     
-    glm::quat rotation;
-    glm::quat angularVelocity;
-    glm::quat angularAcceleration;
-    glm::vec3 I = glm::vec3(1.0f);
-
-    std::vector<RigidBodyForce> externalForces = {};
-    float gravity = -9.81f;
+    glm::quat rotation;                                     // https://en.m.wikipedia.org/wiki/Quaternion
+    glm::quat angularVelocity;                              // https://en.m.wikipedia.org/wiki/Angular_velocity
+    glm::quat angularAcceleration;                          // https://en.m.wikipedia.org/wiki/Angular_acceleration
+    glm::vec3 I = glm::vec3(1.0f);                          // https://en.m.wikipedia.org/wiki/Moment_of_inertia
 
     float mass = 1.0f;
-    float staticFriction = 0.6f;
-    float dynamicFriction = 0.2f;
-    float bounciness = 0.85f;        // https://en.m.wikipedia.org/wiki/Coefficient_of_restitution
+    float gravity = -9.81f;
+    float staticFriction = 0.50f;                           // https://en.m.wikipedia.org/wiki/Friction
+    float dynamicFriction = 0.30f;                          // https://en.m.wikipedia.org/wiki/Friction
+    float bounciness = 0.8f;                                // https://en.m.wikipedia.org/wiki/Coefficient_of_restitution
+
+    std::vector<RigidBodyForce> externalForces = {};
 
     RigidBody(Mesh* mesh);
     ~RigidBody() = default;
@@ -42,7 +42,7 @@ public:
     void applyForce(RigidBodyForce force);
     void applyForce(glm::vec3 force, glm::vec3 position = glm::vec3(0.0f));
     
-    void update(double &time, double &deltaTime);
+    void updatePhysics(const double &deltaTime);
 
 private:
     float sleepVelocity = 0.000001f;

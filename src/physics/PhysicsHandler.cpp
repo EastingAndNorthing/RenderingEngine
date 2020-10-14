@@ -27,7 +27,7 @@ void PhysicsHandler::update() {
     
     for (auto& body: this->bodies) {
 
-        // This could be inefficient, checking the same body pairs multiple times. 
+        // @TODO Chunking / octree, prevent checking body pairs multiple times
         for (auto& otherBody: this->bodies) {
             
             if (!body->isDynamic && !otherBody->isDynamic)
@@ -36,25 +36,35 @@ void PhysicsHandler::update() {
             if (body == otherBody)
                 continue;
 
-                // if(glm::distance(body->position, otherBody->position) < 2.0f) { // o c t r e e 
-                switch(body->collider->colliderType) {
+            // @TODO Bounding box proximity check
+            // if(body->boundingBox.intersects(otherBody.boundingBox)) {}
 
-                    case ColliderType::Sphere :
-                        switch(otherBody->collider->colliderType) {
-                            case ColliderType::Plane :  this->collideSpherePlane(body, otherBody); break;
-                            case ColliderType::Sphere : this->collideSphereSphere(body, otherBody); break;
-                        }
-                    break;
+            switch(body->collider->colliderType) {
 
-                    case ColliderType::CustomGeometry :
-                        for(auto& polygon: otherBody->collider->polygons) {}
-                    break;
-                }
+                case ColliderType::Sphere :
+                    switch(otherBody->collider->colliderType) {
+                        case ColliderType::Plane  : this->collideSpherePlane(body, otherBody); break;
+                        case ColliderType::Sphere : this->collideSphereSphere(body, otherBody); break;
+                    }
+                break;
+
+                case ColliderType::CustomGeometry :
+                    // https://en.m.wikipedia.org/wiki/Hyperplane_separation_theorem
+                    // https://unitylist.com/p/5uc/Unity-Separating-Axis-SAT
+                    // https://www.youtube.com/watch?v=EzD7FY62A20
+                    for(auto& polygon: otherBody->collider->polygons) {}
+
+                break;
+            }
         }
 
-        body->update(time.time, time.dt);
+        body->updatePhysics(time.dt);
 
     }
+}
+
+float PhysicsHandler::getPointToPlaneDistance(const glm::vec3& pointPos, const glm::vec3& planePos, const glm::vec3& planeNormal) {
+    return glm::dot(planeNormal, (pointPos - planePos));
 }
 
 void PhysicsHandler::collideSpherePlane(RigidBody* A, RigidBody* B) {
@@ -62,11 +72,11 @@ void PhysicsHandler::collideSpherePlane(RigidBody* A, RigidBody* B) {
     auto SC = static_cast<SphereCollider*>(A->collider);
     auto PC = static_cast<PlaneCollider*>(B->collider);
 
-    float signedDistance = glm::dot(PC->normal, (A->position - B->position)) - SC->radius; // Point to plane distance + radius
+    float signedDistance = this->getPointToPlaneDistance(A->position, B->position, PC->normal) - SC->radius;
 
     if(signedDistance <= this->minCollisionDistance) {
         this->ElasticCollision(A, B, PC->normal);
-        // A->position.y = SC->radius; // This line causes spheres to overlap, and somehow preventing bouncing
+        A->position += PC->normal * (abs(signedDistance) + this->afterCollisionDistance + this->minCollisionDistance); // Set position to just outside of collision plane
     }
 }
 
@@ -78,8 +88,9 @@ void PhysicsHandler::collideSphereSphere(RigidBody* A, RigidBody* B) {
     float signedDistance = glm::distance(A->position, B->position) - SCA->radius - SCB->radius;
 
     if(signedDistance <= this->minCollisionDistance) {
-        glm::vec3 collisionPlane = A->position - B->position;
-        this->ElasticCollision(A, B, A->position - B->position);
+        glm::vec3 N = (A->position - B->position);
+        this->ElasticCollision(A, B, N);
+        A->position += N * (abs(signedDistance) + this->afterCollisionDistance + this->minCollisionDistance); // Set position to just outside of collision plane
     }
 
 }
@@ -97,29 +108,26 @@ void PhysicsHandler::ElasticCollision(RigidBody* A, RigidBody* B, const glm::vec
 
     float& m1 = A->mass;
     float& m2 = B->mass;
-    float totalMass = A->mass + B->mass;
+    float totalMass = A->mass + B->mass; 
 
-    float velocityRatio1 = (B->isDynamic) ? m1/totalMass : 1.0f;
-    float velocityRatio2 = (A->isDynamic) ? m2/totalMass : 1.0f;
+    // @TODO: when one of the bodies is static, all velocity should go to the dynamic body
+    float velocityRatio1 = m2/totalMass;
+    float velocityRatio2 = m1/totalMass;
 
     glm::vec3 N = glm::normalize(collisionPlane);
 
-    // new_v2 = v2 - (2*m1)/totalMass * glm::dot(v2-v1, x2-x1) / glm::length2(x2-x1) * (x2-x1);
-    // new_v1 = v1 - (2*m2)/totalMass * glm::dot(v1-v2, x1-x2) / glm::length2(x1-x2) * (x1-x2);
+    float combinedCOR = (A->bounciness + B->bounciness) / 2.0f; // https://en.m.wikipedia.org/wiki/Coefficient_of_restitution
 
-    new_v1 = v1 - ( 2 * velocityRatio1 * glm::dot(v1-v2, N) / glm::length2(N) * N );    // Reflection of vector along collision normal
-    new_v2 = v2 - ( 2 * velocityRatio2 * glm::dot(v2-v1, -N) / glm::length2(-N) * -N ); // Reflection of vector along collision normal
-
-    if(A->isDynamic)
-        A->velocity = new_v1 * A->bounciness;
+    if(A->isDynamic) {
+        new_v1 = v1 - ( velocityRatio1 * 2.0f * glm::dot( v1-v2,  N) / glm::length2( N) *  N ); // Reflection of vector along collision normal
+        A->velocity = new_v1 * combinedCOR;
+    }
     
-    if(B->isDynamic)
-        B->velocity = new_v2 * B->bounciness;
+    if(B->isDynamic) {
+        new_v2 = v2 - ( velocityRatio2 * 2.0f * glm::dot( v2-v1, -N) / glm::length2(-N) * -N ); // Reflection of vector along collision normal
+        B->velocity = new_v2 * combinedCOR;
+    }
 }
-
-// https://en.m.wikipedia.org/wiki/Hyperplane_separation_theorem
-// https://www.youtube.com/watch?v=EzD7FY62A20
-// https://unitylist.com/p/5uc/Unity-Separating-Axis-SAT
 
 // glm::vec3 normalForce = this->externalForces[0].force;
 // glm::vec3 perpendicular = glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), this->velocity);
