@@ -33,7 +33,7 @@ public:
     void rotate(float angle, glm::vec3 direction);
 
     glm::vec3 getPosition();
-    glm::mat4 getRotation();
+    glm::quat getRotation();
     glm::vec3 getScale();
 
     glm::mat4 getWorldPositionMatrix();
@@ -42,7 +42,7 @@ private:
     friend RigidBody;
     
     glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
-    glm::mat4 rotation = glm::mat4(1.0f);
+    glm::quat rotation = glm::quat(1.0f, 0, 0, 0);
     glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
 
     bool _worldPosMatrixNeedsUpdate = true;

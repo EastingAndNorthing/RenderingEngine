@@ -49,6 +49,8 @@ void Mesh::setRotation(float x, float y, float z) {
         this->rotation = glm::rotate(this->rotation, glm::radians(x), glm::vec3(1.0f, 0.0f, 0.0f));
         this->rotation = glm::rotate(this->rotation, glm::radians(y), glm::vec3(0.0f, 1.0f, 0.0f));
         this->rotation = glm::rotate(this->rotation, glm::radians(z), glm::vec3(0.0f, 0.0f, 1.0f));
+        
+        this->rotation = glm::normalize(this->rotation);
     }
 }
 
@@ -56,16 +58,17 @@ void Mesh::rotate(float angle, glm::vec3 direction) {
     if(!managedByRigidBody) {
         this->_worldPosMatrixNeedsUpdate = true;
         this->rotation = glm::rotate(this->rotation, glm::radians(angle), direction);
+        this->rotation = glm::normalize(this->rotation);
     }
 }
 
-glm::mat4 Mesh::getRotation() {
+glm::quat Mesh::getRotation() {
     return this->rotation;
 }
 
 glm::mat4 Mesh::getWorldPositionMatrix() {
     if(this->_worldPosMatrixNeedsUpdate) {
-        this->_worldPositionMatrix = glm::translate(glm::mat4(1), this->position) * this->rotation; // @TODO scale
+        this->_worldPositionMatrix = glm::translate(glm::mat4(1), this->position) * glm::mat4_cast(this->rotation); // @TODO scale
     }
     this->_worldPosMatrixNeedsUpdate = false;
     

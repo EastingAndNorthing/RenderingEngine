@@ -15,13 +15,16 @@ public:
     ColliderType colliderType = Sphere;
 
     std::vector<Polygon> polygons;
+    std::vector<Vertex> vertices;
+    std::vector<unsigned int> indices;
+    std::vector<unsigned int> uniqueIndices;
 
     glm::vec3 relativePos = glm::vec3(0.0f);
 
     Collider() = default;
     ~Collider() = default;
     
-    void setPolygons(const PrimitiveMesh& geometry);
+    void setGeometry(const PrimitiveMesh& geometry);
 
 };
 

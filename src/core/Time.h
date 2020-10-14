@@ -6,7 +6,7 @@ class Time {
 public:
     double time = 0;
     double dt = 0;
-    double timeScale = 0.4f;
+    double timeScale = 1.0f;
 
 	static Time& Instance();
 

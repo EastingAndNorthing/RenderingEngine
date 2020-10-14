@@ -5,7 +5,7 @@ RigidBody::RigidBody(Mesh* mesh) {
     this->mesh->managedByRigidBody = true;
 
     this->position = mesh->position;
-    // this->rotation = mesh->rotation;
+    this->rotation = mesh->rotation;
 
     if(this->isDynamic) {
         this->applyForce(glm::vec3(0.0f, this->mass * this->gravity, 0.0f));
@@ -13,8 +13,12 @@ RigidBody::RigidBody(Mesh* mesh) {
 
 }
 
-void RigidBody::applyForce(glm::vec3 force, glm::vec3 position) {
-    this->applyForce({ force, position });
+void RigidBody::applyForce(glm::vec3 worldForce, glm::vec3 localPosition) {
+    
+    // worldForce = this->rotation * worldForce;
+    // std::cout << worldForce.y << std::endl;
+
+    this->applyForce({ worldForce, localPosition });
 }
 
 void RigidBody::applyForce(RigidBodyForce force) {
@@ -29,13 +33,17 @@ void RigidBody::updatePhysics(const double &deltaTime) {
         this->acceleration.y = 0.0f;
         this->acceleration.z = 0.0f;
 
+        // this->angularAcceleration.x = 0.0f;
+        // this->angularAcceleration.y = 0.0f;
+        // this->angularAcceleration.z = 0.0f;
+        // this->angularAcceleration.w = 0.0f;
+
+        // https://gafferongames.com/post/physics_in_3d/
         for (auto force: this->externalForces) {
             this->acceleration += force.force / this->mass; // F = ma
 
-            // https://gafferongames.com/post/physics_in_3d/
-            // A torque is also generated based on the cross product of the force vector and the point on the object relative to the center of mass of the object
-            // this->angularAcceleration += (force.force * glm::distance(this->position, force.position)) / I; // a = T/I
-        
+            this->torque += glm::cross(force.force, (glm::vec3(0.0f) - force.position)); // T = F x r
+            
             if(this->externalForces.size() > 1){
                 this->externalForces.erase(this->externalForces.begin() + 1, this->externalForces.end()); // Remove forces, keep gravity
             }
@@ -44,7 +52,18 @@ void RigidBody::updatePhysics(const double &deltaTime) {
         this->velocity += this->acceleration * (float) deltaTime;
         this->position += this->velocity * (float) deltaTime;
 
-        if(glm::length(this->velocity) >= this->sleepVelocity) {
+
+        //https://www.euclideanspace.com/physics/kinematics/angularvelocity/index.htm
+        // this->angularAcceleration += glm::quat(totalTorque) * 1000.0f; //; // a = T/I (or T * inv_I)
+        // this->angularVelocity += this->angularAcceleration * (float) deltaTime;
+        // this->angularVelocity.x += 1.0f; // This simply aligns the object to the x axis
+
+        this->rotation += this->angularVelocity * (float) deltaTime;
+        this->rotation = glm::normalize(this->rotation);
+
+        this->updateGeometry();
+
+        if(glm::length(this->velocity) >= this->sleepVelocity || glm::length(this->angularVelocity) >= this->sleepVelocity) {
             this->updateGeometry();
         }
     }
@@ -53,5 +72,5 @@ void RigidBody::updatePhysics(const double &deltaTime) {
 void RigidBody::updateGeometry() {
     this->mesh->_worldPosMatrixNeedsUpdate = true;
     this->mesh->position = this->position;
-//  this->mesh->rotation = this->rotation;
+    this->mesh->rotation = this->rotation;
 }

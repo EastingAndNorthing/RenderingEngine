@@ -63,6 +63,14 @@ void PhysicsHandler::update() {
     }
 }
 
+glm::vec3 PhysicsHandler::constructPlaneFromPolygon(const Polygon& polygon) {
+    const glm::vec3& A = polygon.vertices[0].position;
+    const glm::vec3& B = polygon.vertices[1].position;
+    const glm::vec3& C = polygon.vertices[2].position;
+
+    return glm::normalize(glm::cross(B - A, C - A));
+}
+
 float PhysicsHandler::getPointToPlaneDistance(const glm::vec3& pointPos, const glm::vec3& planePos, const glm::vec3& planeNormal) {
     return glm::dot(planeNormal, (pointPos - planePos));
 }
@@ -75,7 +83,7 @@ void PhysicsHandler::collide_SPHERE_PLANE(RigidBody* A, RigidBody* B) {
     float signedDistance = this->getPointToPlaneDistance(A->position, B->position, PC->normal) - SC->radius;
 
     if(signedDistance <= this->minCollisionDistance) {
-        this->elasticCollision(A, B, PC->normal);
+        this->elasticBodyCollision(A, B, PC->normal);
         A->position += PC->normal * (abs(signedDistance) + this->afterCollisionDistance + this->minCollisionDistance); // Set position to just outside of collision plane
     }
 }
@@ -89,7 +97,7 @@ void PhysicsHandler::collide_SPHERE_SPHERE(RigidBody* A, RigidBody* B) {
 
     if(signedDistance <= this->minCollisionDistance) {
         glm::vec3 N = (A->position - B->position);
-        this->elasticCollision(A, B, N);
+        this->elasticBodyCollision(A, B, N);
         A->position += N * (abs(signedDistance) + this->afterCollisionDistance + this->minCollisionDistance); // Set position to just outside of collision plane
     }
 
@@ -102,18 +110,25 @@ void PhysicsHandler::collide_MESH_PLANE(RigidBody* A, RigidBody* B) {
 
     auto MC = static_cast<MeshCollider*>(A->collider);
     auto PC = static_cast<PlaneCollider*>(B->collider);
+    
+    for(int i = 0; i < MC->uniqueIndices.size(); i++) {
+        Vertex v = MC->vertices[MC->uniqueIndices[i]];
 
-    for(auto& polygon: MC->polygons) {
-        for(int i = 0; i < 2; i++) {
-            // glm::vec3 A = glm::vec3(polygon.vertices[i].position);
-            // glm::vec3 A = glm::vec3(polygon.vertices[i].position);
-            // glm::vec3 A = glm::vec3(polygon.vertices[i].position);
+        glm::vec3 v_worldPos = (A->rotation * v.position) + A->position; // Local to world (?)
+
+        const float& signedDistance = this->getPointToPlaneDistance(v_worldPos, B->position, PC->normal);
+
+        if(signedDistance <= this->minCollisionDistance) {
+            // glm::vec3 reactionForce = 100.0f * PC->normal;
+            // A->applyForce(reactionForce, v.position);
+
+            break;
         }
     }
-
 }
 
-void PhysicsHandler::elasticCollision(RigidBody* A, RigidBody* B, const glm::vec3 collisionPlane) {
+
+void PhysicsHandler::elasticBodyCollision(RigidBody* A, RigidBody* B, const glm::vec3 collisionPlane) {
 
     // https://en.m.wikipedia.org/wiki/Elastic_collision
     glm::vec3 new_v1 = A->velocity;

@@ -45,13 +45,15 @@ int main() {
     }
 
     Mesh* myTetra = new TetrahedronMesh(1.0f);
-    myTetra->setPosition(0.0f, 0.4f, 0.0f);
+    myTetra->setPosition(0.0f, 1.0f, 0.0f);
     myTetra->assignMaterial(colorMaterial);
     renderer.Enqueue(myTetra);
 
-    RigidBody* tetraBod = new RigidBody(myTetra);
-    tetraBod->collider = new MeshCollider(PrimitiveMesh(PrimitiveGenerator::Tetrahedron::generate(1.0f)));
-    physicsHandler.Enqueue(tetraBod);
+    // myTetra->setRotation(-90.0f, 0.0f, 0.0f);
+    // RigidBody* tetraBod = new RigidBody(myTetra);
+    // tetraBod->collider = new MeshCollider(PrimitiveMesh(PrimitiveGenerator::Tetrahedron::generate(1.0f)));
+    // tetraBod->mass = 100.0f;
+    // physicsHandler.Enqueue(tetraBod);
 
     Mesh* floor = new PlaneMesh(255.0f);
     floor->setRotation(-90.0f, 0.0f, 0.0f);
@@ -80,11 +82,11 @@ int main() {
         
         physicsHandler.update();
 
-        if(time.time < 6) {
-            for (auto& body: physicsHandler.bodies) {
-                body->applyForce(glm::vec3(5 - randboy(gen), 0, 5 - randboy(gen)));
-            }
-        }
+        // if(time.time < 10) {
+        //     for (auto& body: physicsHandler.bodies) {
+        //         body->applyForce(glm::vec3(0.0f, 20.0f, 0.0f), glm::vec3(2.0f, 0.0f, 2.0f));
+        //     }
+        // }
 
         float oscillator = sin(time.time*1.5) / 2.0f + 0.5f;
         colorMaterial.setUniform("u_color", glm::vec4(0.0f, oscillator, 0.8f, 1.0f)); 

@@ -10,6 +10,7 @@
 #include <GLFW/glfw3.h>
 #define GLAD_DEBUG
 
+// @TODO look into SSE2 support flags for performance
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
