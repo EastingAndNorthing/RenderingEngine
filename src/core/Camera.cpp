@@ -34,7 +34,7 @@ void Camera::update() {
         if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
             this->position += this->right * posDelta;
 
-        Vec2 mouseDelta = mouse.getDelta();
+        glm::vec2 mouseDelta = mouse.getDelta();
 
         this->eulerRotation.x += mouseDelta.x;
         this->eulerRotation.y -= mouseDelta.y;

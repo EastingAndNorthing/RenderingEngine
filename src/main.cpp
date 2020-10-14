@@ -2,8 +2,6 @@
 #include "common.h"
 #include "core/Renderer.h"
 #include "core/Camera.h"
-#include "core/Vec3.h"
-#include "core/Vec4.h"
 #include "core/Vertex.h"
 #include "core/VertexBuffer.h"
 #include "core/IndexBuffer.h"
@@ -28,7 +26,7 @@ int main() {
     Material colorMaterial("/shaders/Color");
     Material phongMaterial("/shaders/Phong");
     
-    auto lightDirection = new Uniform<Vec3>("u_lightDirection", Vec3(0.5f, 0.0f, 2.0f));
+    auto lightDirection = new Uniform<glm::vec3>("u_lightDirection", glm::vec3(0.5f, 0.0f, 2.0f));
     phongMaterial.assignUniform(lightDirection);
 
     std::random_device rd; std::mt19937 gen(rd()); std::uniform_real_distribution<> randboy(0, 10);
@@ -51,14 +49,18 @@ int main() {
     myTetra->assignMaterial(colorMaterial);
     renderer.Enqueue(myTetra);
 
+    RigidBody* tetraBod = new RigidBody(myTetra);
+    tetraBod->collider = new MeshCollider(PrimitiveMesh(PrimitiveGenerator::Tetrahedron::generate(1.0f)));
+    physicsHandler.Enqueue(tetraBod);
+
     Mesh* floor = new PlaneMesh(255.0f);
     floor->setRotation(-90.0f, 0.0f, 0.0f);
 
     Material floorMaterial("/shaders/Phong", {
-        new Uniform<Vec3>("ambient", Vec3(0.2f, 0.3f, 0.3f)),
-        new Uniform<Vec3>("diffuseAlbedo", Vec3(0.2f, 0.3f, 0.3f)),
-        new Uniform<Vec3>("specularAlbedo", Vec3(0.2f, 0.2f, 0.2f)),
-        new Uniform<Vec3>("rimColor", Vec3(0.2f, 0.3f, 0.3f)),
+        new Uniform<glm::vec3>("ambient", glm::vec3(0.2f, 0.3f, 0.3f)),
+        new Uniform<glm::vec3>("diffuseAlbedo", glm::vec3(0.2f, 0.3f, 0.3f)),
+        new Uniform<glm::vec3>("specularAlbedo", glm::vec3(0.2f, 0.2f, 0.2f)),
+        new Uniform<glm::vec3>("rimColor", glm::vec3(0.2f, 0.3f, 0.3f)),
         new Uniform<int>("rimLightOn", 1),
         new Uniform<float>("shininess", 20.0f),
         new Uniform<float>("rimPower", 200.0f),
@@ -85,7 +87,7 @@ int main() {
         }
 
         float oscillator = sin(time.time*1.5) / 2.0f + 0.5f;
-        colorMaterial.setUniform("u_color", Vec4(0.0f, oscillator, 0.8f, 1.0f)); 
+        colorMaterial.setUniform("u_color", glm::vec4(0.0f, oscillator, 0.8f, 1.0f)); 
         lightDirection->set({ oscillator * 4.0f - 2.0f, 1.0f, 0.0f });
 
         renderer.EndLoop();

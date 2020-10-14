@@ -1,8 +1,6 @@
 #pragma once
 
 #include "../common.h"
-#include "core/Vec3.h"
-#include "core/Vec4.h"
 
 class IUniform {
 public:

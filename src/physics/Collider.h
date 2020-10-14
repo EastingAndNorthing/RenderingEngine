@@ -3,15 +3,16 @@
 #include "common.h"
 #include "primitives/Polygon.h"
 #include "primitives/PrimitiveGenerator.h"
+#include "primitives/Mesh.h"
 
 enum ColliderType {
-    Box, Plane, Sphere, CustomGeometry
+    Box, Plane, Sphere, ConvexMesh
 };
 
 struct Collider {
 public:
 
-    ColliderType colliderType = CustomGeometry;
+    ColliderType colliderType = Sphere;
 
     std::vector<Polygon> polygons;
 
@@ -38,4 +39,8 @@ struct PlaneCollider : public Collider {
 struct SphereCollider : public Collider {
     float radius = 1.0f;
     SphereCollider(const float &diameter);
+};
+
+struct MeshCollider : public Collider {
+    MeshCollider(PrimitiveMesh convexMesh);
 };

@@ -10,10 +10,10 @@ PrimitiveMesh PrimitiveGenerator::Plane::generate(const float &length, const flo
     float y_dist = width/2;
     
     std::vector<Vertex> geometry {
-        Vertex(Vec3( -x_dist, -y_dist, 0), Vec3(0.0f, 0.0f, 1.0f)),
-        Vertex(Vec3(  x_dist, -y_dist, 0), Vec3(0.0f, 0.0f, 1.0f)),
-        Vertex(Vec3( -x_dist,  y_dist, 0), Vec3(0.0f, 0.0f, 1.0f)),
-        Vertex(Vec3(  x_dist,  y_dist, 0), Vec3(0.0f, 0.0f, 1.0f)),
+        Vertex(glm::vec3( -x_dist, -y_dist, 0), glm::vec3(0.0f, 0.0f, 1.0f)),
+        Vertex(glm::vec3(  x_dist, -y_dist, 0), glm::vec3(0.0f, 0.0f, 1.0f)),
+        Vertex(glm::vec3( -x_dist,  y_dist, 0), glm::vec3(0.0f, 0.0f, 1.0f)),
+        Vertex(glm::vec3(  x_dist,  y_dist, 0), glm::vec3(0.0f, 0.0f, 1.0f)),
     }; 
 
     std::vector<unsigned int> indices = {
@@ -32,10 +32,10 @@ PrimitiveMesh PrimitiveGenerator::Tetrahedron::generate(const float &size) {
     float oneThirdComponent = 0.333333333333333333 * size;
 
     std::vector<Vertex> geometry {
-        Vertex(Vec3(0, -oneThirdComponent, sqrt8over9component)),
-        Vertex(Vec3(sqrt2over3component, -oneThirdComponent, -sqrt2over9component)), 
-        Vertex(Vec3(-sqrt2over3component, -oneThirdComponent, -sqrt2over9component)),
-        Vertex(Vec3(0, size, 0)),
+        Vertex(glm::vec3(0, -oneThirdComponent, sqrt8over9component)),
+        Vertex(glm::vec3(sqrt2over3component, -oneThirdComponent, -sqrt2over9component)), 
+        Vertex(glm::vec3(-sqrt2over3component, -oneThirdComponent, -sqrt2over9component)),
+        Vertex(glm::vec3(0, size, 0)),
     };
 
     std::vector<unsigned int> indices = {
@@ -56,14 +56,14 @@ PrimitiveMesh PrimitiveGenerator::Box::generate(const float &width, const float 
     float z_dist = depth/2;
     
     std::vector<Vertex> box {
-        Vertex(Vec3(-x_dist, -y_dist, -z_dist)), // Front
-        Vertex(Vec3( x_dist, -y_dist, -z_dist)), // Front
-        Vertex(Vec3( x_dist,  y_dist, -z_dist)), // Front
-        Vertex(Vec3(-x_dist,  y_dist, -z_dist)), // Front
-        Vertex(Vec3( x_dist, -y_dist,  z_dist)), // Back
-        Vertex(Vec3( x_dist,  y_dist,  z_dist)), // Back
-        Vertex(Vec3(-x_dist,  y_dist,  z_dist)), // Back
-        Vertex(Vec3(-x_dist, -y_dist,  z_dist)), // Back
+        Vertex(glm::vec3(-x_dist, -y_dist, -z_dist)), // Front
+        Vertex(glm::vec3( x_dist, -y_dist, -z_dist)), // Front
+        Vertex(glm::vec3( x_dist,  y_dist, -z_dist)), // Front
+        Vertex(glm::vec3(-x_dist,  y_dist, -z_dist)), // Front
+        Vertex(glm::vec3( x_dist, -y_dist,  z_dist)), // Back
+        Vertex(glm::vec3( x_dist,  y_dist,  z_dist)), // Back
+        Vertex(glm::vec3(-x_dist,  y_dist,  z_dist)), // Back
+        Vertex(glm::vec3(-x_dist, -y_dist,  z_dist)), // Back
     }; 
 
     // // @TODO remove test code
@@ -162,8 +162,8 @@ PrimitiveMesh PrimitiveGenerator::Sphere::generate(const float &size, const unsi
             // t = (float)i / stackCount;
 
             geometry.push_back(Vertex(
-                Vec3(x, y, z),
-                Vec3(nx, ny, nz)
+                glm::vec3(x, y, z),
+                glm::vec3(nx, ny, nz)
             ));
             
         }

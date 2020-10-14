@@ -4,8 +4,9 @@ void Collider::setPolygons(const PrimitiveMesh& geometry) {
 
     if(geometry.indices.size() > 0) {
         
-        for (int i = 0; i < geometry.indices.size(); i += 2) {
+        for (int i = 0; i < geometry.indices.size(); i += 3) {
             if( (i+2) < geometry.indices.size()) {
+                std::cout << geometry.indices[i] << " " << geometry.indices[i+1] << " " << geometry.indices[i+2] << std::endl;
                 this->polygons.push_back( Polygon({ geometry.vertices[i], geometry.vertices[i+1], geometry.vertices[i+2] }) );
             }
         };
@@ -35,4 +36,9 @@ PlaneCollider::PlaneCollider(const glm::vec2 &size, const glm::vec3 &normal) {
 SphereCollider::SphereCollider(const float &diameter) {
     this->colliderType = ColliderType::Sphere;
     this->radius = diameter/2;
+}
+
+MeshCollider::MeshCollider(PrimitiveMesh convexMesh) {
+    this->colliderType = ColliderType::ConvexMesh;
+    this->setPolygons(convexMesh);
 }

@@ -1,10 +1,9 @@
 #include "common.h"
 #include "core/Vertex.h"
-#include "core/Vec3.h"
 
 Vertex::Vertex() {}
 
-Vertex::Vertex(Vec3 position, Vec3 normal, Vec4 color)
+Vertex::Vertex(glm::vec3 position, glm::vec3 normal, glm::vec4 color)
     : position(position), normal(normal), color(color)
 {}
 

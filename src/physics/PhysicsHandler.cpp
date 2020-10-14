@@ -43,16 +43,16 @@ void PhysicsHandler::update() {
 
                 case ColliderType::Sphere :
                     switch(otherBody->collider->colliderType) {
-                        case ColliderType::Plane  : this->collideSpherePlane(body, otherBody); break;
-                        case ColliderType::Sphere : this->collideSphereSphere(body, otherBody); break;
+                        case ColliderType::Plane  : this->collide_SPHERE_PLANE(body, otherBody); break;
+                        case ColliderType::Sphere : this->collide_SPHERE_SPHERE(body, otherBody); break;
                     }
                 break;
 
-                case ColliderType::CustomGeometry :
-                    // https://en.m.wikipedia.org/wiki/Hyperplane_separation_theorem
-                    // https://unitylist.com/p/5uc/Unity-Separating-Axis-SAT
-                    // https://www.youtube.com/watch?v=EzD7FY62A20
-                    for(auto& polygon: otherBody->collider->polygons) {}
+                case ColliderType::ConvexMesh :
+                    switch(otherBody->collider->colliderType) {
+                        case ColliderType::Plane  : this->collide_MESH_PLANE(body, otherBody); break;
+                        // case ColliderType::Sphere : this->collide_MESH_MESH(body, otherBody); break;
+                    }
 
                 break;
             }
@@ -67,7 +67,7 @@ float PhysicsHandler::getPointToPlaneDistance(const glm::vec3& pointPos, const g
     return glm::dot(planeNormal, (pointPos - planePos));
 }
 
-void PhysicsHandler::collideSpherePlane(RigidBody* A, RigidBody* B) {
+void PhysicsHandler::collide_SPHERE_PLANE(RigidBody* A, RigidBody* B) {
 
     auto SC = static_cast<SphereCollider*>(A->collider);
     auto PC = static_cast<PlaneCollider*>(B->collider);
@@ -75,12 +75,12 @@ void PhysicsHandler::collideSpherePlane(RigidBody* A, RigidBody* B) {
     float signedDistance = this->getPointToPlaneDistance(A->position, B->position, PC->normal) - SC->radius;
 
     if(signedDistance <= this->minCollisionDistance) {
-        this->ElasticCollision(A, B, PC->normal);
+        this->elasticCollision(A, B, PC->normal);
         A->position += PC->normal * (abs(signedDistance) + this->afterCollisionDistance + this->minCollisionDistance); // Set position to just outside of collision plane
     }
 }
 
-void PhysicsHandler::collideSphereSphere(RigidBody* A, RigidBody* B) {
+void PhysicsHandler::collide_SPHERE_SPHERE(RigidBody* A, RigidBody* B) {
 
     auto SCA = static_cast<SphereCollider*>(A->collider);
     auto SCB = static_cast<SphereCollider*>(B->collider);
@@ -89,13 +89,31 @@ void PhysicsHandler::collideSphereSphere(RigidBody* A, RigidBody* B) {
 
     if(signedDistance <= this->minCollisionDistance) {
         glm::vec3 N = (A->position - B->position);
-        this->ElasticCollision(A, B, N);
+        this->elasticCollision(A, B, N);
         A->position += N * (abs(signedDistance) + this->afterCollisionDistance + this->minCollisionDistance); // Set position to just outside of collision plane
     }
 
 }
 
-void PhysicsHandler::ElasticCollision(RigidBody* A, RigidBody* B, const glm::vec3 collisionPlane) {
+void PhysicsHandler::collide_MESH_PLANE(RigidBody* A, RigidBody* B) {
+    // https://en.m.wikipedia.org/wiki/Hyperplane_separation_theorem
+    // https://unitylist.com/p/5uc/Unity-Separating-Axis-SAT
+    // https://www.youtube.com/watch?v=EzD7FY62A20
+
+    auto MC = static_cast<MeshCollider*>(A->collider);
+    auto PC = static_cast<PlaneCollider*>(B->collider);
+
+    for(auto& polygon: MC->polygons) {
+        for(int i = 0; i < 2; i++) {
+            // glm::vec3 A = glm::vec3(polygon.vertices[i].position);
+            // glm::vec3 A = glm::vec3(polygon.vertices[i].position);
+            // glm::vec3 A = glm::vec3(polygon.vertices[i].position);
+        }
+    }
+
+}
+
+void PhysicsHandler::elasticCollision(RigidBody* A, RigidBody* B, const glm::vec3 collisionPlane) {
 
     // https://en.m.wikipedia.org/wiki/Elastic_collision
     glm::vec3 new_v1 = A->velocity;

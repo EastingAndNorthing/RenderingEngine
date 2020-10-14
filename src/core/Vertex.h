@@ -1,16 +1,15 @@
 #pragma once
 
-#include "core/Vec3.h"
-#include "core/Vec4.h"
+#include "common.h"
 
 struct Vertex {
     
-    Vec3 position = { 0, 0, 0 };
-    Vec3 normal   = { 0, 0, 0 };
-    Vec4 color    = { 0, 0, 0, 0 };
+    glm::vec3 position = glm::vec3(0.0f);
+    glm::vec3 normal   = glm::vec3(0.0f);
+    glm::vec4 color    = glm::vec4(0.0f);
 
     Vertex();
-    Vertex(Vec3 position = {}, Vec3 normal = {}, Vec4 color = {});
+    Vertex(glm::vec3 position = glm::vec3(0.0f), glm::vec3 normal = glm::vec3(0.0f), glm::vec4 color = glm::vec4(0.0f));
     Vertex(float x = 0, float y = 0, float z = 0);
 	~Vertex() = default;
 

@@ -5,22 +5,28 @@ Mouse& Mouse::Instance() {
     return instance;
 }
 
-Vec2 Mouse::getDelta() {
+glm::vec2 Mouse::getDelta() {
 
     float posDelta = this->sensitivity * this->deltaTime;
     
     double dx = this->sensitivity * (pos.x - this->lastPos.x);
     double dy = this->sensitivity * (pos.y - this->lastPos.y);
 
-    return Vec2(dx, dy);
+    return glm::vec2(dx, dy);
 }
 
 void Mouse::update(GLFWwindow* window, double& deltaTime) {
 
     this->deltaTime = deltaTime;
 
-    glfwGetCursorPos(window, &this->absolutePos.x, &this->absolutePos.y);
+    double _absolutePosX;
+    double _absolutePosY;
+
+    glfwGetCursorPos(window, &_absolutePosX, &_absolutePosY);
     glfwGetWindowSize(window, &this->windowWidth, &this->windowHeight);
+
+    this->absolutePos.x = (float) _absolutePosX;
+    this->absolutePos.y = (float) _absolutePosY;
 
     this->lastPos.x = this->pos.x;
     this->lastPos.y = this->pos.y;

@@ -1,14 +1,13 @@
 #pragma once
 
 #include "common.h"
-#include "core/Vec2.h"
 
 class Mouse {
 public:
 
-    Vec2 pos = { 0, 0 };
-    Vec2 absolutePos = { 0, 0 };
-    Vec2 scrollpos = { 0, 0 };
+    glm::vec2 pos = glm::vec2(0.0f);
+    glm::vec2 absolutePos = glm::vec2(0.0f);
+    glm::vec2 scrollpos = glm::vec2(0.0f);
 
     float sensitivity = 75.0f;
 
@@ -17,7 +16,7 @@ public:
 	Mouse(const Mouse&) = delete;
     ~Mouse() = default;
 
-    Vec2 getDelta();
+    glm::vec2 getDelta();
 
     void update(GLFWwindow* window, double& dt);
 
@@ -28,8 +27,8 @@ private:
     int windowWidth;
     int windowHeight;
 
-    Vec2 lastPos = { 0, 0 };
-    Vec2 deltaPosOffset = { 0, 0 };
+    glm::vec2 lastPos = { 0, 0 };
+    glm::vec2 deltaPosOffset = { 0, 0 };
 
     double deltaTime = 0;
 

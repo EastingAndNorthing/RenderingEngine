@@ -23,10 +23,12 @@ private:
     
     PhysicsHandler();
 
-    void collideSpherePlane(RigidBody* sphere, RigidBody* plane);
-    void collideSphereSphere(RigidBody* A, RigidBody* B);
+    void collide_SPHERE_PLANE(RigidBody* sphere, RigidBody* plane);
+    void collide_SPHERE_SPHERE(RigidBody* A, RigidBody* B);
+    void collide_MESH_PLANE(RigidBody* A, RigidBody* B);
+    void collide_MESH_MESH(RigidBody* A, RigidBody* B);
 
-    void ElasticCollision(RigidBody* A, RigidBody* B, const glm::vec3 collisionPlane = glm::vec3(0.0f));
+    void elasticCollision(RigidBody* A, RigidBody* B, const glm::vec3 collisionPlane = glm::vec3(0.0f));
 
     float getPointToPlaneDistance(const glm::vec3& pointPos, const glm::vec3& planePos, const glm::vec3& planeNormal);
 
