@@ -62,8 +62,7 @@ void PhysicsHandler::collideSpherePlane(RigidBody* A, RigidBody* B) {
     auto SC = static_cast<SphereCollider*>(A->collider);
     auto PC = static_cast<PlaneCollider*>(B->collider);
 
-    // if(glm::distance(A->position, B->position) <= sC->radius) { // Need point-to-plane distance
-    float signedDistance = A->position.y - B->position.y - SC->radius;
+    float signedDistance = glm::dot(PC->normal, (A->position - B->position)) - SC->radius; // Point to plane distance + radius
 
     if(signedDistance <= this->minCollisionDistance) {
         this->ElasticCollision(A, B, PC->normal);
@@ -108,8 +107,8 @@ void PhysicsHandler::ElasticCollision(RigidBody* A, RigidBody* B, const glm::vec
     // new_v2 = v2 - (2*m1)/totalMass * glm::dot(v2-v1, x2-x1) / glm::length2(x2-x1) * (x2-x1);
     // new_v1 = v1 - (2*m2)/totalMass * glm::dot(v1-v2, x1-x2) / glm::length2(x1-x2) * (x1-x2);
 
-    new_v1 = v1 - ( 2 * velocityRatio1 * glm::dot(v1-v2, N) / glm::length2(N) * N ); // Reflection of vector along normal
-    new_v2 = v2 - ( 2 * velocityRatio2 * glm::dot(v2-v1, -N) / glm::length2(-N) * -N ); // Reflection of vector along normal
+    new_v1 = v1 - ( 2 * velocityRatio1 * glm::dot(v1-v2, N) / glm::length2(N) * N );    // Reflection of vector along collision normal
+    new_v2 = v2 - ( 2 * velocityRatio2 * glm::dot(v2-v1, -N) / glm::length2(-N) * -N ); // Reflection of vector along collision normal
 
     if(A->isDynamic)
         A->velocity = new_v1 * A->bounciness;

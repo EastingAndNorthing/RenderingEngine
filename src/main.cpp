@@ -33,10 +33,10 @@ int main() {
 
     std::random_device rd; std::mt19937 gen(rd()); std::uniform_real_distribution<> randboy(0, 10);
 
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < 31; i++) {
         Mesh* mesh = new SphereMesh(0.5f, 22);
-        // mesh->setPosition(randboy(gen) - 5, 1.0f + randboy(gen), randboy(gen) - 5);
-        mesh->setPosition(1.0f, 1.0f + i, randboy(gen)/10);
+        mesh->setPosition(randboy(gen) - 5, 1.0f + randboy(gen), randboy(gen) - 5);
+        // mesh->setPosition(1.0f, 1.0f + i, randboy(gen)/10);
         mesh->assignMaterial(phongMaterial);
         renderer.Enqueue(mesh);
 
