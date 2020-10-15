@@ -11,8 +11,8 @@
 
 class Renderer {
 public:
-	GLFWwindow* window;
-	Camera* camera;
+	GLFWwindow* window = NULL;
+	Camera* camera = NULL;
 
 	int windowWidth = 0;
 	int windowHeight = 0;

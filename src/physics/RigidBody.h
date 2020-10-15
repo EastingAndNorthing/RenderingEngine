@@ -13,8 +13,8 @@ struct RigidBodyForce {
 class RigidBody {
 public:
 
-    Mesh* mesh;                                                 // Non-physical mesh that is rendered to the screen
-    Collider* collider;                                         // Physics representation of shape. https://en.m.wikipedia.org/wiki/Convex_hull
+    Mesh* mesh = NULL;                                          // Non-physical mesh that is rendered to the screen
+    Collider* collider = NULL;                                  // Physics representation of shape. https://en.m.wikipedia.org/wiki/Convex_hull
 
     bool isDynamic = true;                                      // Whether physics applies to this object
 
@@ -35,17 +35,20 @@ public:
     float gravity = -9.81f;
     float staticFriction = 0.50f;                               // https://en.m.wikipedia.org/wiki/Friction
     float dynamicFriction = 0.30f;                              // https://en.m.wikipedia.org/wiki/Friction
-    float bounciness = 0.8f;                                    // https://en.m.wikipedia.org/wiki/Coefficient_of_restitution
+    float bounciness = 0.9f;                                    // https://en.m.wikipedia.org/wiki/Coefficient_of_restitution
 
     std::vector<RigidBodyForce> externalForces = {};
 
-    RigidBody(Mesh* mesh);
+    RigidBody() = default;
+    RigidBody(Mesh* mesh = NULL, Collider* collider = NULL);
     ~RigidBody() = default;
 
     void applyForce(RigidBodyForce force);
     void applyForce(glm::vec3 worldForce, glm::vec3 localPosition = glm::vec3(0.0f));
     
     void updatePhysics(const double &deltaTime);
+
+    void makeStatic();
 
 private:
     float sleepVelocity = 0.08f;

@@ -1,19 +1,25 @@
 #include "RigidBody.h"
 
-RigidBody::RigidBody(Mesh* mesh) {
-    this->mesh = mesh;
-    this->mesh->managedByRigidBody = true;
+RigidBody::RigidBody(Mesh* mesh, Collider* collider) {
 
-    this->position = mesh->position;
-    this->rotation = mesh->rotation;
+    if(mesh) {
+        this->mesh = mesh;
+        this->mesh->managedByRigidBody = true;
+        this->position = mesh->position;
+        this->rotation = mesh->rotation;
+    }
 
+    if(collider) {
+        this->collider = collider;
+    }
+}
+
+void RigidBody::makeStatic() {
+    this->isDynamic = false;
+    this->mass = std::numeric_limits<float>::max(); // lol
 }
 
 void RigidBody::applyForce(glm::vec3 worldForce, glm::vec3 localPosition) {
-    
-    // worldForce = this->rotation * worldForce;
-    // std::cout << worldForce.y << std::endl;
-
     this->applyForce(RigidBodyForce(worldForce, localPosition));
 }
 
@@ -44,10 +50,15 @@ void RigidBody::updatePhysics(const double &deltaTime) {
         this->velocity += this->acceleration * (float) deltaTime;
         this->position += this->velocity * (float) deltaTime;
 
-        this->angularAcceleration += this->torque / this->inertia; // a = T/I (or T * inv_I)
-        this->angularVelocity += this->angularAcceleration * (float) deltaTime;
-        this->rotation *= glm::quat(this->angularVelocity * (float) deltaTime);
-        this->rotation = glm::normalize(this->rotation);
+        // glm::vec3 normalForce = this->externalForces[0].force;
+        // glm::vec3 perpendicular = glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), this->velocity);
+        // float mu = (glm::length(this->velocity) > 0.1) ? this->dynamicFriction : this->staticFriction;
+        // this->velocity -= 1000 * mu * normalForce * (float) deltaTime;
+
+        // this->angularAcceleration += this->torque / this->inertia; // a = T/I (or T * inv_I)
+        // this->angularVelocity += this->angularAcceleration * (float) deltaTime;
+        // this->rotation *= glm::quat(this->angularVelocity * (float) deltaTime);
+        // this->rotation = glm::normalize(this->rotation);
 
         this->externalForces.clear();
 
@@ -58,7 +69,9 @@ void RigidBody::updatePhysics(const double &deltaTime) {
 }
 
 void RigidBody::updateGeometry() {
-    this->mesh->_worldPosMatrixNeedsUpdate = true;
-    this->mesh->position = this->position;
-    this->mesh->rotation = this->rotation;
+    if(this->mesh) {
+        this->mesh->_worldPosMatrixNeedsUpdate = true;
+        this->mesh->position = this->position;
+        this->mesh->rotation = this->rotation;
+    }
 }
