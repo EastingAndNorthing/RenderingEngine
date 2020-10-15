@@ -119,8 +119,10 @@ void PhysicsHandler::collide_MESH_PLANE(RigidBody* A, RigidBody* B) {
         const float& signedDistance = this->getPointToPlaneDistance(v_worldPos, B->position, PC->normal);
 
         if(signedDistance <= this->minCollisionDistance) {
-            // glm::vec3 reactionForce = 100.0f * PC->normal;
-            // A->applyForce(reactionForce, v.position);
+            glm::vec3 reactionForce = 400.0f * PC->normal;
+            A->applyForce(reactionForce, v.position);
+
+            A->position += PC->normal * (abs(signedDistance) + this->afterCollisionDistance + this->minCollisionDistance); // Set position to just outside of collision plane
 
             break;
         }

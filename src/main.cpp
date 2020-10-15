@@ -50,10 +50,11 @@ int main() {
     renderer.Enqueue(myTetra);
 
     // myTetra->setRotation(-90.0f, 0.0f, 0.0f);
-    // RigidBody* tetraBod = new RigidBody(myTetra);
-    // tetraBod->collider = new MeshCollider(PrimitiveMesh(PrimitiveGenerator::Tetrahedron::generate(1.0f)));
-    // tetraBod->mass = 100.0f;
-    // physicsHandler.Enqueue(tetraBod);
+    RigidBody* tetraBod = new RigidBody(myTetra);
+    tetraBod->collider = new MeshCollider(PrimitiveMesh(PrimitiveGenerator::Tetrahedron::generate(1.0f)));
+    tetraBod->mass = 20.0f;
+    // tetraBod->gravity = 0.0f;
+    physicsHandler.Enqueue(tetraBod);
 
     Mesh* floor = new PlaneMesh(255.0f);
     floor->setRotation(-90.0f, 0.0f, 0.0f);
@@ -82,9 +83,9 @@ int main() {
         
         physicsHandler.update();
 
-        // if(time.time < 10) {
+        // if(time.time < 2) {
         //     for (auto& body: physicsHandler.bodies) {
-        //         body->applyForce(glm::vec3(0.0f, 20.0f, 0.0f), glm::vec3(2.0f, 0.0f, 2.0f));
+        //         body->applyForce(glm::vec3(0.0f, 20.0f, 0.0f), glm::vec3(0.5f, 0.0f, 0.0f));
         //     }
         // }
 
