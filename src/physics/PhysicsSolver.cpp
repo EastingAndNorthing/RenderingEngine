@@ -12,6 +12,10 @@ float PhysicsSolver::getPointToPlaneDistance(const glm::vec3& pointPos, const gl
     return glm::dot(planeNormal, (pointPos - planePos));
 }
 
+glm::vec3 PhysicsSolver::getAfterCollisionPositionOffset(const float& signedDistance, const glm::vec3& N) {
+    return N * (-signedDistance + PhysicsSolver::afterCollisionDistance);
+}
+
 glm::vec3 PhysicsSolver::getPointVelocity(const glm::vec3& pointPos, const glm::vec3& linearVelocity, const glm::vec3& angularVelocity) {
     return linearVelocity + glm::cross(angularVelocity, pointPos);
 }
@@ -54,11 +58,11 @@ void PhysicsSolver::collide_SPHERE_PLANE(RigidBody* A, RigidBody* B) {
         auto velocities = PhysicsSolver::elasticParticleCollision(A->velocity, B->velocity, A->mass, B->mass, PC->normal, A->isDynamic, B->isDynamic, A->bounciness * B->bounciness);
 
         if(A->isDynamic) {
-            A->position += PC->normal * (abs(signedDistance) + PhysicsSolver::afterCollisionDistance);
+            A->position += PhysicsSolver::getAfterCollisionPositionOffset(signedDistance, PC->normal);
             A->velocity = velocities.first;
         }
         if(B->isDynamic) {
-            B->position += PC->normal * (abs(signedDistance) + PhysicsSolver::afterCollisionDistance);
+            B->position -= PhysicsSolver::getAfterCollisionPositionOffset(signedDistance, PC->normal);
             B->velocity = velocities.second;
         }
     }
@@ -76,11 +80,11 @@ void PhysicsSolver::collide_SPHERE_SPHERE(RigidBody* A, RigidBody* B) {
         auto velocities = PhysicsSolver::elasticParticleCollision(A->velocity, B->velocity, A->mass, B->mass, N, A->isDynamic, B->isDynamic, A->bounciness * B->bounciness);
         
         if(A->isDynamic) {
-            A->position += N * (abs(signedDistance) + PhysicsSolver::afterCollisionDistance);
+            A->position += PhysicsSolver::getAfterCollisionPositionOffset(signedDistance, N);
             A->velocity = velocities.first;
         }
         if(B->isDynamic) {
-            B->position += N * (abs(signedDistance) + PhysicsSolver::afterCollisionDistance);
+            B->position -= PhysicsSolver::getAfterCollisionPositionOffset(signedDistance, N);
             B->velocity = velocities.second;
         }
     }
@@ -112,12 +116,12 @@ void PhysicsSolver::collide_MESH_PLANE(RigidBody* A, RigidBody* B) {
             const glm::vec3 totalVelocity1 = getPointVelocity(r1, A->velocity, A->angularVelocity);
             const glm::vec3 totalVelocity2 = getPointVelocity(r2, B->velocity, B->angularVelocity);
 
-            const float combinedCOR = A->bounciness * B->bounciness; // A->bounciness + B->bounciness;
+            const float combinedCOR = A->bounciness * B->bounciness;
 
             const float impulse = glm::dot(
                 (-(1.0f + combinedCOR) * (totalVelocity2-totalVelocity1)), N
             ) / (
-                1/A->mass + 1/B->mass 
+                A->inverseMass + B->inverseMass 
                 + glm::dot(
                     A->inverseInertiaTensor * glm::cross(
                         glm::cross(r1, N), r1
@@ -126,18 +130,16 @@ void PhysicsSolver::collide_MESH_PLANE(RigidBody* A, RigidBody* B) {
                     ), N
                 )
             );
-            
-            const glm::vec3 resetPos = N * (abs(signedDistance) + PhysicsSolver::afterCollisionDistance + 0.0f);
-            
+
             if(A->isDynamic) {
-                A->position += resetPos;
-                A->velocity -= N * impulse/A->mass;
+                A->position += PhysicsSolver::getAfterCollisionPositionOffset(signedDistance, N);
+                A->velocity -= N * impulse * A->inverseMass;
                 A->angularVelocity -= impulse * A->inertiaTensor * glm::cross(r1, N);
             }
 
             if(B->isDynamic) {
-                // B->position -= resetPos;
-                B->velocity += N * impulse/B->mass;
+                B->position -= PhysicsSolver::getAfterCollisionPositionOffset(signedDistance, N);
+                B->velocity += N * impulse * B->inverseMass;
                 B->angularVelocity += impulse * B->inertiaTensor * glm::cross(r2, N);
             }
 

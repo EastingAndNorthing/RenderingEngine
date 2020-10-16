@@ -24,6 +24,8 @@ void PhysicsHandler::update() {
     
     for (auto& body: this->bodies) {
 
+        body->rebuildPrecomputedValues();
+
         // @TODO Chunking / octree, prevent checking body pairs multiple times
         for (auto& otherBody: this->bodies) {
             
@@ -33,7 +35,7 @@ void PhysicsHandler::update() {
             if (body == otherBody)
                 continue;
 
-            // @TODO Bounding box proximity check
+            // @TODO Broad phase collision detection using bounding box proximity check, 
             // if(body->boundingBox.intersects(otherBody.boundingBox)) {}
 
             switch(body->collider->colliderType) {

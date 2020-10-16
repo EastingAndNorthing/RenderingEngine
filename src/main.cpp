@@ -31,20 +31,20 @@ int main() {
 
     std::random_device rd; std::mt19937 gen(rd()); std::uniform_real_distribution<> randboy(0, 10);
 
-    // for (int i = 0; i < 30; i++) {
-    //     float size = randboy(gen)/11 + 0.1f;
-    //     Mesh* mesh = new SphereMesh(size, 22);
-    //     mesh->setPosition(randboy(gen) - 5, 1.0f + randboy(gen), randboy(gen) - 5);
-    //     // mesh->setPosition(1.0f, 2.0f + i, randboy(gen)/10);
-    //     mesh->assignMaterial(phongMaterial);
-    //     renderer.Enqueue(mesh);
+    for (int i = 0; i < 50; i++) {
+        float size = randboy(gen)/11 + 0.1f;
+        Mesh* mesh = new SphereMesh(size, 22);
+        mesh->setPosition(randboy(gen) - 5, 1.0f + randboy(gen), randboy(gen) - 5);
+        // mesh->setPosition(1.0f, 2.0f + i, randboy(gen)/10);
+        mesh->assignMaterial(phongMaterial);
+        renderer.Enqueue(mesh);
 
-    //     RigidBody* rigidBod = new RigidBody(mesh);
-    //     rigidBod->collider = new SphereCollider(size);
-    //     rigidBod->mass = size;
-    //     rigidBod->bounciness = 0.90f;
-    //     physicsHandler.Enqueue(rigidBod);
-    // }
+        RigidBody* rigidBod = new RigidBody(mesh);
+        rigidBod->collider = new SphereCollider(size);
+        rigidBod->mass = size;
+        rigidBod->bounciness = 0.90f;
+        physicsHandler.Enqueue(rigidBod);
+    }
 
     // for (int i = 0; i < 4; i++) {
         Mesh* myTetra = new TetrahedronMesh(1.0f);
@@ -53,7 +53,7 @@ int main() {
         myTetra->assignMaterial(colorMaterial);
         renderer.Enqueue(myTetra);
 
-        myTetra->setRotation(-45.0f, 0.0f, 0.0f);
+        myTetra->setRotation(-20.0f, 0.0f, 0.0f);
         // myTetra->setRotation(randboy(gen) * 11.121, randboy(gen) * 11.121, randboy(gen) * 11.121);
         RigidBody* tetraBod = new RigidBody(myTetra);
         tetraBod->collider = new MeshCollider(PrimitiveMesh(PrimitiveGenerator::Tetrahedron::generate(1.0f)));

@@ -33,10 +33,8 @@ void RigidBody::applyForce(RigidBodyForce force) {
 void RigidBody::updatePhysics(const double &deltaTime) {
 
     if(this->isDynamic) {
-        this->inertiaTensorW = glm::matrixCompMult(glm::mat3_cast(this->rotation), this->inertiaTensor);
-        // this->inertiaTensorW = glm::mat3_cast(this->rotation) * this->inertiaTensor;
-        this->inverseInertiaTensor = glm::inverse(this->inertiaTensor);
-        this->inverseInertiaTensorW = glm::inverse(this->inertiaTensorW);
+
+        this->rebuildPrecomputedValues();
 
         this->applyForce(glm::vec3(0.0f, this->mass * this->gravity, 0.0f), glm::vec3(0, 0, 0));
         
@@ -65,8 +63,14 @@ void RigidBody::updatePhysics(const double &deltaTime) {
         this->externalForces.clear();
 
         this->updateGeometry();
-        // if(glm::length(this->velocity) >= this->sleepVelocity || glm::length(this->velocity) >= this->sleepAngularVelocity) {
-        // }
+
+        float velocity = glm::length(this->velocity);
+        float angularVelocity = glm::length(this->velocity);
+
+        if(velocity >= this->sleepVelocity || angularVelocity >= this->sleepAngularVelocity) {
+            _inertiaNeedsUpdate = true;
+            this->rebuildPrecomputedValues();
+        }
     }
 }
 
@@ -78,11 +82,18 @@ void RigidBody::updateGeometry() {
     }
 }
 
-glm::mat4 RigidBody::getWorldPositionMatrix() { // Same as Mesh...
-    if(this->_worldPosMatrixNeedsUpdate) {
-        this->_worldPositionMatrix = glm::translate(glm::mat4(1), this->position) * glm::mat4_cast(this->rotation); // @TODO scale
+void RigidBody::rebuildPrecomputedValues() {
+    if(this->_massNeedsUpdate) { 
+        this->inverseMass = 1 / this->mass;
     }
-    this->_worldPosMatrixNeedsUpdate = false;
-    
-    return this->_worldPositionMatrix;
+
+    if(this->_inertiaNeedsUpdate) {
+        this->inertiaTensorW = glm::matrixCompMult(glm::mat3_cast(this->rotation), this->inertiaTensor);
+        // this->inertiaTensorW = glm::mat3_cast(this->rotation) * this->inertiaTensor;
+        this->inverseInertiaTensor = glm::inverse(this->inertiaTensor);
+        this->inverseInertiaTensorW = glm::inverse(this->inertiaTensorW);
+    }
+
+    this->_inertiaNeedsUpdate = false;
+    this->_massNeedsUpdate = false;
 }
