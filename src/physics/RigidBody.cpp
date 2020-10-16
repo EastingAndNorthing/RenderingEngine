@@ -17,7 +17,9 @@ RigidBody::RigidBody(Mesh* mesh, Collider* collider) {
 void RigidBody::makeStatic() {
     this->isDynamic = false;
     this->bounciness = 1.0f;
-    this->mass = std::numeric_limits<float>::max(); // lol
+    // this->mass = std::numeric_limits<float>::max(); // lol
+    this->mass = 99999.0f;
+    this->inertiaTensor = glm::mat3(9999.0f);
 }
 
 void RigidBody::applyForce(glm::vec3 worldForce, glm::vec3 localPosition) {
@@ -31,14 +33,13 @@ void RigidBody::applyForce(RigidBodyForce force) {
 void RigidBody::updatePhysics(const double &deltaTime) {
 
     if(this->isDynamic) {
+        this->inertiaTensorW = glm::matrixCompMult(glm::mat3_cast(this->rotation), this->inertiaTensor);
+        // this->inertiaTensorW = glm::mat3_cast(this->rotation) * this->inertiaTensor;
+        this->inverseInertiaTensor = glm::inverse(this->inertiaTensor);
+        this->inverseInertiaTensorW = glm::inverse(this->inertiaTensorW);
 
         this->applyForce(glm::vec3(0.0f, this->mass * this->gravity, 0.0f), glm::vec3(0, 0, 0));
         
-        // https://gafferongames.com/post/physics_in_3d/
-        // https://gamedev.stackexchange.com/questions/147409/rotate-from-current-rotation-to-another-using-angular-velocity
-        // https://www.euclideanspace.com/physics/kinematics/angularvelocity/index.htm
-        // https://stackoverflow.com/questions/33182258/how-to-scale-the-rotation-of-a-quaternion
-
         this->acceleration = glm::vec3(0.0f);
         this->angularAcceleration = glm::vec3(0.0f);
         this->torque = glm::vec3(0.0f);
@@ -61,8 +62,6 @@ void RigidBody::updatePhysics(const double &deltaTime) {
         this->rotation *= glm::quat(this->angularVelocity * (float) deltaTime);
         this->rotation = glm::normalize(this->rotation);
 
-        // Log(this->angularVelocity);
-
         this->externalForces.clear();
 
         this->updateGeometry();
@@ -77,4 +76,13 @@ void RigidBody::updateGeometry() {
         this->mesh->position = this->position;
         this->mesh->rotation = this->rotation;
     }
+}
+
+glm::mat4 RigidBody::getWorldPositionMatrix() { // Same as Mesh...
+    if(this->_worldPosMatrixNeedsUpdate) {
+        this->_worldPositionMatrix = glm::translate(glm::mat4(1), this->position) * glm::mat4_cast(this->rotation); // @TODO scale
+    }
+    this->_worldPosMatrixNeedsUpdate = false;
+    
+    return this->_worldPositionMatrix;
 }

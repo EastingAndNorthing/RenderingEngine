@@ -46,9 +46,9 @@ Renderer::Renderer() {
     printf("Initialized with OpenGL %d.%d.\n", GLVersion.major, GLVersion.minor);
     printf("Supported GLSL version is %s.\n", (char*) glGetString(GL_SHADING_LANGUAGE_VERSION));
 
-    glDebugMessageCallback(GlDebugMsg, nullptr);
-    glEnable(GL_DEBUG_OUTPUT);
-    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    // glDebugMessageCallback(GlDebugMsg, nullptr);
+    // glEnable(GL_DEBUG_OUTPUT);
+    // glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);

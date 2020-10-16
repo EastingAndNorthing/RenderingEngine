@@ -13,9 +13,7 @@ float PhysicsSolver::getPointToPlaneDistance(const glm::vec3& pointPos, const gl
 }
 
 glm::vec3 PhysicsSolver::getPointVelocity(const glm::vec3& pointPos, const glm::vec3& linearVelocity, const glm::vec3& angularVelocity) {
-    // glm::vec3 radius = glm::vec3(0.0f) - pointPos;
-    glm::vec3 radius = pointPos;
-    return glm::vec3(linearVelocity + glm::cross(angularVelocity, radius));
+    return linearVelocity + glm::cross(angularVelocity, pointPos);
 }
 
 std::pair<glm::vec3, glm::vec3> PhysicsSolver::elasticParticleCollision(
@@ -99,8 +97,8 @@ void PhysicsSolver::collide_MESH_PLANE(RigidBody* A, RigidBody* B) {
     for(int i = 0; i < MC->uniqueIndices.size(); i++) {
         const Vertex& v = MC->vertices[MC->uniqueIndices[i]];
 
-        const glm::vec3& N = PC->normal;
-
+        const glm::vec3& N = glm::normalize(PC->normal); // Not really needed if plane normals are always normalized
+        
         glm::vec3 point_worldPos = (A->rotation * v.position) + A->position; // (?)
         const float& signedDistance = PhysicsSolver::getPointToPlaneDistance(point_worldPos, B->position, N);
 
@@ -108,64 +106,39 @@ void PhysicsSolver::collide_MESH_PLANE(RigidBody* A, RigidBody* B) {
             // https://en.m.wikipedia.org/wiki/Collision_response#Impulse-based_reaction_model
             // https://www.youtube.com/watch?v=SHinxAhv1ZE
 
-            // Time &time = Time::Instance();
-            // glm::vec3 impulse = v_totalVelocity * (float) time.dt;
-            
-            glm::vec3 r1 = v.position;
-            glm::vec3 r2 = (point_worldPos - B->position); // @TODO check local point position for B
+            const glm::vec3 r1 = v.position;
+            const glm::vec3 r2 = (point_worldPos - B->position); // @TODO check local point position for B
 
-            glm::vec3 totalVelocity1 = getPointVelocity(r1, A->velocity, A->angularVelocity);
-            glm::vec3 totalVelocity2 = getPointVelocity(r2, B->velocity, B->angularVelocity);
+            const glm::vec3 totalVelocity1 = getPointVelocity(r1, A->velocity, A->angularVelocity);
+            const glm::vec3 totalVelocity2 = getPointVelocity(r2, B->velocity, B->angularVelocity);
 
-            // auto newVelocities = PhysicsSolver::elasticParticleCollision(totalVelocity1, totalVelocity2, A->mass, B->mass, N, A->isDynamic, B->isDynamic, 0.5f);
+            const float combinedCOR = A->bounciness * B->bounciness; // A->bounciness + B->bounciness;
 
-            glm::vec3 dv;
-            float impulse; 
-
-            // if(A->isDynamic) {
-            //     dv = newVelocities.first - totalVelocity1;
-            //     // impulse = glm::length(N * (dv * A->mass));
-            //     impulse = N * (dv * A->mass);
-            // } else {
-            //     dv = newVelocities.second - totalVelocity2;
-            //     // impulse = glm::length(N * (dv * B->mass));
-            //     impulse = N * (dv * B->mass);
-            // }
-
-            // if(A->isDynamic) {
-            //     A->position += N * (abs(signedDistance) + PhysicsSolver::afterCollisionDistance + 0.0f);
-            //     A->velocity = newVelocities.first;
-            //     A->angularVelocity -= impulse*0.05f * glm::cross(r1, N); // Add I
-            // }
-
-            // if(B->isDynamic) {
-            //     B->position += N * (abs(signedDistance) + PhysicsSolver::afterCollisionDistance + 0.0f);
-            //     B->velocity = newVelocities.second;
-            //     B->angularVelocity += impulse*0.05f * glm::cross(r2, N); // Add I
-            // }
-
-            // impulse = glm::dot(-(1.0f + A->bounciness) * (totalVelocity1-totalVelocity2), N) / (1/A->mass + 1/B->mass + ((1/0.1f) * glm::cross(glm::cross(r1, N), r1) + (1/0.1f) * glm::cross(glm::cross(r2, N), r2)) * N);
-            float combinedCOR = 1.0f; // A->bounciness + B->bounciness;
-            impulse = glm::dot(
-                (-(1.0f + combinedCOR) * (totalVelocity1-totalVelocity2)), N
+            const float impulse = glm::dot(
+                (-(1.0f + combinedCOR) * (totalVelocity2-totalVelocity1)), N
             ) / (
-                1/A->mass + 1/B->mass + glm::dot(
-                    1/0.1f * glm::cross(
+                1/A->mass + 1/B->mass 
+                + glm::dot(
+                    A->inverseInertiaTensor * glm::cross(
                         glm::cross(r1, N), r1
-                    ) + 1/0.1f * glm::cross(
+                    ) + B->inverseInertiaTensor * glm::cross(
                         glm::cross(r2, N), r2
                     ), N
                 )
             );
             
+            const glm::vec3 resetPos = N * (abs(signedDistance) + PhysicsSolver::afterCollisionDistance + 0.0f);
+            
             if(A->isDynamic) {
-                A->position += N * (abs(signedDistance) + PhysicsSolver::afterCollisionDistance + 0.0f);
-                A->velocity += impulse/A->mass * N;
+                A->position += resetPos;
+                A->velocity -= N * impulse/A->mass;
+                A->angularVelocity -= impulse * A->inertiaTensor * glm::cross(r1, N);
             }
 
             if(B->isDynamic) {
-                B->position += N * (abs(signedDistance) + PhysicsSolver::afterCollisionDistance + 0.0f);
-                B->velocity += impulse/B->mass * N;
+                // B->position -= resetPos;
+                B->velocity += N * impulse/B->mass;
+                B->angularVelocity += impulse * B->inertiaTensor * glm::cross(r2, N);
             }
 
             break;

@@ -43,12 +43,14 @@ void PhysicsHandler::update() {
                         case ColliderType::Plane      : PhysicsSolver::collide_SPHERE_PLANE(body, otherBody);   break;
                         case ColliderType::Sphere     : PhysicsSolver::collide_SPHERE_SPHERE(body, otherBody);  break;
                         case ColliderType::ConvexMesh : PhysicsSolver::collide_SPHERE_MESH(body, otherBody);    break;
+                        default: break;
                     }
                 break;
 
                 case ColliderType::ConvexMesh :
                     switch(otherBody->collider->colliderType) {
                         case ColliderType::Plane      : PhysicsSolver::collide_MESH_PLANE(body, otherBody);     break;
+                        default: break;
                     }
 
                 break;

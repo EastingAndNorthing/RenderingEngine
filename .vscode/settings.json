@@ -57,6 +57,7 @@
         "xloctime": "cpp",
         "xmemory": "cpp",
         "xstddef": "cpp",
-        "xstring": "cpp"
+        "xstring": "cpp",
+        "__node_handle": "cpp"
     }
 }

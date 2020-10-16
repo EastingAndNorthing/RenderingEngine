@@ -8,10 +8,7 @@
             "dependsOn": [
                 "BUILD (Windows)"
             ],
-            "group": {
-                "kind": "test",
-                "isDefault": true
-            },
+            "group": "test",
             "problemMatcher": []
         },
         {
@@ -21,7 +18,10 @@
             "dependsOn": [
                 "BUILD (MacOS)"
             ],
-            "group": "test",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
             "problemMatcher": []
         },
         {

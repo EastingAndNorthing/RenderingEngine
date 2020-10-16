@@ -29,7 +29,11 @@ public:
     glm::vec3 angularAcceleration = glm::vec3(0, 0, 0);         // https://en.m.wikipedia.org/wiki/Angular_acceleration
 
     glm::vec3 torque = glm::vec3(0.0f);                         // https://en.m.wikipedia.org/wiki/Torque
-    glm::mat3 inertia = glm::mat3(0.01f);                       // https://en.m.wikipedia.org/wiki/Moment_of_inertia
+    glm::mat3 inertiaTensor = glm::mat3(0.3f);                  // https://en.m.wikipedia.org/wiki/Moment_of_inertia
+    
+    glm::mat3 inertiaTensorW;                                   // Precomputed world inertia 
+    glm::mat3 inverseInertiaTensor;                             // https://stackoverflow.com/questions/18290798/calculating-rigid-body-inertia-tensor-world-coordinates
+    glm::mat3 inverseInertiaTensorW;                            // https://people.dsv.su.se/~miko1432/rb/Rotations%20of%20Tensors%20using%20Quaternions%20v0.3.pdf                  
 
     float mass = 1.0f;
     float gravity = -9.81f;
@@ -53,6 +57,11 @@ public:
 private:
     float sleepVelocity = 0.08f;
     float sleepAngularVelocity = 0.01f;
+
+    bool _worldPosMatrixNeedsUpdate = true;
+    glm::mat4 _worldPositionMatrix = glm::mat4(1.0f);
+
+    glm::mat4 getWorldPositionMatrix();
 
     void updateGeometry();
 };
