@@ -19,7 +19,7 @@ void RigidBody::makeStatic() {
     this->bounciness = 1.0f;
     // this->mass = std::numeric_limits<float>::max(); // lol
     this->mass = 99999.0f;
-    this->inertiaTensor = glm::mat3(9999.0f);
+    this->inertiaTensor = glm::mat3(99999.0f);
 }
 
 void RigidBody::applyForce(glm::vec3 worldForce, glm::vec3 localPosition) {
@@ -49,11 +49,6 @@ void RigidBody::updatePhysics(const double &deltaTime) {
 
         this->velocity += this->acceleration * (float) deltaTime;
         this->position += this->velocity * (float) deltaTime;
-
-        // glm::vec3 normalForce = this->externalForces[0].force;
-        // glm::vec3 perpendicular = glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), this->velocity);
-        // float mu = (glm::length(this->velocity) > 0.1) ? this->dynamicFriction : this->staticFriction;
-        // this->velocity -= 1000 * mu * normalForce * (float) deltaTime;
 
         // this->angularAcceleration += this->torque / this->inertia; // a = T/I (or T * inv_I)
         this->angularVelocity += this->angularAcceleration * (float) deltaTime;
@@ -88,8 +83,8 @@ void RigidBody::rebuildPrecomputedValues() {
     }
 
     if(this->_inertiaNeedsUpdate) {
-        this->inertiaTensorW = glm::matrixCompMult(glm::mat3_cast(this->rotation), this->inertiaTensor);
-        // this->inertiaTensorW = glm::mat3_cast(this->rotation) * this->inertiaTensor;
+        // this->inertiaTensorW = glm::mat3(glm::toMat4(this->rotation) * glm::mat4(this->inertiaTensor)); // Kinda same result as just glm::toMat3(this->rotation) * this->inertiaTensor
+        this->inertiaTensorW = glm::toMat3(this->rotation) * this->inertiaTensor;
         this->inverseInertiaTensor = glm::inverse(this->inertiaTensor);
         this->inverseInertiaTensorW = glm::inverse(this->inertiaTensorW);
     }

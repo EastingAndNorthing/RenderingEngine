@@ -30,6 +30,7 @@
             "command": "g++",
             "args": [
                 "-g",
+                // "-O3", // Harsh optimization
                 "-I${workspaceFolder}\\src\\",
                 "${workspaceFolder}\\src\\*.cpp",
                 "${workspaceFolder}\\src\\general\\*.cpp",
@@ -53,10 +54,7 @@
             "problemMatcher": [
                 "$gcc"
             ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
+            "group": "build"
         },
         {
             "type": "shell",
@@ -94,6 +92,6 @@
                 "$gcc"
             ],
             "group": "build"
-        }
+        },
     ]
 }

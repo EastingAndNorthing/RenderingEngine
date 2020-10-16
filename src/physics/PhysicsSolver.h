@@ -12,7 +12,7 @@ namespace PhysicsSolver {
 
     float getPointToPlaneDistance(const glm::vec3& pointPos, const glm::vec3& planePos, const glm::vec3& planeNormal);
 
-    glm::vec3 getAfterCollisionPositionOffset(const float& signedDistance, const glm::vec3& N);
+    glm::vec3 getAfterCollisionPositionOffset(const float& signedDistance, const glm::vec3& N, const float& additionalOffset = 0.0f);
 
     glm::vec3 getPointVelocity(const glm::vec3& pointPos, const glm::vec3& linearVelocity, const glm::vec3& angularVelocity);
 

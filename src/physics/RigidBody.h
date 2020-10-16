@@ -30,17 +30,17 @@ public:
 
     glm::vec3 torque = glm::vec3(0);                            // https://en.m.wikipedia.org/wiki/Torque
     
-    glm::mat3 inertiaTensor = glm::mat3(0.6f);                  // https://en.m.wikipedia.org/wiki/Moment_of_inertia
-    glm::mat3 inertiaTensorW;                                   // Precomputed world inertia 
+    glm::mat3 inertiaTensor = glm::mat3(0.1331712);             // https://en.m.wikipedia.org/wiki/Moment_of_inertia Tetrahedron of unit size with unit mass = 0.1331712
+    glm::mat3 inertiaTensorW;                                   // Precomputed world space inertia
     glm::mat3 inverseInertiaTensor;                             // https://stackoverflow.com/questions/18290798/calculating-rigid-body-inertia-tensor-world-coordinates
-    glm::mat3 inverseInertiaTensorW;                            // https://people.dsv.su.se/~miko1432/rb/Rotations%20of%20Tensors%20using%20Quaternions%20v0.3.pdf                  
+    glm::mat3 inverseInertiaTensorW;                            // Precomputed inverse world space inertia              
 
     float mass = 1.0f;
     float inverseMass;
     float gravity = -9.81f;
     float staticFriction = 0.50f;                               // https://en.m.wikipedia.org/wiki/Friction
     float dynamicFriction = 0.30f;                              // https://en.m.wikipedia.org/wiki/Friction
-    float bounciness = 0.9f;                                    // https://en.m.wikipedia.org/wiki/Coefficient_of_restitution
+    float bounciness = 0.5f;                                    // https://en.m.wikipedia.org/wiki/Coefficient_of_restitution
 
     std::vector<RigidBodyForce> externalForces = {};
 
