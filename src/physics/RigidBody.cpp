@@ -16,6 +16,7 @@ RigidBody::RigidBody(Mesh* mesh, Collider* collider) {
 
 void RigidBody::makeStatic() {
     this->isDynamic = false;
+    this->bounciness = 1.0f;
     this->mass = std::numeric_limits<float>::max(); // lol
 }
 
@@ -56,15 +57,17 @@ void RigidBody::updatePhysics(const double &deltaTime) {
         // this->velocity -= 1000 * mu * normalForce * (float) deltaTime;
 
         // this->angularAcceleration += this->torque / this->inertia; // a = T/I (or T * inv_I)
-        // this->angularVelocity += this->angularAcceleration * (float) deltaTime;
-        // this->rotation *= glm::quat(this->angularVelocity * (float) deltaTime);
-        // this->rotation = glm::normalize(this->rotation);
+        this->angularVelocity += this->angularAcceleration * (float) deltaTime;
+        this->rotation *= glm::quat(this->angularVelocity * (float) deltaTime);
+        this->rotation = glm::normalize(this->rotation);
+
+        // Log(this->angularVelocity);
 
         this->externalForces.clear();
 
-        if(glm::length(this->velocity) >= this->sleepVelocity || glm::length(this->velocity) >= this->sleepVelocity) {
-            this->updateGeometry();
-        }
+        this->updateGeometry();
+        // if(glm::length(this->velocity) >= this->sleepVelocity || glm::length(this->velocity) >= this->sleepAngularVelocity) {
+        // }
     }
 }
 

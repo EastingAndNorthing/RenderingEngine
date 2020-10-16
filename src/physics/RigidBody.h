@@ -29,7 +29,7 @@ public:
     glm::vec3 angularAcceleration = glm::vec3(0, 0, 0);         // https://en.m.wikipedia.org/wiki/Angular_acceleration
 
     glm::vec3 torque = glm::vec3(0.0f);                         // https://en.m.wikipedia.org/wiki/Torque
-    glm::mat3 inertia = glm::mat3(1.0f);                        // https://en.m.wikipedia.org/wiki/Moment_of_inertia
+    glm::mat3 inertia = glm::mat3(0.01f);                       // https://en.m.wikipedia.org/wiki/Moment_of_inertia
 
     float mass = 1.0f;
     float gravity = -9.81f;
@@ -52,6 +52,7 @@ public:
 
 private:
     float sleepVelocity = 0.08f;
+    float sleepAngularVelocity = 0.01f;
 
     void updateGeometry();
 };

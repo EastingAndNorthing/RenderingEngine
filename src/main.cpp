@@ -31,32 +31,32 @@ int main() {
 
     std::random_device rd; std::mt19937 gen(rd()); std::uniform_real_distribution<> randboy(0, 10);
 
-    for (int i = 0; i < 30; i++) {
-        float size = randboy(gen)/11 + 0.1f;
-        Mesh* mesh = new SphereMesh(size, 22);
-        mesh->setPosition(randboy(gen) - 5, 1.0f + randboy(gen), randboy(gen) - 5);
-        // mesh->setPosition(1.0f, 2.0f + i, randboy(gen)/10);
-        mesh->assignMaterial(phongMaterial);
-        renderer.Enqueue(mesh);
+    // for (int i = 0; i < 30; i++) {
+    //     float size = randboy(gen)/11 + 0.1f;
+    //     Mesh* mesh = new SphereMesh(size, 22);
+    //     mesh->setPosition(randboy(gen) - 5, 1.0f + randboy(gen), randboy(gen) - 5);
+    //     // mesh->setPosition(1.0f, 2.0f + i, randboy(gen)/10);
+    //     mesh->assignMaterial(phongMaterial);
+    //     renderer.Enqueue(mesh);
 
-        RigidBody* rigidBod = new RigidBody(mesh);
-        rigidBod->collider = new SphereCollider(size);
-        rigidBod->mass = size;
-        rigidBod->bounciness = 0.90f;
-        physicsHandler.Enqueue(rigidBod);
-    }
+    //     RigidBody* rigidBod = new RigidBody(mesh);
+    //     rigidBod->collider = new SphereCollider(size);
+    //     rigidBod->mass = size;
+    //     rigidBod->bounciness = 0.90f;
+    //     physicsHandler.Enqueue(rigidBod);
+    // }
 
-    // Mesh* myTetra = new TetrahedronMesh(1.0f);
-    // myTetra->setPosition(0.0f, 1.0f, 0.0f);
-    // myTetra->assignMaterial(colorMaterial);
-    // renderer.Enqueue(myTetra);
+    Mesh* myTetra = new TetrahedronMesh(1.0f);
+    myTetra->setPosition(0.0f, 1.0f, 0.0f);
+    myTetra->assignMaterial(colorMaterial);
+    renderer.Enqueue(myTetra);
 
-    // myTetra->setRotation(-90.0f, 0.0f, 0.0f);
-    // RigidBody* tetraBod = new RigidBody(myTetra);
-    // tetraBod->collider = new MeshCollider(PrimitiveMesh(PrimitiveGenerator::Tetrahedron::generate(1.0f)));
-    // tetraBod->mass = 20.0f;
-    // // tetraBod->gravity = 0.0f;
-    // physicsHandler.Enqueue(tetraBod);
+    myTetra->setRotation(-90.0f, 0.0f, 0.0f);
+    RigidBody* tetraBod = new RigidBody(myTetra);
+    tetraBod->collider = new MeshCollider(PrimitiveMesh(PrimitiveGenerator::Tetrahedron::generate(1.0f)));
+    tetraBod->mass = 20.0f;
+    // tetraBod->gravity = 0.0f;
+    physicsHandler.Enqueue(tetraBod);
 
     Mesh* floor = new PlaneMesh(255.0f);
     floor->setRotation(-90.0f, 0.0f, 0.0f);

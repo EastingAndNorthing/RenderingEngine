@@ -12,6 +12,8 @@ namespace PhysicsSolver {
 
     float getPointToPlaneDistance(const glm::vec3& pointPos, const glm::vec3& planePos, const glm::vec3& planeNormal);
 
+    glm::vec3 getPointVelocity(const glm::vec3& pointPos, const glm::vec3& linearVelocity, const glm::vec3& angularVelocity);
+
     std::pair<glm::vec3, glm::vec3> elasticParticleCollision(
         const glm::vec3& v1,
         const glm::vec3& v2,
