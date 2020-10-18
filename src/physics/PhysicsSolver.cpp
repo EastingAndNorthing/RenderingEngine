@@ -1,5 +1,8 @@
-#include "physics/PhysicsSolver.h"
+#include <algorithm>
 #include "core/Time.h"
+#include "core/Renderer.h"
+#include "physics/PhysicsSolver.h"
+#include "math/Quaternion.h"
 
 glm::vec3 PhysicsSolver::constructPlaneFromPolygon(const Polygon& polygon) {
     const glm::vec3& A = polygon.vertices[0].position;
@@ -98,6 +101,8 @@ void PhysicsSolver::collide_SPHERE_MESH(RigidBody* A, RigidBody* B) {}
 
 void PhysicsSolver::collide_MESH_PLANE(RigidBody* A, RigidBody* B) {
 
+    Renderer &renderer = Renderer::Instance();
+
     auto MC = static_cast<MeshCollider*>(A->collider);
     auto PC = static_cast<PlaneCollider*>(B->collider);
 
@@ -109,6 +114,7 @@ void PhysicsSolver::collide_MESH_PLANE(RigidBody* A, RigidBody* B) {
         const Vertex& v = MC->vertices[MC->uniqueIndices[i]];
         
         const glm::vec3 point_worldPos = (A->rotation * v.position) + A->position;
+        
         const float& signedDistance = PhysicsSolver::getPointToPlaneDistance(point_worldPos, B->position, N);
 
         if(signedDistance <= 0.0f) {
@@ -117,45 +123,61 @@ void PhysicsSolver::collide_MESH_PLANE(RigidBody* A, RigidBody* B) {
 
             touchPoints++;
 
-            const glm::vec3 r1 = v.position - point_worldPos;  // Shouldn't this just be equal to v.position? // It could happen that the cross product becomes 0 if v.pos = 0 1 0
-            const glm::vec3 r2 = B->position - point_worldPos; // @TODO check local point position for B
+            const glm::vec3 r1 = point_worldPos - A->position;
+            const glm::vec3 r2 = point_worldPos - B->position;
 
-            const glm::vec3 totalVelocity1 = (A->isDynamic) ? getPointVelocity(r1, A->velocity, A->angularVelocity) : glm::vec3(0.0f);
-            const glm::vec3 totalVelocity2 = (B->isDynamic) ? getPointVelocity(r2, B->velocity, B->angularVelocity) : glm::vec3(0.0f);
+            glm::vec3 worldAngularVel1 = A->rotation * A->angularVelocity;
+            glm::vec3 worldAngularVel2 = B->rotation * B->angularVelocity;
+            
+            // const glm::vec3 totalVelocity1 = getPointVelocity(v.position, A->velocity, A->angularVelocity);
+            // const glm::vec3 totalVelocity1 = A->rotation * localPointVelocity1;
+            const glm::vec3 totalVelocity1 = (A->isDynamic) ? getPointVelocity(r1, A->velocity, worldAngularVel1) : glm::vec3(0.0f);
+            const glm::vec3 totalVelocity2 = (B->isDynamic) ? getPointVelocity(r2, B->velocity, worldAngularVel2) : glm::vec3(0.0f);
 
-            const float combinedCOR = A->bounciness * B->bounciness;
+            const float combinedCOR = 1.0f + 0.85f; // A->bounciness * B->bounciness;
+            const glm::vec3 inertiaInfluenceA = glm::cross(glm::cross(r1, N), r1) * A->inverseInertiaTensorW;
+            const glm::vec3 inertiaInfluenceB = glm::cross(glm::cross(r2, N), r2) * B->inverseInertiaTensorW;
 
-            const float impulse = glm::dot(-(1.0f + combinedCOR) * (totalVelocity2-totalVelocity1), N) / ( A->inverseMass + B->inverseMass +
-                glm::dot(
-                    A->inverseInertiaTensorW * glm::cross(
-                        glm::cross(r1, N), r1
-                    ) + B->inverseInertiaTensorW * glm::cross(
-                        glm::cross(r2, N), r2
-                    ), N
-                )
+            float impulse = glm::dot(-combinedCOR * (totalVelocity2-totalVelocity1), N) / ( A->inverseMass + B->inverseMass +
+                glm::dot(inertiaInfluenceA + inertiaInfluenceB, N)
             );
             
-            for(int x = 0; x < 3; x++){
-                std::cout << A->inertiaTensorW[x][0] << " " << A->inertiaTensorW[x][1] << " " << A->inertiaTensorW[x][2] << std::endl;
-            }
-            std::cout << std::endl;
+            // const float impulse = glm::dot(-(1.0f + combinedCOR) * (totalVelocity2-totalVelocity1), N) / ( A->inverseMass + B->inverseMass +
+            // glm::dot(
+            //     A->inverseInertiaTensorW * glm::cross(
+            //         glm::cross(r1, N), r1
+            //     ) + B->inverseInertiaTensorW * glm::cross(
+            //         glm::cross(r2, N), r2
+            //     ), N
+            // )
 
             if(A->isDynamic) {
-                A->position += PhysicsSolver::getAfterCollisionPositionOffset(signedDistance, N, 0.5f);
                 A->velocity -= N * impulse * A->inverseMass;
-                A->angularVelocity -= impulse * A->inverseInertiaTensor * glm::cross(r1, N);
+
+                glm::vec3 dw_world = impulse * A->inverseInertiaTensorW * glm::cross(r1, N);
+                worldAngularVel1 -= dw_world;
+                A->angularVelocity = A->inverseRotation * worldAngularVel1;
+
+                renderer.debugVector->setPosition(point_worldPos);
+                renderer.debugVector->setScale(glm::vec3(1.0f, impulse * 0.5f, 1.0f));
+                renderer.debugVector->setRotation(Quaternion::createFromUnitVectors(
+                    glm::vec3(0.0f, 1.0f, 0.0f),
+                    A->inverseRotation * dw_world
+                ));
             }
 
             if(B->isDynamic) {
-                B->position -= PhysicsSolver::getAfterCollisionPositionOffset(signedDistance, N);
                 B->velocity += N * impulse * B->inverseMass;
-                // B->angularVelocity += impulse * B->inverseInertiaTensorW * glm::cross(r2, N);
-                B->angularVelocity += impulse * B->inverseInertiaTensor * glm::cross(r2, N);
+                B->angularVelocity += impulse * glm::cross(r2, N) * B->inverseInertiaTensorW;
             }
+
+            // if(!B->isDynamic) A->position += PhysicsSolver::getAfterCollisionPositionOffset(signedDistance, N, 0.5f);
+            // if(!A->isDynamic) B->position -= PhysicsSolver::getAfterCollisionPositionOffset(signedDistance, N, 0.5f);
         }
 
-        if(touchPoints >= 1) 
+        if(touchPoints >= 1) {
             break;
+        }
 
     }
 }

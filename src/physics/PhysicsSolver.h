@@ -15,6 +15,7 @@ namespace PhysicsSolver {
     glm::vec3 getAfterCollisionPositionOffset(const float& signedDistance, const glm::vec3& N, const float& additionalOffset = 0.0f);
 
     glm::vec3 getPointVelocity(const glm::vec3& pointPos, const glm::vec3& linearVelocity, const glm::vec3& angularVelocity);
+    glm::vec3 getPointVelocity(const glm::vec3& pointPos, const glm::vec3& linearVelocity, const glm::quat& angularVelocity);
 
     std::pair<glm::vec3, glm::vec3> elasticParticleCollision(
         const glm::vec3& v1,
