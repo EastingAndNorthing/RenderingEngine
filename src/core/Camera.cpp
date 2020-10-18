@@ -21,7 +21,7 @@ void Camera::update() {
         float posDelta = this->speed * time.dt;
 
         if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) 
-            posDelta *= 2;
+            posDelta *= 3;
         if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) 
             posDelta *= 0.333;
 
