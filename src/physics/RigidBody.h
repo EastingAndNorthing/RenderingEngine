@@ -24,13 +24,15 @@ public:
     glm::vec3 velocity = glm::vec3(0);                          // https://en.m.wikipedia.org/wiki/Equations_of_motion
     glm::vec3 acceleration = glm::vec3(0, 0, 0);                // https://en.m.wikipedia.org/wiki/Equations_of_motion
     
-    glm::quat rotation = glm::quat(0, 0, 0, 0);                 // https://en.m.wikipedia.org/wiki/Quaternion
-    glm::vec3 angularVelocity = glm::vec3(0, 0, 0);             // https://en.m.wikipedia.org/wiki/Angular_velocity
+    glm::quat rotation = glm::quat(1, 0, 0, 0);                 // https://en.m.wikipedia.org/wiki/Quaternion
+    glm::quat inverseRotation = glm::quat(0, 0, 0, 0);          // https://en.m.wikipedia.org/wiki/Quaternion
+    glm::vec3 angularVelocity = glm::vec3(0, 0, 0);             // https://en.m.wikipedia.org/wiki/Angular_velocity LOCAL angular velocity vector 
     glm::vec3 angularAcceleration = glm::vec3(0, 0, 0);         // https://en.m.wikipedia.org/wiki/Angular_acceleration
 
     glm::vec3 torque = glm::vec3(0);                            // https://en.m.wikipedia.org/wiki/Torque
     
-    glm::mat3 inertiaTensor = glm::mat3(0.1331712);             // https://en.m.wikipedia.org/wiki/Moment_of_inertia Tetrahedron of unit size with unit mass = 0.1331712
+    glm::mat3 inertiaTensor = glm::mat3(0.1331712);             // https://en.m.wikipedia.org/wiki/Moment_of_inertia Tetrahedron of unit size, unit mass = 0.1331712
+    // glm::mat3 inertiaTensor = glm::mat3(1.0f);             // https://en.m.wikipedia.org/wiki/Moment_of_inertia Tetrahedron of unit size with unit mass = 0.1331712
     glm::mat3 inertiaTensorW;                                   // Precomputed world space inertia
     glm::mat3 inverseInertiaTensor;                             // https://stackoverflow.com/questions/18290798/calculating-rigid-body-inertia-tensor-world-coordinates
     glm::mat3 inverseInertiaTensorW;                            // Precomputed inverse world space inertia              
@@ -61,8 +63,9 @@ private:
     float sleepVelocity = 0.08f;
     float sleepAngularVelocity = 0.01f;
 
-    bool _inertiaNeedsUpdate = true;
-    bool _massNeedsUpdate = true;
+    bool _inertiaNeedsUpdate   = true;
+    bool _massNeedsUpdate      = true;
+    bool _rotationNeedsUpdate  = true;
 
     void updateGeometry();
 };

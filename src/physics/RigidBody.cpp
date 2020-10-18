@@ -18,8 +18,8 @@ void RigidBody::makeStatic() {
     this->isDynamic = false;
     this->bounciness = 1.0f;
     // this->mass = std::numeric_limits<float>::max(); // lol
-    this->mass = 99999.0f;
-    this->inertiaTensor = glm::mat3(99999.0f);
+    this->mass = 9999999999.0f;
+    this->inertiaTensor = glm::mat3(9999999999.0f);
 }
 
 void RigidBody::applyForce(glm::vec3 worldForce, glm::vec3 localPosition) {
@@ -32,10 +32,9 @@ void RigidBody::applyForce(RigidBodyForce force) {
 
 void RigidBody::updatePhysics(const double &deltaTime) {
 
+    this->rebuildPrecomputedValues();
+
     if(this->isDynamic) {
-
-        this->rebuildPrecomputedValues();
-
         this->applyForce(glm::vec3(0.0f, this->mass * this->gravity, 0.0f), glm::vec3(0, 0, 0));
         
         this->acceleration = glm::vec3(0.0f);
@@ -44,28 +43,30 @@ void RigidBody::updatePhysics(const double &deltaTime) {
 
         for (auto force: this->externalForces) {
             this->acceleration += force.force / this->mass; // F = ma
-            this->torque += glm::cross(force.force, (glm::vec3(0.0f) - force.position)); // T = F x r
+            // this->torque += glm::cross(force.force, (glm::vec3(0.0f) - force.position)); // T = F x r
         }
 
         this->velocity += this->acceleration * (float) deltaTime;
         this->position += this->velocity * (float) deltaTime;
 
         // this->angularAcceleration += this->torque / this->inertia; // a = T/I (or T * inv_I)
-        this->angularVelocity += this->angularAcceleration * (float) deltaTime;
-        this->rotation *= glm::quat(this->angularVelocity * (float) deltaTime);
+        // this->rotation *= glm::quat(this->angularVelocity * (float) deltaTime);
+        glm::vec3 halve = this->angularVelocity * (float) deltaTime * 0.5f; // vector of half angle
+        glm::quat deltaQuat = glm::quat(1.0, halve.x, halve.y, halve.z);
+        this->rotation *= deltaQuat;
         this->rotation = glm::normalize(this->rotation);
+
+        float velocity = glm::length(this->velocity);
+        float angularVelocity = glm::length(this->angularVelocity);
 
         this->externalForces.clear();
 
-        this->updateGeometry();
-
-        float velocity = glm::length(this->velocity);
-        float angularVelocity = glm::length(this->velocity);
-
-        if(velocity >= this->sleepVelocity || angularVelocity >= this->sleepAngularVelocity) {
+        // if(velocity >= this->sleepVelocity || angularVelocity >= this->sleepAngularVelocity) {
             _inertiaNeedsUpdate = true;
+            _rotationNeedsUpdate = true;
             this->rebuildPrecomputedValues();
-        }
+            this->updateGeometry();
+        // }
     }
 }
 
@@ -78,17 +79,19 @@ void RigidBody::updateGeometry() {
 }
 
 void RigidBody::rebuildPrecomputedValues() {
-    if(this->_massNeedsUpdate) { 
+    if(this->_massNeedsUpdate)
         this->inverseMass = 1 / this->mass;
-    }
+
+    if(this->_rotationNeedsUpdate)
+        this->inverseRotation = glm::inverse(this->rotation);
 
     if(this->_inertiaNeedsUpdate) {
-        // this->inertiaTensorW = glm::mat3(glm::toMat4(this->rotation) * glm::mat4(this->inertiaTensor)); // Kinda same result as just glm::toMat3(this->rotation) * this->inertiaTensor
-        this->inertiaTensorW = glm::toMat3(this->rotation) * this->inertiaTensor;
+        this->inertiaTensorW = this->inertiaTensor * glm::mat3_cast(this->rotation);
         this->inverseInertiaTensor = glm::inverse(this->inertiaTensor);
         this->inverseInertiaTensorW = glm::inverse(this->inertiaTensorW);
     }
 
+    this->_rotationNeedsUpdate = false;
     this->_inertiaNeedsUpdate = false;
     this->_massNeedsUpdate = false;
 }
