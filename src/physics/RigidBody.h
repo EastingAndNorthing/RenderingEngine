@@ -51,8 +51,10 @@ public:
     ~RigidBody() = default;
 
     void applyForce(RigidBodyForce force);
-    void applyForce(glm::vec3 worldForce, glm::vec3 localPosition = glm::vec3(0.0f));
+    void applyForce(glm::vec3 forceW, glm::vec3 localPosition = glm::vec3(0.0f));
     
+    void applyImpulse(const glm::vec3& impulse, const glm::vec3& position);
+
     void rebuildPrecomputedValues();
 
     void updatePhysics(const double &deltaTime);

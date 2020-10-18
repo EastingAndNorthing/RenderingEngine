@@ -30,6 +30,10 @@ void RigidBody::applyForce(RigidBodyForce force) {
     this->externalForces.push_back(force);
 }
 
+void RigidBody::applyImpulse(const glm::vec3& impulse, const glm::vec3& position) {
+    this->velocity += impulse;
+}
+
 void RigidBody::updatePhysics(const double &deltaTime) {
 
     this->rebuildPrecomputedValues();

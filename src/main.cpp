@@ -8,6 +8,7 @@
 #include "physics/RigidBody.h"
 #include "physics/PhysicsSolver.h"
 #include "math/Quaternion.h"
+#include "math/CoordinateSystem.h"
 
 Settings g_settings;
 
@@ -55,7 +56,7 @@ int main() {
         RigidBody* tetraBod = new RigidBody(myTetra);
         tetraBod->collider = new MeshCollider(PrimitiveMesh(PrimitiveGenerator::Tetrahedron::generate(1.0f)));
         tetraBod->mass = 1.0f;
-        // tetraBod->gravity = 0.0f;
+        tetraBod->gravity = 0.0f;
         // tetraBod->angularVelocity = glm::vec3(3.0f, 0.0f, 0.0f);
         physicsHandler.Enqueue(tetraBod);
     // }
@@ -83,7 +84,11 @@ int main() {
     // floorCollider->inertiaTensor = glm::mat3(5000.0f);
     physicsHandler.Enqueue(floorCollider);
 
-    Mesh debugMesh = Mesh({ Vertex(glm::vec3(0, 0, 0)), Vertex(glm::vec3(0, 1, 0)) });
+    Mesh debugMesh = Mesh({ 
+        Vertex(glm::vec3(0, 0, 0)), Vertex(glm::vec3(0, 1, 0)),
+        Vertex(glm::vec3(0, 1, 0)), Vertex(glm::vec3(-0.2, 0.8, 0)),
+        Vertex(glm::vec3(0, 1, 0)), Vertex(glm::vec3( 0.2, 0.8, 0))
+    });
     debugMesh.assignMaterial(renderer.defaultShader);
     
     while (renderer.isActive()) {
@@ -94,33 +99,20 @@ int main() {
         colorMaterial->setUniform("u_color", glm::vec4(0.0f, oscillator, 0.8f, 1.0f)); 
         lightDirection->set({ oscillator * 4.0f - 2.0f, 1.0f, 0.0f });
 
-        // if(time.time < 2) {
-        //     for (auto& body: physicsHandler.bodies) {
+        // if(time.time < 2)WWWW
+        //     for (auto& body: physicsHandler.bodies)
         //         body->applyForce(glm::vec3(0.0f, 20.0f, 0.0f), glm::vec3(0.5f, 0.0f, 0.0f));
-        //     }
-        // }
         
-        if(glfwGetKey(renderer.window, GLFW_KEY_I) == GLFW_PRESS) {
-            tetraBod->angularVelocity.x += 0.1f;
-        }
-        if(glfwGetKey(renderer.window, GLFW_KEY_K) == GLFW_PRESS) {
-            tetraBod->angularVelocity.x -= 0.1f;
-        }
-        if(glfwGetKey(renderer.window, GLFW_KEY_J) == GLFW_PRESS) {
-            tetraBod->angularVelocity.y += 0.1f;
-        }
-        if(glfwGetKey(renderer.window, GLFW_KEY_L) == GLFW_PRESS) {
-            tetraBod->angularVelocity.y -= 0.1f;
-        }
-        if(glfwGetKey(renderer.window, GLFW_KEY_U) == GLFW_PRESS) {
-            tetraBod->angularVelocity.z += 0.1f;
-        }
-        if(glfwGetKey(renderer.window, GLFW_KEY_O) == GLFW_PRESS) {
-            tetraBod->angularVelocity.z -= 0.1f;
-        }
+        if(glfwGetKey(renderer.window, GLFW_KEY_I) == GLFW_PRESS) tetraBod->angularVelocity.x += 0.1f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_K) == GLFW_PRESS) tetraBod->angularVelocity.x -= 0.1f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_J) == GLFW_PRESS) tetraBod->angularVelocity.y += 0.1f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_L) == GLFW_PRESS) tetraBod->angularVelocity.y -= 0.1f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_U) == GLFW_PRESS) tetraBod->angularVelocity.z += 0.1f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_O) == GLFW_PRESS) tetraBod->angularVelocity.z -= 0.1f;
 
         glm::vec3 localTetraPoint = glm::vec3(0, -0.333333333333333333, 0.9428090415820633658);
-        glm::vec3 worldTetraPoint = (tetraBod->rotation * localTetraPoint) + tetraBod->position;
+        // glm::vec3 worldTetraPoint = (tetraBod->rotation * localTetraPoint) + tetraBod->position;
+        glm::vec3 worldTetraPoint = CoordinateSystem::localToWorld(localTetraPoint, tetraBod->rotation, tetraBod->position);
 
         auto localPointVel = PhysicsSolver::getPointVelocity(localTetraPoint, glm::vec3(0.0f), tetraBod->angularVelocity);
         auto worldPointVel = PhysicsSolver::getPointVelocity(worldTetraPoint, glm::vec3(0.0f), tetraBod->angularVelocity);
@@ -128,10 +120,11 @@ int main() {
         debugMesh.setPosition(tetraBod->position);
         debugMesh.setRotation(Quaternion::createFromUnitVectors(
             glm::vec3(0.0f, 1.0f, 0.0f),
-            (tetraBod->rotation * tetraBod->angularVelocity) // To world
-            // tetraBod->inverseRotation * (tetraBod->rotation * tetraBod->angularVelocity) // To world and back to local
+            CoordinateSystem::localToWorld(tetraBod->angularVelocity, tetraBod->rotation)
+            // (tetraBod->rotation * tetraBod->angularVelocity)                                 // To world
+            // tetraBod->inverseRotation * (tetraBod->rotation * tetraBod->angularVelocity)     // To world and back to local
         ));
-        debugMesh.setScale(glm::vec3(1.0f, 0.05f + glm::length(tetraBod->angularVelocity) * 0.5f, 1.0f));
+        debugMesh.setScale(0.05f + glm::length(tetraBod->angularVelocity) * 0.5f);
 
         debugMesh.Bind();
         glUniformMatrix4fv(debugMesh.material->shader->getUniformLocation("u_modelViewProjectionMatrix"), 1, GL_FALSE, 

@@ -75,6 +75,10 @@ void Mesh::setRotation(const glm::vec3& eulerRotation) {
     }
 }
 
+void Mesh::setScale(const float& uniformScale) {
+    this->setScale(glm::vec3(uniformScale));
+}
+
 void Mesh::setScale(const glm::vec3& scale) {
     this->scale = scale;
 }

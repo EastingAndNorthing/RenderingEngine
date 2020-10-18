@@ -3,6 +3,7 @@
 #include "core/Renderer.h"
 #include "physics/PhysicsSolver.h"
 #include "math/Quaternion.h"
+#include "math/CoordinateSystem.h"
 
 glm::vec3 PhysicsSolver::constructPlaneFromPolygon(const Polygon& polygon) {
     const glm::vec3& A = polygon.vertices[0].position;

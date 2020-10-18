@@ -31,6 +31,7 @@ public:
     void setRotation(const glm::quat& rotation);
     void alignRotation(const glm::vec3& directionVector, const glm::vec3& up = glm::vec3(0, 1, 0));
     
+    void setScale(const float& uniformScale);
     void setScale(const glm::vec3& scale);
     
     void translate(glm::vec3 translation);
