@@ -6,7 +6,7 @@
 
 namespace PhysicsSolver {
 
-    const float afterCollisionDistance = 0.0008f;
+    const float afterCollisionDistance = 0.0005f;
 
     glm::vec3 constructPlaneFromPolygon(const Polygon& polygon);
 
@@ -14,8 +14,8 @@ namespace PhysicsSolver {
 
     glm::vec3 getAfterCollisionPositionOffset(const float& signedDistance, const glm::vec3& N, const float& additionalOffset = 0.0f);
 
-    glm::vec3 getPointVelocity(const glm::vec3& pointPos, const glm::vec3& linearVelocity, const glm::vec3& angularVelocity);
-    glm::vec3 getPointVelocity(const glm::vec3& pointPos, const glm::vec3& linearVelocity, const glm::quat& angularVelocity);
+    glm::vec3 getLocalPointVelocity(const glm::vec3& pointPosL, const glm::vec3& angularVelocityW);
+    glm::vec3 getWorldPointVelocity(const glm::vec3& pointPosW, const glm::vec3& originPosW, const glm::vec3& linearVelocityW, const glm::vec3& angularVelocityW);
 
     std::pair<glm::vec3, glm::vec3> elasticParticleCollision(
         const glm::vec3& v1,

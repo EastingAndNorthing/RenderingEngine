@@ -1,6 +1,6 @@
 #include "Quaternion.h"
 
-glm::quat Quaternion::createFromUnitVectors(glm::vec3 vFrom, glm::vec3 vTo) {
+glm::quat Quaternion::createFromTwoVectors(glm::vec3 vFrom, glm::vec3 vTo) {
     // https://github.com/Mugen87/three.js/blob/master/src/math/Quaternion.js
 
     vFrom = glm::normalize(vFrom);
