@@ -65,8 +65,8 @@ public:
     void makeStatic();
 
 private:
-    float sleepVelocity = 0.08f;
-    float sleepAngularVelocity = 0.01f;
+    float sleepVelocity = 0.05f;
+    float sleepAngularVelocity = 0.08f;
 
     bool _inertiaNeedsUpdate   = true;
     bool _massNeedsUpdate      = true;

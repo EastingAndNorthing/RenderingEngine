@@ -77,12 +77,15 @@ void RigidBody::updatePhysics(const double &deltaTime) {
         float velocity = glm::length(this->velocity);
         float angularVelocity = glm::length(this->angularVelocity);
 
-        // if(velocity >= this->sleepVelocity || angularVelocity >= this->sleepAngularVelocity) {
+        if(velocity >= this->sleepVelocity || angularVelocity >= this->sleepAngularVelocity) {
             _inertiaNeedsUpdate = true;
             _rotationNeedsUpdate = true;
             this->rebuildPrecomputedValues();
             this->updateGeometry();
-        // }
+        } else {
+            this->velocity -= 0.7f * this->velocity * dt;
+            this->angularVelocity -= 0.7f * this->velocity * dt;
+        }
     }
 }
 
@@ -104,7 +107,7 @@ void RigidBody::rebuildPrecomputedValues() {
     }
 
     if(this->_inertiaNeedsUpdate) {
-        this->_inertiaTensorW = glm::mat3_cast(this->rotation) * this->inertiaTensor;
+        this->_inertiaTensorW = this->inertiaTensor * glm::mat3_cast(this->rotation);
         this->_inverseInertiaTensor = glm::inverse(this->inertiaTensor);
         this->_inverseInertiaTensorW = glm::inverse(this->_inertiaTensorW);
     }

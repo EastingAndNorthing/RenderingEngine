@@ -128,13 +128,10 @@ void PhysicsSolver::collide_MESH_PLANE(RigidBody* A, RigidBody* B) {
 
             const glm::vec3 r1 = point_worldPos - A->position;
             const glm::vec3 r2 = point_worldPos - B->position;
-
-            const glm::vec3 worldAngularVel1 = A->rotation * A->angularVelocity;
-            const glm::vec3 worldAngularVel2 = B->rotation * B->angularVelocity;
             
             // Must be a way to optimize getWorldPointVelocity. Now we're re-calculating r1 -> A, which is basically v.position (+ rotation)
-            const glm::vec3 totalVelocity1 = (A->isDynamic) ? getWorldPointVelocity(r1, A->position, A->velocity, worldAngularVel1) : glm::vec3(0.0f);
-            const glm::vec3 totalVelocity2 = (B->isDynamic) ? getWorldPointVelocity(r2, A->position, B->velocity, worldAngularVel2) : glm::vec3(0.0f);
+            const glm::vec3 totalVelocity1 = (A->isDynamic) ? getWorldPointVelocity(r1, A->position, A->velocity, B->angularVelocityW) : glm::vec3(0.0f);
+            const glm::vec3 totalVelocity2 = (B->isDynamic) ? getWorldPointVelocity(r2, A->position, B->velocity, B->angularVelocityW) : glm::vec3(0.0f);
             const glm::vec3 relativeVelocity = totalVelocity2 - totalVelocity1; // Relative to normal?
 
             const float combinedCOR = 1.0f + (A->bounciness * B->bounciness); // https://en.m.wikipedia.org/wiki/Coefficient_of_restitution
@@ -158,7 +155,7 @@ void PhysicsSolver::collide_MESH_PLANE(RigidBody* A, RigidBody* B) {
 
                 Renderer &renderer = Renderer::Instance();
                 renderer.debugVector->setPosition(point_worldPos);
-                renderer.debugVector->setScale(glm::vec3(1.0f, glm::length(impulse) * 0.5f, 1.0f));
+                renderer.debugVector->setScale(glm::vec3(2.0f, glm::length(impulse) * 2.5f, 2.0f));
                 renderer.debugVector->setRotation(Quaternion::createFromTwoVectors(
                     glm::vec3(0.0f, 1.0f, 0.0f),
                     impulse
