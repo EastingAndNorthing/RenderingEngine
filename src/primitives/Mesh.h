@@ -17,18 +17,22 @@ public:
     bool managedByRigidBody = false;
 
     Mesh();
-    Mesh(const VertexBuffer &vertexBuffer, const IndexBuffer &indexBuffer);
-    Mesh(std::vector<Vertex> &vertices, std::vector<unsigned int> &indices);
-    Mesh(std::vector<Vertex> &vertices);
-    Mesh(std::vector<Vertex> vertices);
+    Mesh(const VertexBuffer& vertexBuffer, const IndexBuffer &indexBuffer);
+    Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int> &indices = {});
     virtual ~Mesh();
 
-    void assignMaterial(Material &material);
+    void assignMaterial(Material* material);
     void Bind();
+    void Unbind();
     
-    void setPosition(float x, float y, float z);
-    void setScale(float x, float y, float z);
-    void setRotation(float x, float y, float z);
+    void setPosition(glm::vec3 position);
+
+    void setRotation(const glm::vec3& eulerRotation);
+    void setRotation(const glm::quat& rotation);
+    void alignRotation(const glm::vec3& directionVector, const glm::vec3& up = glm::vec3(0, 1, 0));
+    
+    void setScale(const glm::vec3& scale);
+    
     void translate(glm::vec3 translation);
     void rotate(float angle, glm::vec3 direction);
 

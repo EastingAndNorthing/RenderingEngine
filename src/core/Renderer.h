@@ -13,6 +13,8 @@ class Renderer {
 public:
 	GLFWwindow* window = NULL;
 	Camera* camera = NULL;
+	Mesh* debugVector = NULL;
+    Material* defaultShader = NULL;
 
 	int windowWidth = 0;
 	int windowHeight = 0;

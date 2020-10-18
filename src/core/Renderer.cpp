@@ -46,16 +46,26 @@ Renderer::Renderer() {
     printf("Initialized with OpenGL %d.%d.\n", GLVersion.major, GLVersion.minor);
     printf("Supported GLSL version is %s.\n", (char*) glGetString(GL_SHADING_LANGUAGE_VERSION));
 
-    // glDebugMessageCallback(GlDebugMsg, nullptr);
-    // glEnable(GL_DEBUG_OUTPUT);
-    // glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    // Breaks on MacOS?
+    glDebugMessageCallback(GlDebugMsg, nullptr);
+    glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 
-	glEnable(GL_CULL_FACE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe
+	// glEnable(GL_CULL_FACE);
+
 	glEnable(GL_DEPTH_TEST);
 	// glDepthFunc(GL_LESS);
-	// glEnable(GL_STENCIL_TEST);
+	
+    // glEnable(GL_STENCIL_TEST);
 	// glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 	// glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+    
+    this->defaultShader = new Material("/shaders/Basic");
+    this->debugVector = new BoxMesh(0.02f, 0.5f, 0.02f);
+    // this->debugVector = new BoxMesh(0.02f, 0.02f, 1.0f);
+    this->debugVector->assignMaterial(defaultShader);
+    this->Enqueue(this->debugVector);
 
     WindowEventHandler::init(this->window, true);
     WindowEventHandler::onFrame(this->window);
@@ -121,7 +131,6 @@ void Renderer::DrawMeshes() {
             glDrawElements(GL_TRIANGLES, mesh->indexBuffer.getCount(), GL_UNSIGNED_INT, 0);
         } else {
             glDrawArrays(GL_TRIANGLES, 0, mesh->vertexBuffer.getCount());
-            // glDrawArrays(GL_POINTS, 0, mesh->vertexBuffer.getCount());
         }
     }
 }
