@@ -10,9 +10,7 @@
 #include <GLFW/glfw3.h>
 #define GLAD_DEBUG
 
-#define GLM_FORCE_SIMD_AVX2
-#define GLM_FORCE_SSE2
-#define GLM_FORCE_ALIGNED
+#define GLM_FORCE_INTRINSICS // SIMD / SSE / AVX2 instruction sets
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/vector_angle.hpp>
