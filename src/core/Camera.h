@@ -12,7 +12,7 @@ public:
     float fov = g_settings.fov;
     float zoomspeed = 0.05f;
 
-    bool autoRotate = true;
+    bool autoRotate = false;
 
     glm::vec3 position = glm::vec3(0.0f, 0.0f, 8.0f);
     glm::vec3 lookAtPos = glm::vec3(0.0f);

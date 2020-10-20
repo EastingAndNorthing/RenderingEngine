@@ -16,8 +16,8 @@ float PhysicsSolver::getPointToPlaneDistance(const glm::vec3& pointPos, const gl
     return glm::dot(planeNormal, (pointPos - planePos));
 }
 
-glm::vec3 PhysicsSolver::getAfterCollisionPositionOffset(const float& signedDistance, const glm::vec3& N, const float& additionalOffset) {
-    return N * (-signedDistance + PhysicsSolver::afterCollisionDistance + additionalOffset);
+glm::vec3 PhysicsSolver::resolvePenetration(const float& signedDistance, const glm::vec3& N, const float& additionalOffset) {
+    return N * (-signedDistance + PhysicsSolver::seperationDistance + additionalOffset);
 }
 
 glm::vec3 PhysicsSolver::getLocalPointVelocity(const glm::vec3& pointPosL, const glm::vec3& angularVelocityW) {
@@ -50,10 +50,10 @@ std::pair<glm::vec3, glm::vec3> PhysicsSolver::elasticParticleCollision(
     float velocityRatio1 = (P2Dynamic) ? m2/totalMass : 1.0f;
     float velocityRatio2 = (P1Dynamic) ? m1/totalMass : 1.0f;
 
-    if(P1Dynamic) new_v1 = glm::reflect(v1-v2, N) * velocityRatio1 * energyConservation;
-    if(P2Dynamic) new_v2 = glm::reflect(v2-v1, N) * velocityRatio2 * energyConservation;
     // if(P1Dynamic) new_v1 = v1 - ( velocityRatio1 * 2.0f * glm::dot( v1-v2,  N) / glm::length2( N) *  N ) * energyConservation; 
     // if(P2Dynamic) new_v2 = v2 - ( velocityRatio2 * 2.0f * glm::dot( v2-v1, -N) / glm::length2(-N) * -N ) * energyConservation;
+    if(P1Dynamic) new_v1 = glm::reflect(v1-v2, N) * velocityRatio1 * energyConservation;
+    if(P2Dynamic) new_v2 = glm::reflect(v2-v1, N) * velocityRatio2 * energyConservation;
 
     return std::make_pair(new_v1, new_v2);
 }
@@ -69,11 +69,11 @@ void PhysicsSolver::collide_SPHERE_PLANE(RigidBody* A, RigidBody* B) {
         auto velocities = PhysicsSolver::elasticParticleCollision(A->velocity, B->velocity, A->mass, B->mass, PC->normal, A->isDynamic, B->isDynamic, A->bounciness * B->bounciness);
 
         if(A->isDynamic) {
-            A->position += PhysicsSolver::getAfterCollisionPositionOffset(signedDistance, PC->normal);
+            A->position += PhysicsSolver::resolvePenetration(signedDistance, PC->normal);
             A->velocity = velocities.first;
         }
         if(B->isDynamic) {
-            B->position -= PhysicsSolver::getAfterCollisionPositionOffset(signedDistance, PC->normal);
+            B->position -= PhysicsSolver::resolvePenetration(signedDistance, PC->normal);
             B->velocity = velocities.second;
         }
     }
@@ -91,11 +91,11 @@ void PhysicsSolver::collide_SPHERE_SPHERE(RigidBody* A, RigidBody* B) {
         auto velocities = PhysicsSolver::elasticParticleCollision(A->velocity, B->velocity, A->mass, B->mass, N, A->isDynamic, B->isDynamic, A->bounciness * B->bounciness);
         
         if(A->isDynamic) {
-            A->position += PhysicsSolver::getAfterCollisionPositionOffset(signedDistance, N);
+            A->position += PhysicsSolver::resolvePenetration(signedDistance, N);
             A->velocity = velocities.first;
         }
         if(B->isDynamic) {
-            B->position -= PhysicsSolver::getAfterCollisionPositionOffset(signedDistance, N);
+            B->position -= PhysicsSolver::resolvePenetration(signedDistance, N);
             B->velocity = velocities.second;
         }
     }
@@ -116,9 +116,9 @@ void PhysicsSolver::collide_MESH_PLANE(RigidBody* A, RigidBody* B) {
     for(int i = 0; i < MC->uniqueIndices.size(); i++) {
         const Vertex& v = MC->vertices[MC->uniqueIndices[i]];
         
-        const glm::vec3 point_worldPos = CoordinateSystem::localToWorld(v.position, A->rotation, A->position);
+        const glm::vec3 contactPointW = CoordinateSystem::localToWorld(v.position, A->rotation, A->position);
         
-        const float& signedDistance = PhysicsSolver::getPointToPlaneDistance(point_worldPos, B->position, N);
+        const float& signedDistance = PhysicsSolver::getPointToPlaneDistance(contactPointW, B->position, N);
 
         if(signedDistance < 0.0f) {
             // https://en.m.wikipedia.org/wiki/Collision_response#Impulse-based_reaction_model
@@ -126,46 +126,45 @@ void PhysicsSolver::collide_MESH_PLANE(RigidBody* A, RigidBody* B) {
 
             touchPoints++;
 
-            const glm::vec3 r1 = point_worldPos - A->position;
-            const glm::vec3 r2 = point_worldPos - B->position;
+            const glm::vec3 r1 = contactPointW - A->position;
+            const glm::vec3 r2 = contactPointW - B->position;
+
+            const glm::vec3 totalVelocity1 = (A->isDynamic) ? A->getPointVelocityW(contactPointW) : glm::vec3(0.0f);
+            const glm::vec3 totalVelocity2 = (B->isDynamic) ? B->getPointVelocityW(contactPointW) : glm::vec3(0.0f);
+            const glm::vec3 relativeVelocity = totalVelocity2 - totalVelocity1;
+
+            // Bug: World inertia tensor does not seem to be aligned properly, causing bouncing if local/world coordinate systems are not nearly aligned
+            // https://physics.stackexchange.com/questions/468941/inertia-tensor-of-rigid-body-in-generalized-coordinate-frame
+            // Somehow using the local inertia tensor makes the simulation more stable / predictable 
+            const glm::vec3 inertiaInfluenceA = (A->isDynamic) ? glm::cross(glm::cross(r1, N), r1) * A->_inverseInertiaTensor : glm::vec3(0.0f); // Static bodies have 'infinite' inertia, reciprocal is zero
+            const glm::vec3 inertiaInfluenceB = (B->isDynamic) ? glm::cross(glm::cross(r2, N), r2) * B->_inverseInertiaTensor : glm::vec3(0.0f);
             
-            // Must be a way to optimize getWorldPointVelocity. Now we're re-calculating r1 -> A, which is basically v.position (+ rotation)
-            const glm::vec3 totalVelocity1 = (A->isDynamic) ? getWorldPointVelocity(r1, A->position, A->velocity, B->angularVelocityW) : glm::vec3(0.0f);
-            const glm::vec3 totalVelocity2 = (B->isDynamic) ? getWorldPointVelocity(r2, A->position, B->velocity, B->angularVelocityW) : glm::vec3(0.0f);
-            const glm::vec3 relativeVelocity = totalVelocity2 - totalVelocity1; // Relative to normal?
+            const float inverseMassA = (A->isDynamic) ? A->_inverseMass : 0.0f; // Static bodies have 'infinite' mass, reciprocal is zero
+            const float inverseMassB = (B->isDynamic) ? B->_inverseMass : 0.0f;
 
-            const float combinedCOR = 1.0f + (A->bounciness * B->bounciness); // https://en.m.wikipedia.org/wiki/Coefficient_of_restitution
-            // const glm::vec3 inertiaInfluenceA = glm::cross(glm::cross(r1, N), r1) * A->inverseInertiaTensorW;
-            // const glm::vec3 inertiaInfluenceB = glm::cross(glm::cross(r2, N), r2) * B->inverseInertiaTensorW;
-            // float impulse = glm::dot(-combinedCOR * (totalVelocity2-totalVelocity1), N) / ( A->inverseMass + B->inverseMass +
-            //     glm::dot(inertiaInfluenceA + inertiaInfluenceB, N)
-            // );
-
-            const glm::vec3 impulse = N * glm::dot(-combinedCOR * relativeVelocity, N) / ( A->_inverseMass + B->_inverseMass +
-            glm::dot(
-                A->_inverseInertiaTensorW * glm::cross(
-                    glm::cross(r1, N), r1
-                ) + B->_inverseInertiaTensorW * glm::cross(
-                    glm::cross(r2, N), r2
-                ), N
-            ));
+            const float combinedCOR = (A->bounciness + B->bounciness) / 2.0f; // Average coefficient of restitution 
+            
+            const glm::vec3 impulse = N * glm::dot(-(1.0f + combinedCOR) * relativeVelocity, N) / ( inverseMassA + inverseMassB +
+                glm::dot(inertiaInfluenceA + inertiaInfluenceB, N)
+            );
 
             if(A->isDynamic) {
-                A->applyWorldImpulse(-impulse, point_worldPos);
+                A->applyWorldImpulse(-impulse, contactPointW);
+                A->position += PhysicsSolver::resolvePenetration(signedDistance, N);
 
                 Renderer &renderer = Renderer::Instance();
-                renderer.debugVector->setPosition(point_worldPos);
-                renderer.debugVector->setScale(glm::vec3(2.0f, glm::length(impulse) * 2.5f, 2.0f));
+                renderer.debugVector->setPosition(contactPointW);
+                renderer.debugVector->setScale(glm::vec3(glm::length(impulse) * 2.0f));
                 renderer.debugVector->setRotation(Quaternion::createFromTwoVectors(
                     glm::vec3(0.0f, 1.0f, 0.0f),
-                    impulse
+                    -impulse
                 ));
             }
 
-            if(B->isDynamic) B->applyWorldImpulse(impulse, point_worldPos);
-
-            if(!B->isDynamic) A->position += PhysicsSolver::getAfterCollisionPositionOffset(signedDistance, N, 0.0f);
-            if(!A->isDynamic) B->position -= PhysicsSolver::getAfterCollisionPositionOffset(signedDistance, N, 0.0f);
+            if(B->isDynamic) {
+                B->applyWorldImpulse(impulse, contactPointW);
+                B->position -= PhysicsSolver::resolvePenetration(signedDistance, N);
+            }
         }
 
         if(touchPoints >= 3) {

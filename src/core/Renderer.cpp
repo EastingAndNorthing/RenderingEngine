@@ -51,7 +51,7 @@ Renderer::Renderer() {
     glEnable(GL_DEBUG_OUTPUT);
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe
 	// glEnable(GL_CULL_FACE);
 
 	glEnable(GL_DEPTH_TEST);
@@ -61,9 +61,14 @@ Renderer::Renderer() {
 	// glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 	// glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
     
+    // @TODO Should make a vector debug mesh generator, move somewhere else
     this->defaultShader = new Material("/shaders/Basic");
-    this->debugVector = new BoxMesh(0.02f, 0.5f, 0.02f);
-    // this->debugVector = new BoxMesh(0.02f, 0.02f, 1.0f);
+    // this->debugVector = new BoxMesh(0.02f, 0.5f, 0.02f);
+    this->debugVector = new Mesh({ 
+        Vertex(glm::vec3(0, 0, 0)), Vertex(glm::vec3(0, 1, 0)),
+        Vertex(glm::vec3(0, 1, 0)), Vertex(glm::vec3(-0.2, 0.8, 0)),
+        Vertex(glm::vec3(0, 1, 0)), Vertex(glm::vec3( 0.2, 0.8, 0))
+    });
     this->debugVector->assignMaterial(defaultShader);
     this->Enqueue(this->debugVector);
 

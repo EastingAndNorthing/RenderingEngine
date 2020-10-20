@@ -26,17 +26,16 @@ public:
     
     glm::quat rotation = glm::quat(1, 0, 0, 0);                 // In WORLD space. https://en.m.wikipedia.org/wiki/Quaternion
     glm::vec3 angularVelocity = glm::vec3(0, 0, 0);             // In LOCAL space. https://en.m.wikipedia.org/wiki/Angular_velocity
-    glm::vec3 angularVelocityW = glm::vec3(0, 0, 0);            // In WORLD space. Precomputed from angularVelocity.
     glm::vec3 angularAcceleration = glm::vec3(0, 0, 0);         // In LOCAL space. https://en.m.wikipedia.org/wiki/Angular_acceleration
     
     // glm::mat3 inertiaTensor = glm::mat3(0.1331712f);             // In LOCAL space. https://en.m.wikipedia.org/wiki/Moment_of_inertia Tetrahedron of unit size, unit mass = 0.1331712
-    glm::mat3 inertiaTensor = glm::mat3(2.0f);                 // In LOCAL space. https://en.m.wikipedia.org/wiki/Moment_of_inertia Tetrahedron of unit size with unit mass = 0.1331712       
+    glm::mat3 inertiaTensor = glm::mat3(2.0f);                  // In LOCAL space. https://en.m.wikipedia.org/wiki/Moment_of_inertia Tetrahedron of unit size with unit mass = 0.1331712       
 
     float mass = 1.0f;
     float gravity = -9.81f;                                     // In WORLD space.
     float staticFriction = 0.50f;                               // https://en.m.wikipedia.org/wiki/Friction
     float dynamicFriction = 0.30f;                              // https://en.m.wikipedia.org/wiki/Friction
-    float bounciness = 0.5f;                                    // https://en.m.wikipedia.org/wiki/Coefficient_of_restitution
+    float bounciness = 0.6f;                                    // https://en.m.wikipedia.org/wiki/Coefficient_of_restitution
     float rotationalDamping = 0.996f;
     
     float _inverseMass;
@@ -63,6 +62,11 @@ public:
     void updatePhysics(const double &deltaTime);
 
     void makeStatic();
+
+    glm::vec3 getAngularVelocityW();
+    
+    glm::vec3 getPointVelocityL(const glm::vec3& localPoint);
+    glm::vec3 getPointVelocityW(glm::vec3 point, bool isPointInLocalSpace = false);
 
 private:
     float sleepVelocity = 0.05f;
