@@ -7,24 +7,19 @@ struct PrimitiveMesh {
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
     PrimitiveMesh() = default;
-    PrimitiveMesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices);
+    PrimitiveMesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices = {});
 };
 
 namespace PrimitiveGenerator {
 
-    namespace Box {
-        PrimitiveMesh generate(const float &width, const float &height, const float &depth);
-    }
+    PrimitiveMesh Box(const float &width = 1.0f, const float &height = 1.0f, const float &depth = 1.0f);
 
-    namespace Sphere {
-        PrimitiveMesh generate(const float &size, const unsigned int segments);
-    }
+    PrimitiveMesh Sphere(const float &size = 1.0f, const unsigned int segments = 20);
 
-    namespace Plane {
-        PrimitiveMesh generate(const float &length, const float &width);
-    }
+    PrimitiveMesh Plane(const float &length = 1.0f, const float &width = 1.0f);
 
-    namespace Tetrahedron {
-        PrimitiveMesh generate(const float &size);
-    }
+    PrimitiveMesh Tetrahedron(const float &size = 1.0f);
+
+    PrimitiveMesh Arrow(const float &size = 1.0f);
+    
 };

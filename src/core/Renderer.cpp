@@ -51,7 +51,7 @@ Renderer::Renderer() {
     glEnable(GL_DEBUG_OUTPUT);
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe
 	// glEnable(GL_CULL_FACE);
 
 	glEnable(GL_DEPTH_TEST);
@@ -61,15 +61,10 @@ Renderer::Renderer() {
 	// glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 	// glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
     
-    // @TODO Should make a vector debug mesh generator, move somewhere else
     this->defaultShader = new Material("/shaders/Basic");
-    // this->debugVector = new BoxMesh(0.02f, 0.5f, 0.02f);
-    this->debugVector = new Mesh({ 
-        Vertex(glm::vec3(0, 0, 0)), Vertex(glm::vec3(0, 1, 0)),
-        Vertex(glm::vec3(0, 1, 0)), Vertex(glm::vec3(-0.2, 0.8, 0)),
-        Vertex(glm::vec3(0, 1, 0)), Vertex(glm::vec3( 0.2, 0.8, 0))
-    });
-    this->debugVector->assignMaterial(defaultShader);
+    
+    this->debugVector = new Mesh(PrimitiveGenerator::Arrow());
+    this->debugVector->setMaterial(defaultShader);
     this->Enqueue(this->debugVector);
 
     WindowEventHandler::init(this->window, true);
@@ -98,7 +93,6 @@ void Renderer::SetupFramebuffer(int width, int height) {
 void Renderer::Enqueue(Mesh* mesh) {
     if(mesh->material != NULL) {
         this->meshQueue.push_back(mesh);
-        // Log("Mesh enqueued.", LogLevel::DEBUG);
     } else {
         Log("No material assigned to mesh, skipped.", LogLevel::ERROR);
     }
@@ -109,7 +103,6 @@ void Renderer::BeginLoop() {
     WindowEventHandler::onFrame(this->window);
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     this->camera->update();
 
@@ -118,6 +111,8 @@ void Renderer::BeginLoop() {
 
 void Renderer::EndLoop() {
     glfwSwapBuffers(this->window);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    this->DrawOverlays();
 }
 
 void Renderer::DrawMeshes() {
@@ -137,7 +132,17 @@ void Renderer::DrawMeshes() {
         } else {
             glDrawArrays(GL_TRIANGLES, 0, mesh->vertexBuffer.getCount());
         }
+
+        // @TODO add support for instanced meshes using glDrawArraysInstanced and glDrawElementsInstanced
     }
+}
+
+void Renderer::DrawOverlays() {
+    // Things like debug vector arrows
+    // for (auto& mesh: this->overlayQueue) {
+    //     mesh->Bind();
+    //     glDrawArrays(GL_TRIANGLES, 0, mesh->vertexBuffer.getCount());
+    // }
 }
 
 void Renderer::Clear() {
@@ -146,7 +151,7 @@ void Renderer::Clear() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 Camera* Renderer::getCamera() {

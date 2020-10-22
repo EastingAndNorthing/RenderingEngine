@@ -5,9 +5,10 @@
 #include "util/Filesystem.h"
 #include "core/Shader.h"
 #include "core/Uniforms.h"
-#include "primitives/Mesh.h"
-#include "input/WindowEventHandler.h"
 #include "core/Camera.h"
+#include "primitives/Mesh.h"
+#include "primitives/PrimitiveGenerator.h"
+#include "input/WindowEventHandler.h"
 
 class Renderer {
 public:
@@ -38,9 +39,11 @@ public:
 
 private:
 	std::vector<Mesh*> meshQueue = {};
+	std::vector<Mesh*> overlayQueue = {};
 	Renderer();
 
 	void DrawMeshes();
+	void DrawOverlays();
 	
 };
 

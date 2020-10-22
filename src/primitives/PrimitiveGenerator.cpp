@@ -4,7 +4,7 @@ PrimitiveMesh::PrimitiveMesh(const std::vector<Vertex> &vertices, const std::vec
     : vertices(vertices), indices(indices)
 {}
 
-PrimitiveMesh PrimitiveGenerator::Plane::generate(const float &length, const float &width) {
+PrimitiveMesh PrimitiveGenerator::Plane(const float &length, const float &width) {
     
     float x_dist = length/2;
     float y_dist = width/2;
@@ -24,7 +24,7 @@ PrimitiveMesh PrimitiveGenerator::Plane::generate(const float &length, const flo
     return PrimitiveMesh(geometry, indices);
 }
 
-PrimitiveMesh PrimitiveGenerator::Tetrahedron::generate(const float &size) {
+PrimitiveMesh PrimitiveGenerator::Tetrahedron(const float &size) {
     
     float sqrt8over9component = 0.9428090415820633658 * size;
     float sqrt2over9component = 0.4714045207910316829 * size;
@@ -49,11 +49,11 @@ PrimitiveMesh PrimitiveGenerator::Tetrahedron::generate(const float &size) {
 }
 
 
-PrimitiveMesh PrimitiveGenerator::Box::generate(const float &width, const float &height, const float &depth) {
+PrimitiveMesh PrimitiveGenerator::Box(const float &width, const float &height, const float &depth) {
     
-    float x_dist = width/2;
-    float y_dist = height/2;
-    float z_dist = depth/2;
+    float x_dist = width  / 2;
+    float y_dist = height / 2;
+    float z_dist = depth  / 2;
     
     std::vector<Vertex> box {
         Vertex(glm::vec3(-x_dist, -y_dist, -z_dist)), // Front
@@ -96,7 +96,7 @@ PrimitiveMesh PrimitiveGenerator::Box::generate(const float &width, const float 
 }
 
 
-// PrimitiveMesh PrimitiveGenerator::Box::generate2(const float &width, const float &height, const float &depth) {
+// PrimitiveMesh PrimitiveGenerator::Box(const float &width, const float &height, const float &depth) {
     
 //     float x_dist = width/2;
 //     float y_dist = height/2;
@@ -118,7 +118,7 @@ PrimitiveMesh PrimitiveGenerator::Box::generate(const float &width, const float 
 //     }; 
 // }
 
-PrimitiveMesh PrimitiveGenerator::Sphere::generate(const float &size, const unsigned int segments) {
+PrimitiveMesh PrimitiveGenerator::Sphere(const float &size, const unsigned int segments) {
 
     // http://www.songho.ca/opengl/gl_sphere.html
     float radius = size/2;
@@ -202,4 +202,15 @@ PrimitiveMesh PrimitiveGenerator::Sphere::generate(const float &size, const unsi
     }
 
     return PrimitiveMesh(geometry, indices);
+}
+
+PrimitiveMesh PrimitiveGenerator::Arrow(const float& size) {
+    
+    std::vector<Vertex> geometry = { 
+        Vertex(glm::vec3(0, 0, 0)), Vertex(glm::vec3(0, size, 0)),
+        Vertex(glm::vec3(0, size, 0)), Vertex(glm::vec3(-0.2 * size, 0.8 * size, 0)),
+        Vertex(glm::vec3(0, size, 0)), Vertex(glm::vec3( 0.2 * size, 0.8 * size, 0))
+    };
+
+    return PrimitiveMesh(geometry);
 }

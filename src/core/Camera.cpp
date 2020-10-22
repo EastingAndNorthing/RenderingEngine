@@ -63,7 +63,7 @@ void Camera::update() {
 void Camera::setProjection(float frameBufferWidth, float frameBufferHeight) {
     this->frameBufferWidth = frameBufferWidth;
     this->frameBufferHeight = frameBufferHeight;
-    this->projectionMatrix = glm::perspective(glm::radians(this->fov), (float) this->frameBufferWidth / (float) this->frameBufferHeight, 0.001f, 100.0f);
+    this->projectionMatrix = glm::perspective(glm::radians(this->fov), (float) this->frameBufferWidth / (float) this->frameBufferHeight, 0.01f, 50.0f);
 }
 
 void Camera::_autoRotate(double &time) {

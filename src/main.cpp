@@ -18,8 +18,6 @@ int main() {
     Renderer &renderer = Renderer::Instance();
     PhysicsHandler &physicsHandler = PhysicsHandler::Instance();
 
-    // Material vertexColorMaterial("/shaders/VertexColors");
-
     Material* colorMaterial = new Material("/shaders/Color");
     Material* phongMaterial = new Material("/shaders/Phong");
     
@@ -28,12 +26,11 @@ int main() {
 
     std::random_device rd; std::mt19937 gen(rd()); std::uniform_real_distribution<> randboy(0, 10);
 
-    // for (int i = 0; i < 500; i++) {
+    // for (int i = 0; i < 300; i++) {
     //     float size = randboy(gen)/11 + 0.1f;
-    //     Mesh* mesh = new SphereMesh(size, 8);
+    //     Mesh* mesh = new SphereMesh(size);
     //     mesh->setPosition({ randboy(gen) - 5, 1.0f + randboy(gen), randboy(gen) - 5 });
-    //     // mesh->setPosition(1.0f, 2.0f + i, randboy(gen)/10);
-    //     mesh->assignMaterial(phongMaterial);
+    //     mesh->setMaterial(phongMaterial);
     //     renderer.Enqueue(mesh);
 
     //     RigidBody* rigidBod = new RigidBody(mesh);
@@ -48,13 +45,13 @@ int main() {
         // myTetra->setPosition({ 2.0f, 1.5f, 0.0f });
         myTetra->setPosition({ randboy(gen) - 5, 10.0f + randboy(gen), randboy(gen) - 5 });
         // myTetra->setScale({0.5f, 1.0f, 0.5f});
-        myTetra->assignMaterial(colorMaterial);
+        myTetra->setMaterial(colorMaterial);
         renderer.Enqueue(myTetra);
 
         // myTetra->setRotation({ -120.0f, 20.0f, 0.0f });
         myTetra->setRotation({ randboy(gen) * 18, randboy(gen) * 18, randboy(gen) * 18 });
         RigidBody* tetraBod = new RigidBody(myTetra);
-        tetraBod->collider = new MeshCollider(PrimitiveMesh(PrimitiveGenerator::Tetrahedron::generate(1.0f)));
+        tetraBod->collider = new MeshCollider(PrimitiveMesh(PrimitiveGenerator::Tetrahedron(1.0f)));
         tetraBod->mass = 1.0f;
         tetraBod->bounciness = 0.10f;
         // tetraBod->gravity = 0.0f;
@@ -75,19 +72,15 @@ int main() {
         new Uniform<float>("rimPower", 200.0f),
         lightDirection
     });
-    floor->assignMaterial(floorMaterial);
+    floor->setMaterial(floorMaterial);
     renderer.Enqueue(floor);
     
     RigidBody* floorCollider = new RigidBody(floor, new PlaneCollider(glm::vec2(5.0f, 5.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
     floorCollider->makeStatic();
     physicsHandler.Enqueue(floorCollider);
 
-    Mesh debugMesh = Mesh({ 
-        Vertex(glm::vec3(0, 0, 0)), Vertex(glm::vec3(0, 1, 0)),
-        Vertex(glm::vec3(0, 1, 0)), Vertex(glm::vec3(-0.2, 0.8, 0)),
-        Vertex(glm::vec3(0, 1, 0)), Vertex(glm::vec3( 0.2, 0.8, 0))
-    });
-    debugMesh.assignMaterial(renderer.defaultShader);
+    Mesh debugMesh = Mesh(PrimitiveGenerator::Arrow());
+    debugMesh.setMaterial(renderer.defaultShader);
     
     while (renderer.isActive()) {
         renderer.BeginLoop();
