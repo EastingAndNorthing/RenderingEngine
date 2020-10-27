@@ -35,8 +35,8 @@ struct BoxCollider : public Collider {
 
 struct PlaneCollider : public Collider {
     glm::vec2 size = glm::vec2(1.0f, 1.0f);
-    glm::vec3 normal = glm::vec3(0.0f);
-    PlaneCollider(const glm::vec2 &size, const glm::vec3 &normal = glm::vec3(0.0f));
+    glm::vec3 normal = glm::vec3(0.0f, 1.0f, 0.0f);
+    PlaneCollider(const glm::vec2 &size, const glm::vec3 &normal = glm::vec3(0.0f, 1.0f, 0.0f));
 };
 
 struct SphereCollider : public Collider {

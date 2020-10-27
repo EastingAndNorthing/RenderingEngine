@@ -1,5 +1,4 @@
 #include "Collider.h"
-#include <algorithm>
 
 void Collider::setGeometry(const PrimitiveMesh& geometry) {
 

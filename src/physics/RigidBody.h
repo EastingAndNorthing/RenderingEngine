@@ -5,8 +5,8 @@
 #include "physics/Collider.h"
 
 struct RigidBodyForce {
-    glm::vec3 force    = glm::vec3(0.0f);
-    glm::vec3 position = glm::vec3(0.0f);
+    glm::vec3 force    = glm::vec3(0.0f);   // WORLD space
+    glm::vec3 position = glm::vec3(0.0f);   // LOCAL position
     RigidBodyForce(glm::vec3 force, glm::vec3 position) : force(force), position(position) {}
 };
 
@@ -45,14 +45,17 @@ public:
     glm::quat _inverseRotation = glm::quat(0, 0, 0, 0);         // In WORLD space. https://en.m.wikipedia.org/wiki/Quaternion
 
     std::vector<RigidBodyForce> externalForces = {};            // In WORLD space.
+    glm::vec3 forces = glm::vec3(0);                            // In WORLD space.
     glm::vec3 torque = glm::vec3(0);                            // In LOCAL space. https://en.m.wikipedia.org/wiki/Torque
 
     RigidBody() = default;
     RigidBody(Mesh* mesh = NULL, Collider* collider = NULL);
     ~RigidBody() = default;
 
-    void applyForce(RigidBodyForce force);
-    void applyForce(glm::vec3 forceW, glm::vec3 localPosition = glm::vec3(0.0f));
+    void applyForceL(RigidBodyForce force);
+    void applyForceL(glm::vec3 forceW, glm::vec3 positionL = glm::vec3(0.0f));
+    void applyForceW(RigidBodyForce force);
+    void applyForceW(glm::vec3 forceW, glm::vec3 positionW = glm::vec3(0.0f));
     
     void applyLocalImpulse(const glm::vec3& impulse, const glm::vec3& position);
     void applyWorldImpulse(const glm::vec3& impulse, const glm::vec3& position);
