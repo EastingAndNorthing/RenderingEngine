@@ -2,13 +2,14 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <vector>
+#include <unordered_map>
 #include <cassert>
 #include <iostream>
 #include <string>
+#include <algorithm>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#define GLAD_DEBUG
 
 #define GLM_FORCE_INTRINSICS // SIMD / SSE / AVX2 instruction sets
 #include <glm/glm.hpp>

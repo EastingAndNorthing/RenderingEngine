@@ -1,4 +1,3 @@
-#include <algorithm>
 #include "common.h"
 #include "core/Material.h"
 
@@ -29,5 +28,4 @@ void Material::Bind() {
     for (const auto &nameUniformPair : this->uniforms) {
         nameUniformPair.second->Bind();
     }
-
 }

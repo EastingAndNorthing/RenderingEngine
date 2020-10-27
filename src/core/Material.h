@@ -1,6 +1,5 @@
 #pragma once
 
-#include <unordered_map>
 #include "../common.h"
 #include "core/Shader.h"
 #include "core/Uniforms.h"

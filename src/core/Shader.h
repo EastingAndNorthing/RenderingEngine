@@ -1,6 +1,5 @@
 #pragma once
 
-#include <unordered_map>
 #include <string>
 #include "../common.h"
 #include "core/Uniforms.h"

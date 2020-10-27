@@ -60,12 +60,12 @@ Renderer::Renderer() {
     // glEnable(GL_STENCIL_TEST);
 	// glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 	// glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-    
+
     this->defaultShader = new Material("/shaders/Basic");
     
     this->debugVector = new Mesh(PrimitiveGenerator::Arrow());
     this->debugVector->setMaterial(defaultShader);
-    this->Enqueue(this->debugVector);
+    this->overlayQueue.push_back(this->debugVector);
 
     WindowEventHandler::init(this->window, true);
     WindowEventHandler::onFrame(this->window);
@@ -116,7 +116,9 @@ void Renderer::EndLoop() {
 }
 
 void Renderer::DrawMeshes() {
-    for (auto& mesh: this->meshQueue) {
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    for (auto& mesh : this->meshQueue) {
 
         mesh->Bind();
         
@@ -138,11 +140,29 @@ void Renderer::DrawMeshes() {
 }
 
 void Renderer::DrawOverlays() {
-    // Things like debug vector arrows
-    // for (auto& mesh: this->overlayQueue) {
-    //     mesh->Bind();
-    //     glDrawArrays(GL_TRIANGLES, 0, mesh->vertexBuffer.getCount());
+    glClear(GL_DEPTH_BUFFER_BIT);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe
+    for (auto& mesh : this->overlayQueue) {
+        mesh->Bind();
+        glUniformMatrix4fv(mesh->material->shader->getUniformLocation("u_modelViewProjectionMatrix"), 1, GL_FALSE, 
+            glm::value_ptr(this->camera->viewProjectionMatrix * mesh->getWorldPositionMatrix())
+        );
+        glDrawArrays(GL_TRIANGLES, 0, mesh->vertexBuffer.getCount());
+    }
+    // for (const auto &nameMeshPair : this->debugOverlays) {
+    //     nameMeshPair.second->Bind();
+    //     glDrawArrays(GL_TRIANGLES, 0, nameMeshPair.second->vertexBuffer.getCount());
     // }
+}
+
+void Renderer::addDebugMesh(Mesh* mesh, const std::string& name) {
+    if (debugOverlays.find(name) == debugOverlays.end()) {
+        debugOverlays[name] = mesh;
+    }
+}
+
+Mesh* Renderer::getDebugMesh(const std::string& name) {
+    return this->debugOverlays.at(name);
 }
 
 void Renderer::Clear() {

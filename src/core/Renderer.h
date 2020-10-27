@@ -1,6 +1,5 @@
 #pragma once
 
-#include <unordered_map>
 #include "../common.h"
 #include "util/Filesystem.h"
 #include "core/Shader.h"
@@ -37,9 +36,15 @@ public:
 
 	Camera* getCamera();
 
+	void addDebugMesh(Mesh* mesh, const std::string& name);
+	Mesh* getDebugMesh(const std::string& name);
+
 private:
 	std::vector<Mesh*> meshQueue = {};
 	std::vector<Mesh*> overlayQueue = {};
+
+    std::unordered_map<std::string, Mesh*> debugOverlays = {};
+
 	Renderer();
 
 	void DrawMeshes();
