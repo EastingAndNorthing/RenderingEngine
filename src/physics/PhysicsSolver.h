@@ -3,16 +3,22 @@
 #include "../common.h"
 #include "primitives/Polygon.h"
 #include "physics/RigidBody.h"
+#include "physics/ContactSet.h"
+#include "math/Quaternion.h"
+#include "math/CoordinateSystem.h"
 
 namespace PhysicsSolver {
 
     const float seperationDistance = 0.0005f;
+    const float restingContactVelocity = 0.3f;
 
     glm::vec3 constructPlaneFromPolygon(const Polygon& polygon);
 
     float getPointToPlaneDistance(const glm::vec3& pointPos, const glm::vec3& planePos, const glm::vec3& planeNormal);
 
     glm::vec3 resolvePenetration(const float& signedDistance, const glm::vec3& N, const float& additionalOffset = 0.0f);
+    
+    void solveRestingContact(const std::vector<ContactSet>& contacts);
 
     glm::vec3 getLocalPointVelocity(const glm::vec3& pointPosL, const glm::vec3& angularVelocityW);
     glm::vec3 getWorldPointVelocity(const glm::vec3& pointPosW, const glm::vec3& originPosW, const glm::vec3& linearVelocityW, const glm::vec3& angularVelocityW);
