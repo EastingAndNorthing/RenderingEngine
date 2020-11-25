@@ -47,9 +47,9 @@ Renderer::Renderer() {
     printf("Supported GLSL version is %s.\n", (char*) glGetString(GL_SHADING_LANGUAGE_VERSION));
 
     // Breaks on MacOS?
-    glDebugMessageCallback(GlDebugMsg, nullptr);
-    glEnable(GL_DEBUG_OUTPUT);
-    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    // glDebugMessageCallback(GlDebugMsg, nullptr);
+    // glEnable(GL_DEBUG_OUTPUT);
+    // glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe
 	// glEnable(GL_CULL_FACE);

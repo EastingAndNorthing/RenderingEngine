@@ -2,6 +2,7 @@
 #include "core/Time.h"
 #include "core/Renderer.h"
 
+// Should be part of an intersection detection class
 glm::vec3 PhysicsSolver::constructPlaneFromPolygon(const Polygon& polygon) {
     const glm::vec3& A = polygon.vertices[0].position;
     const glm::vec3& B = polygon.vertices[1].position;

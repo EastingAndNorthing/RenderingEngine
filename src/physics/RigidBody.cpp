@@ -7,8 +7,8 @@ RigidBody::RigidBody(Mesh* mesh, Collider* collider)
 
     if(mesh) {
         this->mesh->managedByRigidBody = true;
-        this->position = mesh->position;
-        this->rotation = mesh->rotation;
+        this->state.position = mesh->position;
+        this->state.rotation = mesh->rotation;
     }
 
 }
@@ -17,16 +17,16 @@ void RigidBody::makeStatic() {
     
     this->isDynamic = false;
     this->mass = 99999.0f;
-    this->inertiaTensor = glm::mat3(99999.0f);
+    this->state.inertiaTensor = glm::mat3(99999.0f);
 
 }
 
 void RigidBody::applyForceW(RigidBodyForce force) {
-    this->applyForceL(force.force, CoordinateSystem::worldToLocal(force.position, this->_inverseRotation));
+    this->applyForceL(force.force, CoordinateSystem::worldToLocal(force.position, this->state._inverseRotation));
 }
 
 void RigidBody::applyForceW(glm::vec3 worldForce, glm::vec3 positionW) {
-    this->applyForceL(RigidBodyForce(worldForce, CoordinateSystem::worldToLocal(positionW, this->_inverseRotation)));
+    this->applyForceL(RigidBodyForce(worldForce, CoordinateSystem::worldToLocal(positionW, this->state._inverseRotation)));
 }
 
 void RigidBody::applyForceL(glm::vec3 worldForce, glm::vec3 positionL) {
@@ -45,44 +45,46 @@ void RigidBody::applyLocalImpulse(const glm::vec3& impulse, const glm::vec3& pos
 
 void RigidBody::applyWorldImpulse(const glm::vec3& impulse, const glm::vec3& position) {
     
-    this->velocity += impulse;
+    this->state.velocity += impulse;
     
-    glm::vec3 localImpulse = CoordinateSystem::worldToLocal(impulse, this->_inverseRotation, glm::vec3(0.0f));
-    glm::vec3 localPosition = CoordinateSystem::worldToLocal(position, this->_inverseRotation, this->position);
+    glm::vec3 localImpulse = CoordinateSystem::worldToLocal(impulse, this->state._inverseRotation, glm::vec3(0.0f));
+    glm::vec3 localPosition = CoordinateSystem::worldToLocal(position, this->state._inverseRotation, this->state.position);
     
-    this->angularVelocity += this->_inverseInertiaTensor * glm::cross(localImpulse, -localPosition);
+    this->state.angularVelocity += this->state._inverseInertiaTensor * glm::cross(localImpulse, -localPosition);
 
 }
 
 glm::vec3 RigidBody::getAngularVelocityW() {
     
-    return CoordinateSystem::localToWorld(this->angularVelocity, this->rotation);   
+    return CoordinateSystem::localToWorld(this->state.angularVelocity, this->state.rotation);   
 
 }
 
 glm::vec3 RigidBody::getPointVelocityL(const glm::vec3& localPoint) {
     
-    return glm::cross(this->angularVelocity, localPoint);
+    return glm::cross(this->state.angularVelocity, localPoint);
 
 }
 
 glm::vec3 RigidBody::getPointVelocityW(glm::vec3 point, bool isPointInLocalSpace) {
 
     if(!isPointInLocalSpace) 
-        point = CoordinateSystem::worldToLocal(point, this->_inverseRotation, this->position);
+        point = CoordinateSystem::worldToLocal(point, this->state._inverseRotation, this->state.position);
 
-    return this->velocity + CoordinateSystem::localToWorld(this->getPointVelocityL(point), this->rotation);
+    return this->state.velocity + CoordinateSystem::localToWorld(this->getPointVelocityL(point), this->state.rotation);
 
 }
 
 void RigidBody::updatePhysics(const double &deltaTime) {
 
+    this->previousState = this->state;
+
     this->rebuildPrecomputedValues();
 
     if(this->isDynamic) {
         
-        this->acceleration          = glm::vec3(0.0f);
-        this->angularAcceleration   = glm::vec3(0.0f);
+        this->state.acceleration          = glm::vec3(0.0f);
+        this->state.angularAcceleration   = glm::vec3(0.0f);
         this->forces                = glm::vec3(0.0f);
         this->torque                = glm::vec3(0.0f);
 
@@ -97,18 +99,18 @@ void RigidBody::updatePhysics(const double &deltaTime) {
         // Implicit Euler integration
         const float dt = (float) deltaTime;
 
-        this->acceleration += this->forces * this->_inverseMass;
-        this->velocity += this->acceleration * dt;  
-        this->position += this->velocity * dt;
+        this->state.acceleration += this->forces * this->state._inverseMass;
+        this->state.velocity += this->state.acceleration * dt;  
+        this->state.position += this->state.velocity * dt;
 
-        this->angularAcceleration += this->torque * this->_inverseInertiaTensor; // a = T/I
-        glm::vec3 halve = 0.5f * this->angularVelocity * dt;
-        this->rotation *= glm::quat(1.0, halve.x, halve.y, halve.z);
-        this->rotation = glm::normalize(this->rotation);
+        this->state.angularAcceleration += this->torque * this->state._inverseInertiaTensor; // a = T/I
+        glm::vec3 halve = 0.5f * this->state.angularVelocity * dt;
+        this->state.rotation *= glm::quat(1.0, halve.x, halve.y, halve.z);
+        this->state.rotation = glm::normalize(this->state.rotation);
 
-        this->angularVelocity -= this->angularVelocity * this->rotationalDamping * dt;
+        this->state.angularVelocity -= this->state.angularVelocity * this->rotationalDamping * dt;
 
-        if(glm::length(this->velocity) >= this->sleepVelocity || glm::length(this->angularVelocity) >= this->sleepAngularVelocity) {
+        if(glm::length(this->state.velocity) >= this->sleepVelocity || glm::length(this->state.angularVelocity) >= this->sleepAngularVelocity) {
             
             _inertiaNeedsUpdate = true;
             _rotationNeedsUpdate = true;
@@ -118,8 +120,8 @@ void RigidBody::updatePhysics(const double &deltaTime) {
 
         } else {
 
-            this->velocity -= 0.7f * this->velocity * dt;
-            this->angularVelocity -= 0.7f * this->velocity * dt;
+            this->state.velocity -= 0.7f * this->state.velocity * dt;
+            this->state.angularVelocity -= 0.7f * this->state.velocity * dt;
             
         }
     }
@@ -128,22 +130,22 @@ void RigidBody::updatePhysics(const double &deltaTime) {
 void RigidBody::updateGeometry() {
     if(this->mesh) {
         this->mesh->_worldPosMatrixNeedsUpdate = true;
-        this->mesh->position = this->position;
-        this->mesh->rotation = this->rotation;
+        this->mesh->position = this->state.position;
+        this->mesh->rotation = this->state.rotation;
     }
 }
 
 void RigidBody::rebuildPrecomputedValues() {
     if(this->_massNeedsUpdate)
-        this->_inverseMass = 1 / this->mass;
+        this->state._inverseMass = 1 / this->mass;
 
     if(this->_rotationNeedsUpdate) {
-        this->_inverseRotation = glm::inverse(this->rotation);
+        this->state._inverseRotation = glm::inverse(this->state.rotation);
     }
 
     if(this->_inertiaNeedsUpdate) {
         // this->_inertiaTensorW = this->inertiaTensor * glm::mat3_cast(this->rotation);
-        this->_inverseInertiaTensor = glm::inverse(this->inertiaTensor);
+        this->state._inverseInertiaTensor = glm::inverse(this->state.inertiaTensor);
         // this->_inverseInertiaTensorW = glm::inverse(this->_inertiaTensorW);
     }
 
