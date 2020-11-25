@@ -32,6 +32,7 @@ std::vector<ContactSet> XPBDSolver::getCollisionPairs() {
     for (auto body: physicsHandler.bodies) {
 
         // @TODO Chunking / octree, prevent checking body pairs multiple times
+        // https://github.com/mwarning/SimpleOctree/tree/master/src
         for (auto otherBody: physicsHandler.bodies) {
             
             if (!body->isDynamic && !otherBody->isDynamic)

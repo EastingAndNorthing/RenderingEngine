@@ -51,7 +51,7 @@ Renderer::Renderer() {
     // glEnable(GL_DEBUG_OUTPUT);
     // glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe ->> https://vitaliburkov.wordpress.com/2016/09/17/simple-and-fast-high-quality-antialiased-lines-with-opengl/
 	// glEnable(GL_CULL_FACE);
 
 	glEnable(GL_DEPTH_TEST);
