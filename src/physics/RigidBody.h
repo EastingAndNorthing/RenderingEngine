@@ -11,24 +11,9 @@ struct RigidBodyForce {
 };
 
 struct RigidBodyState {
-
     glm::vec3 position = glm::vec3(0);                          // In WORLD space. https://en.m.wikipedia.org/wiki/Equations_of_motion
-    glm::vec3 velocity = glm::vec3(0);                          // In WORLD space. https://en.m.wikipedia.org/wiki/Equations_of_motion
-    glm::vec3 acceleration = glm::vec3(0, 0, 0);                // In WORLD space. https://en.m.wikipedia.org/wiki/Equations_of_motion
-    
     glm::quat rotation = glm::quat(1, 0, 0, 0);                 // In WORLD space. https://en.m.wikipedia.org/wiki/Quaternion
-    glm::vec3 angularVelocity = glm::vec3(0, 0, 0);             // In LOCAL space. https://en.m.wikipedia.org/wiki/Angular_velocity
-    glm::vec3 angularAcceleration = glm::vec3(0, 0, 0);         // In LOCAL space. https://en.m.wikipedia.org/wiki/Angular_acceleration
-    
-    // glm::mat3 inertiaTensor = glm::mat3(0.1331712f);             // In LOCAL space. https://en.m.wikipedia.org/wiki/Moment_of_inertia Tetrahedron of unit size, unit mass = 0.1331712
-    glm::mat3 inertiaTensor = glm::mat3(2.0f);                  // In LOCAL space. https://en.m.wikipedia.org/wiki/Moment_of_inertia Tetrahedron of unit size with unit mass = 0.1331712       
-    
-    float _inverseMass;
-    glm::mat3 _inertiaTensorW;                                  // In WORLD space. Precomputed from inertiaTensor.
-    glm::mat3 _inverseInertiaTensor;                            // In WORLD space. Precomputed from inertiaTensor.
-    glm::mat3 _inverseInertiaTensorW;                           // In WORLD space. Precomputed from inertiaTensor.     
     glm::quat _inverseRotation = glm::quat(0, 0, 0, 0);         // In WORLD space. https://en.m.wikipedia.org/wiki/Quaternion
-
 };
 
 class RigidBody {
@@ -37,8 +22,23 @@ public:
     Mesh* mesh = NULL;                                          // Non-physical mesh that is rendered to the screen
     Collider* collider = NULL;                                  // Physics representation of shape. https://en.m.wikipedia.org/wiki/Convex_hull
 
-    RigidBodyState state;
     RigidBodyState previousState;
+    
+    glm::vec3 position = glm::vec3(0);                          // In WORLD space. https://en.m.wikipedia.org/wiki/Equations_of_motion
+    glm::vec3 velocity = glm::vec3(0);                          // In WORLD space. https://en.m.wikipedia.org/wiki/Equations_of_motion
+    glm::vec3 acceleration = glm::vec3(0, 0, 0);                // In WORLD space. https://en.m.wikipedia.org/wiki/Equations_of_motion
+    
+    glm::quat rotation = glm::quat(1, 0, 0, 0);                 // In WORLD space. https://en.m.wikipedia.org/wiki/Quaternion
+    glm::vec3 angularVelocity = glm::vec3(0, 0, 0);             // In LOCAL space. https://en.m.wikipedia.org/wiki/Angular_velocity
+    glm::vec3 angularAcceleration = glm::vec3(0, 0, 0);         // In LOCAL space. https://en.m.wikipedia.org/wiki/Angular_acceleration
+    
+    glm::mat3 inertiaTensor = glm::mat3(2.0f);                  // In LOCAL space. https://en.m.wikipedia.org/wiki/Moment_of_inertia Tetrahedron of unit size with unit mass = 0.1331712       
+    
+    float _inverseMass;
+    glm::mat3 _inertiaTensorW;                                  // In WORLD space. Precomputed from inertiaTensor.
+    glm::mat3 _inverseInertiaTensor;                            // In WORLD space. Precomputed from inertiaTensor.
+    glm::mat3 _inverseInertiaTensorW;                           // In WORLD space. Precomputed from inertiaTensor.     
+    glm::quat _inverseRotation = glm::quat(0, 0, 0, 0);         // In WORLD space. https://en.m.wikipedia.org/wiki/Quaternion
 
     bool isDynamic = true;                                      // Whether physics applies to this body
 
@@ -69,7 +69,8 @@ public:
 
     void rebuildPrecomputedValues();
 
-    void updatePhysics(const double &deltaTime);
+    void updatePhysics(const float &deltaTime);
+    void computeActualState(const float &deltaTime);
 
     void makeStatic();
 

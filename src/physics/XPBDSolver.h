@@ -14,10 +14,15 @@
 namespace XPBDSolver {
 
     const int numSubSteps = 20;
+    const int numConstraintIterations = 1;
 
-    void update();
+    const float AABBMargin = 2.0f;                  // Chapter 3.5
 
-    std::vector<ContactSet> getCollisionPairs();
+    void update(const std::vector<RigidBody*> rigidBodies);
 
+    std::vector<ContactSet> getCollisionPairs(const std::vector<RigidBody*> rigidBodies);
+
+    void solvePositions(const std::vector<ContactSet>& contacts = {});
+    void solveVelocities(const std::vector<ContactSet>& contacts = {});
 
 }

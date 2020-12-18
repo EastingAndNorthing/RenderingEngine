@@ -26,55 +26,6 @@ glm::vec3 PhysicsSolver::getWorldPointVelocity(const glm::vec3& pointPosW, const
     return linearVelocityW + glm::cross(angularVelocityW, (pointPosW - originPosW));
 }
 
-void PhysicsSolver::solveRestingContact(const std::vector<ContactSet>& contacts) {
-    // Baraf: "ComputeContactForces()"
-
-    unsigned int ncontacts = contacts.size();
-
-    if(ncontacts > 0)
-        return;
-
-    for(int i = 0; i < ncontacts; i++) {
-        RigidBody* A = contacts[i].A;
-        RigidBody* B = contacts[i].B;
-        const glm::vec3& N = contacts[i].N;
-
-        A->applyForceW(glm::dot(A->forces, N)/ncontacts * N, contacts[i].p);
-        B->applyForceW(-glm::dot(B->forces, N)/ncontacts * N, contacts[i].p);
-    }
-
-    // std::vector<std::vector<float>> amat(ncontacts, std::vector<float>(ncontacts));
-    // std::vector<float> bvec(ncontacts);
-    // std::vector<float> fvec(ncontacts);
-
-    // // compute_a_matrix(contacts, ncontacts, amat);
-    // // for(int i = 0; i < ncontacts; i++)
-    // //     for(int j = 0; j < ncontacts; j++)
-    // //         a[i,j] = compute_aij(contacts[i], contacts[j]);
-
-    // // Well.......... qp_solve is not defined in the paper.
-    // // compute_b_vector(contacts, ncontacts, bvec);
-    // // qp_solve(amat, bmat, fvec);
-
-    // for(int i = 0; i < ncontacts; i++) {
-
-    //     glm::vec3 reactionForce = fvec[i] * contacts[i].N;
-
-    //     contacts[i].A->applyForce(reactionForce);
-    //     contacts[i].B->applyForce(-reactionForce);
-
-    //     // RigidBody* A = contacts[i].A;
-    //     // RigidBody* B = contacts[i].B;
-
-    //     // A->force += f * n;
-    //     // A->torque += (contacts[i].p - A->x) * (f*n);
-
-    //     // B->force -= f * n;
-    //     // B->torque -= (contacts[i].p - B->x) * (f*n);
-
-    // }
-}
-
 std::pair<glm::vec3, glm::vec3> PhysicsSolver::elasticParticleCollision(
     const glm::vec3& v1,
     const glm::vec3& v2,
@@ -158,7 +109,7 @@ void PhysicsSolver::collide_MESH_PLANE(RigidBody* A, RigidBody* B) {
 
     const glm::vec3& N = glm::normalize(PC->normal);
 
-    std::vector<ContactSet> contacts;
+    // std::vector<ContactSet> contacts;
     
     for(int i = 0; i < MC->uniqueIndices.size(); i++) {
         const Vertex& v = MC->vertices[MC->uniqueIndices[i]];
@@ -214,7 +165,7 @@ void PhysicsSolver::collide_MESH_PLANE(RigidBody* A, RigidBody* B) {
                 
             } if(relativeVelocityToNormal > 0 && relativeVelocityToNormal <= PhysicsSolver::restingContactVelocity) {
 
-                contacts.push_back(ContactSet(A, B, contactPointW, N)); // Resting contact point to be solved with all other points
+                // contacts.push_back(ContactSet(A, B, contactPointW, N)); // Resting contact point to be solved with all other points
 
             }
 
@@ -226,8 +177,6 @@ void PhysicsSolver::collide_MESH_PLANE(RigidBody* A, RigidBody* B) {
         //     break;
 
     }
-
-    PhysicsSolver::solveRestingContact(contacts);
 }
 
 // void PhysicsSolver::collide_MESH_MESH(RigidBody* A, RigidBody* B) {
