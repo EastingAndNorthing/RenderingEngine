@@ -88,14 +88,21 @@ int main() {
     renderer.Enqueue(floor);
     
     RigidBody* floorCollider = new RigidBody(floor, new PlaneCollider(glm::vec2(5.0f, 5.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-    floorCollider->makeStatic();
+    // floorCollider->makeStatic();
+    floorCollider->gravity = 0.0f;
+    floorCollider->mass = 10.0f;
     physicsHandler.Enqueue(floorCollider);
 
     Mesh debugMesh = Mesh(PrimitiveGenerator::Arrow());
     debugMesh.setMaterial(renderer.defaultShader);
     
     while (renderer.isActive()) {
+
+        if(glfwGetKey(renderer.window, GLFW_KEY_UP) == GLFW_PRESS)   { time.slower(); };
+        if(glfwGetKey(renderer.window, GLFW_KEY_DOWN) == GLFW_PRESS) { time.faster(); };
+
         renderer.BeginLoop();
+        
         physicsHandler.update();
         
         colorMaterial->setUniform("u_color", glm::vec4(0.0f, 1.0, 0.8f, 1.0f)); 
@@ -107,14 +114,14 @@ int main() {
         //     for (auto& body: physicsHandler.bodies)
         //         body->applyForce(glm::vec3(15.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.0f, 0.0f));
         
-        if(glfwGetKey(renderer.window, GLFW_KEY_I) == GLFW_PRESS) tetraBod->angularVelocity.x += 0.1f;
-        if(glfwGetKey(renderer.window, GLFW_KEY_K) == GLFW_PRESS) tetraBod->angularVelocity.x -= 0.1f;
-        if(glfwGetKey(renderer.window, GLFW_KEY_J) == GLFW_PRESS) tetraBod->angularVelocity.y += 0.1f;
-        if(glfwGetKey(renderer.window, GLFW_KEY_L) == GLFW_PRESS) tetraBod->angularVelocity.y -= 0.1f;
-        if(glfwGetKey(renderer.window, GLFW_KEY_U) == GLFW_PRESS) tetraBod->angularVelocity.z += 0.1f;
-        if(glfwGetKey(renderer.window, GLFW_KEY_O) == GLFW_PRESS) tetraBod->angularVelocity.z -= 0.1f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_I) == GLFW_PRESS) tetraBod->velocity.x += 0.1f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_K) == GLFW_PRESS) tetraBod->velocity.x -= 0.1f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_J) == GLFW_PRESS) tetraBod->velocity.y += 0.1f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_L) == GLFW_PRESS) tetraBod->velocity.y -= 0.1f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_U) == GLFW_PRESS) tetraBod->velocity.z += 0.1f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_O) == GLFW_PRESS) tetraBod->velocity.z -= 0.1f;
 
-        glm::vec3 impulse = {0, -0.1f, 0};
+        glm::vec3 impulse = {0, -0.5f, 0};
         glm::vec3 impulsePos = {0, 0, -1.0f};
         
         if(glfwGetKey(renderer.window, GLFW_KEY_Q) == GLFW_PRESS) tetraBod->applyWorldImpulse(impulse, impulsePos);
@@ -123,16 +130,12 @@ int main() {
         auto tetraPointW = CoordinateSystem::localToWorld(tetraPointL, tetraBod->rotation, tetraBod->position);
         auto worldPointVel = PhysicsSolver::getWorldPointVelocity(tetraPointW, tetraBod->position, tetraBod->velocity, tetraBod->getAngularVelocityW());
 
-        // debugMesh.setPosition(tetraPointW);
-        // debugMesh.setRotation(Quaternion::createFromTwoVectors(
-        //     glm::vec3(0.0f, 1.0f, 0.0f),
-        //     worldPointVel
-        // ));
-        debugMesh.setPosition(tetraPointW);
+        debugMesh.setPosition(tetraBod->position);
         debugMesh.setScale(glm::length(worldPointVel) * 0.5f);
         debugMesh.setRotation(Quaternion::createFromTwoVectors(
             glm::vec3(0.0f, 1.0f, 0.0f),
-            tetraBod->getPointVelocityW(tetraPointW)
+            // tetraBod->getPointVelocityW(tetraPointW)
+            tetraBod->angularVelocity
         ));
 
         debugMesh.Bind();

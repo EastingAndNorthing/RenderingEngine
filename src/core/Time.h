@@ -14,6 +14,8 @@ public:
     ~Time() = default;
 
     void update();
+    void slower();
+    void faster();
 
 private:
     Time() = default;

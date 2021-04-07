@@ -10,3 +10,17 @@ void Time::update() {
     this->time = glfwGetTime();
     this->dt = (this->time - this->prevTime) * this->timeScale;
 }
+
+void Time::slower() {
+    if(this->timeScale >= 0.01f)
+        this->timeScale -= 0.01f;
+        
+    std::cout << this->timeScale << std::endl;
+}
+
+void Time::faster() {
+    if(this->timeScale <= 5.0f)
+        this->timeScale += 0.01f;
+        
+    std::cout << this->timeScale << std::endl;
+}

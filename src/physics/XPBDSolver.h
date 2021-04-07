@@ -18,11 +18,11 @@ namespace XPBDSolver {
 
     const float AABBMargin = 2.0f;                  // Chapter 3.5
 
-    void update(const std::vector<RigidBody*> rigidBodies);
+    void update(const std::vector<RigidBody*> rigidBodies, const double dt);
 
     std::vector<ContactSet> getCollisionPairs(const std::vector<RigidBody*> rigidBodies);
 
-    void solvePositions(const std::vector<ContactSet>& contacts = {});
-    void solveVelocities(const std::vector<ContactSet>& contacts = {});
+    void solvePositions(const std::vector<ContactSet>& contacts = {}, const double& h = 0.0f);
+    void solveVelocities(const std::vector<ContactSet>& contacts = {}, const double& h = 0.0f);
 
 }

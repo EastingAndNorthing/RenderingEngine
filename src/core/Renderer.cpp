@@ -116,7 +116,8 @@ void Renderer::EndLoop() {
 }
 
 void Renderer::DrawMeshes() {
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     for (auto& mesh : this->meshQueue) {
 
@@ -140,8 +141,10 @@ void Renderer::DrawMeshes() {
 }
 
 void Renderer::DrawOverlays() {
+
     glClear(GL_DEPTH_BUFFER_BIT);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe
+
     for (auto& mesh : this->overlayQueue) {
         mesh->Bind();
         glUniformMatrix4fv(mesh->material->shader->getUniformLocation("u_modelViewProjectionMatrix"), 1, GL_FALSE, 
@@ -149,6 +152,7 @@ void Renderer::DrawOverlays() {
         );
         glDrawArrays(GL_TRIANGLES, 0, mesh->vertexBuffer.getCount());
     }
+
     // for (const auto &nameMeshPair : this->debugOverlays) {
     //     nameMeshPair.second->Bind();
     //     glDrawArrays(GL_TRIANGLES, 0, nameMeshPair.second->vertexBuffer.getCount());

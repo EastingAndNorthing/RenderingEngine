@@ -20,12 +20,12 @@ void PhysicsHandler::Enqueue(RigidBody* body) {
 void PhysicsHandler::update() {
 
     Time &time = Time::Instance();
-    
+
     switch(PhysicsHandler::solverType) {
 
         case SolverType::XPBD :
+            XPBDSolver::update(this->bodies, time.dt);
         default : 
-            XPBDSolver::update(this->bodies);
             
         break;
     }

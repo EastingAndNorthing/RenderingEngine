@@ -78,16 +78,18 @@ glm::vec3 RigidBody::getPointVelocityW(glm::vec3 point, bool isPointInLocalSpace
 
 void RigidBody::updatePhysics(const float &deltaTime) {
 
+    // xprev ← x;
+    // qprev ← q;
     this->previousState.position = this->position;
     this->previousState.rotation = this->rotation;
     this->previousState._inverseRotation = this->_inverseRotation;
 
     this->rebuildPrecomputedValues(); // Maybe try running this each frame, rather than each substep/iteration. 
-
+    
     if(this->isDynamic) {
         
         this->acceleration                = glm::vec3(0.0f);
-        this->angularAcceleration         = glm::vec3(0.0f);
+        this->angularAcceleration         = glm::vec3(0.0f); // Not used
         this->forces                      = glm::vec3(0.0f);
         this->torque                      = glm::vec3(0.0f);
 
@@ -99,19 +101,19 @@ void RigidBody::updatePhysics(const float &deltaTime) {
         }
         this->externalForces.clear();
 
-        // Implicit Euler
+        // Euler step
         this->acceleration += this->forces * this->_inverseMass;
         this->velocity += this->acceleration * deltaTime;  
         this->position += this->velocity * deltaTime;
 
-        this->angularAcceleration += this->torque * this->_inverseInertiaTensor;
-        glm::vec3 halve = 0.5f * this->angularVelocity * deltaTime;
-        this->rotation *= glm::quat(1.0, halve.x, halve.y, halve.z);
+        // this->angularVelocity += deltaTime * this->_inverseInertiaTensor * (this->torque - glm::cross(this->angularVelocity, this->inertiaTensor * this->angularVelocity));
+        // this->rotation += deltaTime * 0.5f * glm::quat(1.0, this->angularVelocity.x, this->angularVelocity.y, this->angularVelocity.z) * this->rotation;
+        this->rotation += deltaTime * 0.5f * glm::quat(1.0f, this->angularVelocity.x, this->angularVelocity.y, this->angularVelocity.z) * this->rotation;
         this->rotation = glm::normalize(this->rotation);
+        
+        // this->angularVelocity -= this->angularVelocity * this->rotationalDamping * deltaTime;
 
-        this->angularVelocity -= this->angularVelocity * this->rotationalDamping * deltaTime;
-
-        if(glm::length(this->velocity) >= this->sleepVelocity || glm::length(this->angularVelocity) >= this->sleepAngularVelocity) {
+        // if(glm::length(this->velocity) >= this->sleepVelocity || glm::length(this->angularVelocity) >= this->sleepAngularVelocity) {
             
             _inertiaNeedsUpdate = true;
             _rotationNeedsUpdate = true;
@@ -119,25 +121,25 @@ void RigidBody::updatePhysics(const float &deltaTime) {
             this->rebuildPrecomputedValues();
             this->updateGeometry();
 
-        } else {
-            // this->velocity -= 0.7f * this->velocity * deltaTime;
-            // this->angularVelocity -= 0.7f * this->velocity * deltaTime;
-        }
+        // }
     }
 }
 
 void RigidBody::computeActualState(const float &deltaTime) {
-    // v ← (x−xprev)/deltaTime;
-    // Δq ← q*q.inv_prev
-    // omega ← 2[Δqx,Δqy,Δqz]/deltaTime;
-    // omega ← Δqw ≥ 0 ? omega : −omega;
 
-    this->velocity = (this->position - this->previousState.position) / deltaTime; // This is SUPER high
+    // Algorithm 2
+
+    // v ← (x−xprev)/deltaTime;
+    this->velocity = (this->position - this->previousState.position) / deltaTime;
     
+    // Δq ← q*q.inv_prev
     glm::quat dq = this->rotation * this->previousState._inverseRotation;
 
+    // omega ← 2[Δqx,Δqy,Δqz]/deltaTime;
+    // Why does this seem to dampen / lose energy over time?
     this->angularVelocity = 2.0f * glm::vec3(dq.x, dq.y, dq.z) / deltaTime;
 
+    // omega ← Δqw ≥ 0 ? omega : −omega;
     if(dq.w < 0) this->angularVelocity *= -1;
 
 }
@@ -159,9 +161,9 @@ void RigidBody::rebuildPrecomputedValues() {
     }
 
     if(this->_inertiaNeedsUpdate) {
-        // this->_inertiaTensorW = this->inertiaTensor * glm::mat3_cast(this->rotation);
+        this->_inertiaTensorW = this->inertiaTensor * glm::mat3_cast(this->rotation); // Was disabled?
         this->_inverseInertiaTensor = glm::inverse(this->inertiaTensor);
-        // this->_inverseInertiaTensorW = glm::inverse(this->_inertiaTensorW);
+        this->_inverseInertiaTensorW = glm::inverse(this->_inertiaTensorW); // Was disabled?
     }
 
     this->_rotationNeedsUpdate = false;
