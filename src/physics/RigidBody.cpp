@@ -1,6 +1,5 @@
 #include "RigidBody.h"
-#include "math/CoordinateSystem.h"
-#include "math/Quaternion.h"
+#include "core/Renderer.h"
 
 RigidBody::RigidBody(Mesh* mesh, Collider* collider)
     : mesh(mesh), collider(collider) {
@@ -76,6 +75,7 @@ glm::vec3 RigidBody::getPointVelocityW(glm::vec3 point, bool isPointInLocalSpace
 
 }
 
+// @TODO also update planeCollider after rotation
 void RigidBody::updatePhysics(const float &deltaTime) {
 
     // xprev ← x;
@@ -119,6 +119,7 @@ void RigidBody::updatePhysics(const float &deltaTime) {
             _rotationNeedsUpdate = true;
 
             this->rebuildPrecomputedValues();
+            this->updateCollider();
             this->updateGeometry();
 
         // }
@@ -127,20 +128,20 @@ void RigidBody::updatePhysics(const float &deltaTime) {
 
 void RigidBody::computeActualState(const float &deltaTime) {
 
-    // Algorithm 2
+    // // Algorithm 2
 
-    // v ← (x−xprev)/deltaTime;
-    this->velocity = (this->position - this->previousState.position) / deltaTime;
+    // // v ← (x−xprev)/deltaTime;
+    // this->velocity = (this->position - this->previousState.position) / deltaTime;
     
-    // Δq ← q*q.inv_prev
-    glm::quat dq = this->rotation * this->previousState._inverseRotation;
+    // // Δq ← q*q.inv_prev
+    // glm::quat dq = this->rotation * this->previousState._inverseRotation;
 
-    // omega ← 2[Δqx,Δqy,Δqz]/deltaTime;
-    // Why does this seem to dampen / lose energy over time?
-    this->angularVelocity = 2.0f * glm::vec3(dq.x, dq.y, dq.z) / deltaTime;
+    // // omega ← 2[Δqx,Δqy,Δqz]/deltaTime;
+    // // Why does this seem to dampen / lose energy over time?
+    // this->angularVelocity = 2.0f * glm::vec3(dq.x, dq.y, dq.z) / deltaTime;
 
-    // omega ← Δqw ≥ 0 ? omega : −omega;
-    if(dq.w < 0) this->angularVelocity *= -1;
+    // // omega ← Δqw ≥ 0 ? omega : −omega;
+    // if(dq.w < 0) this->angularVelocity *= -1;
 
 }
 
@@ -169,4 +170,25 @@ void RigidBody::rebuildPrecomputedValues() {
     this->_rotationNeedsUpdate = false;
     this->_inertiaNeedsUpdate = false;
     this->_massNeedsUpdate = false;
+}
+
+void RigidBody::updateCollider() {
+
+    switch(this->collider->colliderType) {
+
+        case ColliderType::Plane :
+            auto PC = static_cast<PlaneCollider*>(this->collider);
+            PC->normal = this->rotation * glm::vec3(0.0f, 0.0f, 1.0f); // @TODO store initial up direction of plane collider normal
+            
+            // Renderer &renderer = Renderer::Instance();
+            // renderer.debugVector->setPosition(this->position);
+            // renderer.debugVector->setScale(10.0f);
+            // renderer.debugVector->setRotation(Quaternion::createFromTwoVectors(
+            //     glm::vec3(0.0f, 1.0f, 0.0f),
+            //     PC->normal
+            // ));
+            
+        break;
+        
+    }
 }

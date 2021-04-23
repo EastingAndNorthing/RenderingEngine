@@ -6,7 +6,13 @@ class Time {
 public:
     double time = 0;
     double dt = 0;
-    double timeScale = 1.0f;
+    
+    float timeScale = 1.0f;
+    float minTimeScale = 0.0001f;
+    float maxTimeScale = 8.0f;
+    float timeScaleStep = 0.0001f;
+
+    bool isStepMode = false;
 
 	static Time& Instance();
 
@@ -16,6 +22,8 @@ public:
     void update();
     void slower();
     void faster();
+
+    void setStepMode(bool mode = false);
 
 private:
     Time() = default;

@@ -3,6 +3,8 @@
 #include "common.h"
 #include "primitives/Mesh.h"
 #include "physics/Collider.h"
+#include "math/CoordinateSystem.h"
+#include "math/Quaternion.h"
 
 struct RigidBodyForce {
     glm::vec3 force    = glm::vec3(0.0f);   // WORLD space
@@ -32,7 +34,7 @@ public:
     glm::vec3 angularVelocity = glm::vec3(0, 0, 0);             // In LOCAL space. https://en.m.wikipedia.org/wiki/Angular_velocity
     glm::vec3 angularAcceleration = glm::vec3(0, 0, 0);         // In LOCAL space. https://en.m.wikipedia.org/wiki/Angular_acceleration
     
-    glm::mat3 inertiaTensor = glm::mat3(2.0f);                  // In LOCAL space. https://en.m.wikipedia.org/wiki/Moment_of_inertia Tetrahedron of unit size with unit mass = 0.1331712       
+    glm::mat3 inertiaTensor = glm::mat3(0.5f);                  // In LOCAL space. https://en.m.wikipedia.org/wiki/Moment_of_inertia Tetrahedron of unit size with unit mass = 0.1331712       
     
     float _inverseMass;
     glm::mat3 _inertiaTensorW;                                  // In WORLD space. Precomputed from inertiaTensor.
@@ -67,6 +69,7 @@ public:
     void applyLocalImpulse(const glm::vec3& impulse, const glm::vec3& position);
     void applyWorldImpulse(const glm::vec3& impulse, const glm::vec3& position);
 
+    void updateCollider();
     void rebuildPrecomputedValues();
 
     void updatePhysics(const float &deltaTime);

@@ -59,38 +59,39 @@ int main() {
     // Single tetrahedron /////////////////////////////////////////////////////////////////////////
     
     Mesh* myTetra = new TetrahedronMesh(1.0f);
-    myTetra->setPosition({ 2.0f, 1.5f, 0.0f });
+    myTetra->setPosition({ 2.0f, 8.5f, 0.0f });
     myTetra->setMaterial(colorMaterial);
     renderer.Enqueue(myTetra);
 
     // myTetra->setRotation({ -120.0f, 20.0f, 0.0f });
     RigidBody* tetraBod = new RigidBody(myTetra);
     tetraBod->collider = new MeshCollider(PrimitiveMesh(PrimitiveGenerator::Tetrahedron(1.0f)));
-    tetraBod->bounciness = 0.10f;
-    tetraBod->gravity = 0.0f;
+    tetraBod->bounciness = 0.50f;
+    // tetraBod->gravity = 0.0f;
     physicsHandler.Enqueue(tetraBod);
 
     // Floor //////////////////////////////////////////////////////////////////////////////////////
-    Mesh* floor = new PlaneMesh(255.0f);
+    Mesh* floor = new PlaneMesh(6.0f);
     floor->setRotation({ -90.0f, 0.0f, 0.0f });
 
-    Material* floorMaterial = new Material("/shaders/Phong", {
-        new Uniform<glm::vec3>("ambient", glm::vec3(0.2f, 0.3f, 0.3f)),
-        new Uniform<glm::vec3>("diffuseAlbedo", glm::vec3(0.2f, 0.3f, 0.3f)),
-        new Uniform<glm::vec3>("specularAlbedo", glm::vec3(0.2f, 0.2f, 0.2f)),
-        new Uniform<glm::vec3>("rimColor", glm::vec3(0.2f, 0.3f, 0.3f)),
-        new Uniform<int>("rimLightOn", 1),
-        new Uniform<float>("shininess", 20.0f),
-        new Uniform<float>("rimPower", 200.0f),
-        lightDirection
-    });
-    floor->setMaterial(floorMaterial);
+    // Material* floorMaterial = new Material("/shaders/Phong", {
+    //     new Uniform<glm::vec3>("ambient", glm::vec3(0.2f, 0.3f, 0.3f)),
+    //     new Uniform<glm::vec3>("diffuseAlbedo", glm::vec3(0.2f, 0.3f, 0.3f)),
+    //     new Uniform<glm::vec3>("specularAlbedo", glm::vec3(0.2f, 0.2f, 0.2f)),
+    //     new Uniform<glm::vec3>("rimColor", glm::vec3(0.2f, 0.3f, 0.3f)),
+    //     new Uniform<int>("rimLightOn", 1),
+    //     new Uniform<float>("shininess", 20.0f),
+    //     new Uniform<float>("rimPower", 200.0f),
+    //     lightDirection
+    // });
+    floor->setMaterial(colorMaterial);
     renderer.Enqueue(floor);
     
-    RigidBody* floorCollider = new RigidBody(floor, new PlaneCollider(glm::vec2(5.0f, 5.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+    RigidBody* floorCollider = new RigidBody(floor, new PlaneCollider(glm::vec2(6.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
     // floorCollider->makeStatic();
     floorCollider->gravity = 0.0f;
     floorCollider->mass = 10.0f;
+    floorCollider->inertiaTensor = glm::mat3(10.0f);
     physicsHandler.Enqueue(floorCollider);
 
     Mesh debugMesh = Mesh(PrimitiveGenerator::Arrow());
@@ -98,12 +99,14 @@ int main() {
     
     while (renderer.isActive()) {
 
-        if(glfwGetKey(renderer.window, GLFW_KEY_UP) == GLFW_PRESS)   { time.slower(); };
-        if(glfwGetKey(renderer.window, GLFW_KEY_DOWN) == GLFW_PRESS) { time.faster(); };
-
         renderer.BeginLoop();
         
-        physicsHandler.update();
+        if(glfwGetKey(renderer.window, GLFW_KEY_UP) == GLFW_PRESS)   { time.slower(); };
+        if(glfwGetKey(renderer.window, GLFW_KEY_DOWN) == GLFW_PRESS) { time.faster(); };
+        if(glfwGetKey(renderer.window, GLFW_KEY_M) == GLFW_PRESS) { time.setStepMode(true); };
+        if(glfwGetKey(renderer.window, GLFW_KEY_N) == GLFW_PRESS) { time.setStepMode(false); };
+    
+        if(!time.isStepMode || glfwGetKey(renderer.window, GLFW_KEY_P) == GLFW_PRESS) { physicsHandler.update(); };
         
         colorMaterial->setUniform("u_color", glm::vec4(0.0f, 1.0, 0.8f, 1.0f)); 
         // float oscillator = sin(time.time*1.5) / 2.0f + 0.5f;
