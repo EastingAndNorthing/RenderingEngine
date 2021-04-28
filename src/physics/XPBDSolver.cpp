@@ -25,14 +25,6 @@ void XPBDSolver::update(const std::vector<RigidBody*> rigidBodies, const double 
         XPBDSolver::solveVelocities(contacts, h);
 
     }
-
-    for(volatile int i; i < XPBDSolver::numSubSteps; i++) {
-        for (auto& contact: contacts) {
-            contact.lambda = 0.0f;
-            contact.lambdaN =glm::vec3(0.0f);
-            contact.lambdaT = glm::vec3(0.0f);
-        }
-    }
 }
 
 std::vector<ContactSet> XPBDSolver::getCollisionPairs(const std::vector<RigidBody*> rigidBodies) {
@@ -79,12 +71,13 @@ std::vector<ContactSet> XPBDSolver::getCollisionPairs(const std::vector<RigidBod
                                     
                                 const float& signedDistance = PhysicsSolver::getPointToPlaneDistance(contactPointW, B->position, N);
 
-                                if(signedDistance < 0.1f) {
-                                    Time &time = Time::Instance();
-                                    time.setStepMode(true);
-                                }
+                                // if(signedDistance < 0.1f) {
+                                //     Time &time = Time::Instance();
+                                //     time.setStepMode(true);
+                                // }
 
                                 if(signedDistance < 0.0f) {
+                                    A->velocity = glm::vec3(0.0f);
                                     contacts.push_back(ContactSet(A, B, contactPointW, N, signedDistance));
                                 }
                             }
@@ -116,8 +109,8 @@ void XPBDSolver::solvePositions(const std::vector<ContactSet>& contacts, const d
         const glm::vec3 r2 = contact.B->position - contact.P;
 
         // (1, 2) - Generalized inverse masses
-        const float w1 = contact.A->_inverseMass + glm::length(glm::cross(r1, contact.N) * contact.A->_inverseInertiaTensorW * glm::cross(r1, contact.N)); 
-        const float w2 = contact.B->_inverseMass + glm::length(glm::cross(r2, contact.N) * contact.B->_inverseInertiaTensorW * glm::cross(r2, contact.N));
+        const float w1 = contact.A->_inverseMass + glm::length(glm::cross(r1, contact.N) * contact.A->_inverseInertiaTensor * glm::cross(r1, contact.N)); 
+        const float w2 = contact.B->_inverseMass + glm::length(glm::cross(r2, contact.N) * contact.B->_inverseInertiaTensor * glm::cross(r2, contact.N));
 
         // (4, 5) - Lagrange multiplier
         float alpha = contact.compliance/(h*h);
@@ -130,21 +123,22 @@ void XPBDSolver::solvePositions(const std::vector<ContactSet>& contacts, const d
         glm::vec3 impulse = dlambda * contact.N;
 
         if(contact.A->isDynamic) {
+            // @TODO WHY do I need a + sign for position and a - sign for rotation to get expected results?
             contact.A->position += impulse * contact.A->_inverseMass; // (6)
-            contact.A->rotation += 0.5f * glm::quat(0, contact.A->_inverseInertiaTensorW * glm::cross(r1, impulse)) * contact.A->rotation; // (8)
+            contact.A->rotation -= 0.5f * glm::quat(0, contact.A->_inverseInertiaTensor * glm::cross(r1, impulse)) * contact.A->rotation; // (8)
 
-            Renderer &renderer = Renderer::Instance();
-            renderer.debugVector->setPosition(contact.P);
-            renderer.debugVector->setScale(glm::vec3(glm::length(impulse) * 1000.0f));
-            renderer.debugVector->setRotation(Quaternion::createFromTwoVectors(
-                glm::vec3(0.0f, 1.0f, 0.0f),
-                impulse
-            ));
+            // Renderer &renderer = Renderer::Instance();
+            // renderer.debugVector->setPosition(contact.P);
+            // renderer.debugVector->setScale(glm::vec3(glm::length(impulse) * 1000.0f));
+            // renderer.debugVector->setRotation(Quaternion::createFromTwoVectors(
+            //     glm::vec3(0.0f, 1.0f, 0.0f),
+            //     impulse
+            // ));
         }
 
         if(contact.B->isDynamic) {
             contact.B->position -= impulse * contact.B->_inverseMass; // (7)
-            contact.B->rotation -= 0.5f * glm::quat(0, contact.B->_inverseInertiaTensorW * glm::cross(r2, impulse)) * contact.B->rotation; // (9)
+            contact.B->rotation += 0.5f * glm::quat(0, contact.B->_inverseInertiaTensor * glm::cross(r2, impulse)) * contact.B->rotation; // (9)
         }
     }
 }
@@ -158,8 +152,8 @@ void XPBDSolver::solveVelocities(const std::vector<ContactSet>& contacts, const 
         const glm::vec3 r2 = contact.B->position - contact.P;
 
         // SAME as generalized mass equation as (2) and (3), might be wrong
-        const float w1 = contact.A->_inverseMass + glm::length(glm::cross(r1, contact.N) * contact.A->_inverseInertiaTensorW * glm::cross(r1, contact.N)); 
-        const float w2 = contact.B->_inverseMass + glm::length(glm::cross(r2, contact.N) * contact.B->_inverseInertiaTensorW * glm::cross(r2, contact.N));
+        const float w1 = contact.A->_inverseMass + glm::length(glm::cross(r1, contact.N) * contact.A->_inverseInertiaTensor * glm::cross(r1, contact.N)); 
+        const float w2 = contact.B->_inverseMass + glm::length(glm::cross(r2, contact.N) * contact.B->_inverseInertiaTensor * glm::cross(r2, contact.N));
 
         // Calculate average friction
         float staticFriction = 0.5 * (contact.A->staticFriction + contact.A->staticFriction);
@@ -174,23 +168,44 @@ void XPBDSolver::solveVelocities(const std::vector<ContactSet>& contacts, const 
         // (30)
         float h_squared = (float) h * (float) h;
         glm::vec3 Fn = contact.lambdaN / h_squared;
-        glm::vec3 dv = -vt/glm::abs(vt) * glm::min((float) h * dynamicFriction * Fn, glm::abs(vt));     
+        glm::vec3 normalizedVt = (glm::length(vt) > 0.0001f) ? glm::normalize(vt) : glm::vec3(0.0f);
+        glm::vec3 dv = -normalizedVt * min((float) h * dynamicFriction * Fn, glm::length(vt));     
         
-        // (31, 32)
-        // glm::vec3 dv = *contact.A->velocity - contact.B->velocity) * glm::min(staticFriction * (float) h, 1); // (31) ???? static friction?
-        // @TODO apply angular dampening (32)
-        
-        // (34), restitution, normal velocity before PBD velocity update == A->velocity
-        // Why not just do dv*e?
-        // @TODO set 
-        // dv += contact.N * (-vn + glm::max(-e * contact.N * contact.A->velocity, 0));
+        // (31, 32) @TODO dampening
+        // dv -= *contact.A->velocity - contact.B->velocity) * min((float) h * staticFriction, 1); // (31) ???? static friction?
+        // domega = .........
 
+        // (34), restitution
+        // To handle restitution we also need v(bar)n, the normal velocity before
+        // the PBD velocity update. We compute this quantity by applying
+        // Eqn 29 to the pre-update velocities
+        // @TODO Why not just do dv*e?
+        float e = 0.5f * (contact.A->bounciness + contact.B->bounciness);
+        if(glm::length(vn) < (2.0f * -9.81f * h)) {
+            e = 0.0f;
+        }
+        // don't we already know that vn is in the N direction...?
+        dv += contact.N * (-vn + glm::max(-e * contact.N * contact.A->velocity, glm::vec3(0.0f))); // @TODO use glm::reflect(v, N)?
+        
         // (33), velocity update
         glm::vec3 impulse = dv / (w1+w2); 
-        // contact.A->velocity += impulse * contact.A->_inverseMass;
-        // contact.B->velocity -= impulse * contact.B->_inverseMass;
-        // contact.A->angularVelocity += contact.A->_inverseInertiaTensorW * (r1 * impulse);
-        // contact.B->angularVelocity -= contact.B->_inverseInertiaTensorW * (r2 * impulse);
+        
+        // if(contact.A->isDynamic) {
+        //     contact.A->velocity += impulse * contact.A->_inverseMass;
+        //     contact.A->angularVelocity += contact.A->_inverseInertiaTensor * (r1 * impulse);
+        // }
+        // if(contact.B->isDynamic) {
+        //     contact.B->velocity -= impulse * contact.B->_inverseMass;
+        //     contact.B->angularVelocity -= contact.B->_inverseInertiaTensor * (r2 * impulse);
+        // }
+        
+        // Renderer &renderer = Renderer::Instance();
+        // renderer.debugVector->setPosition(contact.P);
+        // renderer.debugVector->setScale(glm::vec3(glm::length(impulse) * 1000.0f));
+        // renderer.debugVector->setRotation(Quaternion::createFromTwoVectors(
+        //     glm::vec3(0.0f, 1.0f, 0.0f),
+        //     impulse
+        // ));
 
     }
 }

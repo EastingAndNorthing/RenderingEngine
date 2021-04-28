@@ -10,7 +10,7 @@ public:
     float timeScale = 1.0f;
     float minTimeScale = 0.0001f;
     float maxTimeScale = 8.0f;
-    float timeScaleStep = 0.0001f;
+    float timeScaleStep = 0.001f;
 
     bool isStepMode = false;
 

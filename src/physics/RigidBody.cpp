@@ -15,6 +15,7 @@ RigidBody::RigidBody(Mesh* mesh, Collider* collider)
 void RigidBody::makeStatic() {
     
     this->isDynamic = false;
+    this->gravity = 0.0f;
     this->mass = 99999.0f;
     this->inertiaTensor = glm::mat3(99999.0f);
 
@@ -78,15 +79,15 @@ glm::vec3 RigidBody::getPointVelocityW(glm::vec3 point, bool isPointInLocalSpace
 // @TODO also update planeCollider after rotation
 void RigidBody::updatePhysics(const float &deltaTime) {
 
-    // xprev ← x;
-    // qprev ← q;
-    this->previousState.position = this->position;
-    this->previousState.rotation = this->rotation;
-    this->previousState._inverseRotation = this->_inverseRotation;
-
-    this->rebuildPrecomputedValues(); // Maybe try running this each frame, rather than each substep/iteration. 
-    
     if(this->isDynamic) {
+        
+        this->rebuildPrecomputedValues(); // Maybe try running this each frame, rather than each substep/iteration. 
+
+        // xprev ← x;
+        // qprev ← q;
+        this->previousState.position = this->position;
+        this->previousState.rotation = this->rotation;
+        this->previousState._inverseRotation = this->_inverseRotation;
         
         this->acceleration                = glm::vec3(0.0f);
         this->angularAcceleration         = glm::vec3(0.0f); // Not used
@@ -128,11 +129,11 @@ void RigidBody::updatePhysics(const float &deltaTime) {
 
 void RigidBody::computeActualState(const float &deltaTime) {
 
-    // // Algorithm 2
+    // Algorithm 2
 
-    // // v ← (x−xprev)/deltaTime;
-    // this->velocity = (this->position - this->previousState.position) / deltaTime;
-    
+    // v ← (x−xprev)/deltaTime;
+    // this->velocity = (this->position - this->previousState.position) / deltaTime; 
+
     // // Δq ← q*q.inv_prev
     // glm::quat dq = this->rotation * this->previousState._inverseRotation;
 
@@ -162,9 +163,9 @@ void RigidBody::rebuildPrecomputedValues() {
     }
 
     if(this->_inertiaNeedsUpdate) {
-        this->_inertiaTensorW = this->inertiaTensor * glm::mat3_cast(this->rotation); // Was disabled?
+        // this->_inertiaTensorW = this->inertiaTensor * glm::mat3_cast(this->rotation); // Seems like world inertia is not needed
         this->_inverseInertiaTensor = glm::inverse(this->inertiaTensor);
-        this->_inverseInertiaTensorW = glm::inverse(this->_inertiaTensorW); // Was disabled?
+        // this->_inverseInertiaTensorW = glm::inverse(this->_inertiaTensorW); // Seems like world inertia is not needed
     }
 
     this->_rotationNeedsUpdate = false;

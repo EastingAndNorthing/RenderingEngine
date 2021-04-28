@@ -40,6 +40,6 @@ void Time::setStepMode(bool mode) {
         this->timeScale = this->minTimeScale;
     }
 
-    std::cout << "Stepmode: " << this->isStepMode << std::endl;
-    std::cout << "TimeScale: " << this->timeScale << std::endl;
+    // std::cout << "Stepmode: " << this->isStepMode << std::endl;
+    // std::cout << "TimeScale: " << this->timeScale << std::endl;
 }
