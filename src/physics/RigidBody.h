@@ -3,6 +3,7 @@
 #include "common.h"
 #include "primitives/Mesh.h"
 #include "physics/Collider.h"
+#include "physics/Pose.h"
 #include "math/CoordinateSystem.h"
 #include "math/Quaternion.h"
 
@@ -12,39 +13,23 @@ struct RigidBodyForce {
     RigidBodyForce(glm::vec3 force, glm::vec3 position) : force(force), position(position) {}
 };
 
-struct RigidBodyState {
-    glm::vec3 position = glm::vec3(0);                          // In WORLD space. https://en.m.wikipedia.org/wiki/Equations_of_motion
-    glm::quat rotation = glm::quat(1, 0, 0, 0);                 // In WORLD space. https://en.m.wikipedia.org/wiki/Quaternion
-    glm::quat _inverseRotation = glm::quat(0, 0, 0, 0);         // In WORLD space. https://en.m.wikipedia.org/wiki/Quaternion
-};
-
 class RigidBody {
 public:
 
     Mesh* mesh = NULL;                                          // Non-physical mesh that is rendered to the screen
     Collider* collider = NULL;                                  // Physics representation of shape. https://en.m.wikipedia.org/wiki/Convex_hull
-
-    RigidBodyState previousState;
-    
-    glm::vec3 position = glm::vec3(0);                          // In WORLD space. https://en.m.wikipedia.org/wiki/Equations_of_motion
-    glm::vec3 velocity = glm::vec3(0);                          // In WORLD space. https://en.m.wikipedia.org/wiki/Equations_of_motion
-    glm::vec3 acceleration = glm::vec3(0, 0, 0);                // In WORLD space. https://en.m.wikipedia.org/wiki/Equations_of_motion
-    
-    glm::quat rotation = glm::quat(1, 0, 0, 0);                 // In WORLD space. https://en.m.wikipedia.org/wiki/Quaternion
-    glm::vec3 angularVelocity = glm::vec3(0, 0, 0);             // In LOCAL space. https://en.m.wikipedia.org/wiki/Angular_velocity
-    glm::vec3 angularAcceleration = glm::vec3(0, 0, 0);         // In LOCAL space. https://en.m.wikipedia.org/wiki/Angular_acceleration
-    
-    glm::mat3 inertiaTensor = glm::mat3(0.5f);                  // In LOCAL space. https://en.m.wikipedia.org/wiki/Moment_of_inertia Tetrahedron of unit size with unit mass = 0.1331712       
-    
-    float _inverseMass;
-    glm::mat3 _inertiaTensorW;                                  // In WORLD space. Precomputed from inertiaTensor.
-    glm::mat3 _inverseInertiaTensor;                            // In WORLD space. Precomputed from inertiaTensor.
-    glm::mat3 _inverseInertiaTensorW;                           // In WORLD space. Precomputed from inertiaTensor.     
-    glm::quat _inverseRotation = glm::quat(0, 0, 0, 0);         // In WORLD space. https://en.m.wikipedia.org/wiki/Quaternion
-
-    bool isDynamic = true;                                      // Whether physics applies to this body
-
     glm::vec3 boundingBox = glm::vec3(1.0f);                    // https://en.m.wikipedia.org/wiki/Bounding_volume
+
+    Pose pose = Pose();
+    Pose prevPose = Pose();
+    
+    glm::vec3 vel = glm::vec3(0.0f);                            
+    glm::vec3 omega = glm::vec3(0.0f);                          // https://en.m.wikipedia.org/wiki/Angular_velocity
+    
+    float invMass = 1.0f;
+    glm::vec3 invInertia = glm::vec3(1.0f);                     // https://en.m.wikipedia.org/wiki/Moment_of_inertia Tetrahedron of unit size with unit mass = 0.1331712
+    
+    bool isDynamic = true;                                      // Whether physics applies to this body
 
     std::vector<RigidBodyForce> externalForces = {};            // In WORLD space.
     glm::vec3 forces = glm::vec3(0);                            // In WORLD space.
@@ -61,26 +46,34 @@ public:
     RigidBody(Mesh* mesh = NULL, Collider* collider = NULL);
     ~RigidBody() = default;
 
-    void applyForceL(RigidBodyForce force);
-    void applyForceL(glm::vec3 forceW, glm::vec3 positionL = glm::vec3(0.0f));
-    void applyForceW(RigidBodyForce force);
-    void applyForceW(glm::vec3 forceW, glm::vec3 positionW = glm::vec3(0.0f));
-    
-    void applyLocalImpulse(const glm::vec3& impulse, const glm::vec3& position);
-    void applyWorldImpulse(const glm::vec3& impulse, const glm::vec3& position);
+    void applyRotation(glm::vec3 rot, float scale = 1.0);
+    void applyCorrection(glm::vec3 corr, glm::vec3 pos = glm::vec3(0.0f), bool velocityLevel = false);
+
+    void integrate(const float &deltaTime);
+    void update(const float &deltaTime);
 
     void updateCollider();
+    
     void rebuildPrecomputedValues();
+    float getInverseMass(glm::vec3& normal, glm::vec3 pos = glm::vec3(0.0f));
 
-    void updatePhysics(const float &deltaTime);
-    void computeActualState(const float &deltaTime);
+    glm::vec3 getVelocityAt(glm::vec3& pos);
 
     void makeStatic();
 
-    glm::vec3 getAngularVelocityW();
+    // void applyForceL(RigidBodyForce force);
+    // void applyForceL(glm::vec3 forceW, glm::vec3 positionL = glm::vec3(0.0f));
+    // void applyForceW(RigidBodyForce force);
+    // void applyForceW(glm::vec3 forceW, glm::vec3 positionW = glm::vec3(0.0f));
     
+    // void applyLocalImpulse(const glm::vec3& impulse, const glm::vec3& position);
+    // void applyWorldImpulse(const glm::vec3& impulse, const glm::vec3& position);
+
+    // glm::vec3 getAngularVelocityW();
     glm::vec3 getPointVelocityL(const glm::vec3& localPoint);
     glm::vec3 getPointVelocityW(glm::vec3 point, bool isPointInLocalSpace = false);
+
+
 
 private:
     float sleepVelocity = 0.05f;

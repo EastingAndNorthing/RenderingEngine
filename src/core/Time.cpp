@@ -19,14 +19,14 @@ void Time::slower() {
     if(this->timeScale >= this->minTimeScale)
         this->timeScale -= this->timeScaleStep;
         
-    std::cout << "TimeScale: " << this->timeScale << std::endl;
+    // std::cout << "TimeScale: " << this->timeScale << std::endl;
 }
 
 void Time::faster() {
     if(this->timeScale <= this->maxTimeScale)
         this->timeScale += this->timeScaleStep;
         
-    std::cout << "TimeScale: " << this->timeScale << std::endl;
+    // std::cout << "TimeScale: " << this->timeScale << std::endl;
 }
 
 void Time::setStepMode(bool mode) {

@@ -2,7 +2,6 @@
 
 #include "common.h"
 #include "physics/RigidBody.h"
-#include "physics/PhysicsSolver.h" // Remove
 
 struct ContactSet {
     
@@ -12,13 +11,12 @@ struct ContactSet {
     glm::vec3 P = glm::vec3(0.0f);      // Contact position in world space
     glm::vec3 N = glm::vec3(0.0f);      // Normal of collision plane
 
+    float vn = 0.0f;                    // Normal velocity
     float signedDistance = 0.0f;        // Signed distance
+    float d = 0.0f;
     
-    float compliance = 5000.0f;
-
-    float lambda = 0.0f;
-    glm::vec3 lambdaN = glm::vec3(0.0f);
-    glm::vec3 lambdaT = glm::vec3(0.0f);
+    float lambdaN = 0.0f;
+    float lambdaT = 0.0f;
 
     ContactSet(
         RigidBody* A, 
@@ -26,7 +24,7 @@ struct ContactSet {
         const glm::vec3& touchPoint,
         const glm::vec3& collisionPlane,
         const float& signedDistance,
-        const float compliance = 0.0f
+        const float& vn = 0.0f
     );
     ~ContactSet();
 
