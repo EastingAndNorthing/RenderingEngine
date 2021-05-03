@@ -40,24 +40,37 @@ int main() {
     //     physicsHandler.Enqueue(rigidBod);
     // }
 
-    for (int i = 0; i < 5; i++) {
-        Mesh* myTetra = new TetrahedronMesh(1.0f);
-        // myTetra->setPosition({ 2.0f, 1.5f, 0.0f });
-        myTetra->setPosition({ randboy(gen) - 5, 10.0f + randboy(gen), randboy(gen) - 5 });
-        // myTetra->setScale({0.5f, 1.0f, 0.5f});
-        myTetra->setMaterial(colorMaterial);
-        renderer.Enqueue(myTetra);
+    // for (int i = 0; i < 5; i++) {
+    //     Mesh* myTetra = new TetrahedronMesh(1.0f);
+    //     // myTetra->setPosition({ 2.0f, 1.5f, 0.0f });
+    //     myTetra->setPosition({ randboy(gen) - 5, 10.0f + randboy(gen), randboy(gen) - 5 });
+    //     // myTetra->setScale({0.5f, 1.0f, 0.5f});
+    //     myTetra->setMaterial(colorMaterial);
+    //     renderer.Enqueue(myTetra);
 
-        // myTetra->setRotation({ -120.0f, 20.0f, 0.0f });
-        myTetra->setRotation({ randboy(gen) * 18, randboy(gen) * 18, randboy(gen) * 18 });
-        RigidBody* tetraBod = new RigidBody(myTetra);
-        tetraBod->collider = new MeshCollider(PrimitiveMesh(PrimitiveGenerator::Tetrahedron(1.0f)));
-        tetraBod->mass = 1.0f;
-        tetraBod->bounciness = 0.10f;
-        // tetraBod->gravity = 0.0f;
-        // tetraBod->angularVelocity = glm::vec3(3.0f, 0.0f, 0.0f);
-        physicsHandler.Enqueue(tetraBod);
-    }
+    //     // myTetra->setRotation({ -120.0f, 20.0f, 0.0f });
+    //     myTetra->setRotation({ randboy(gen) * 18, randboy(gen) * 18, randboy(gen) * 18 });
+    //     RigidBody* tetraBod = new RigidBody(myTetra);
+    //     tetraBod->collider = new MeshCollider(PrimitiveMesh(PrimitiveGenerator::Tetrahedron(1.0f)));
+    //     tetraBod->mass = 1.0f;
+    //     tetraBod->bounciness = 0.10f;
+    //     // tetraBod->gravity = 0.0f;
+    //     // tetraBod->angularVelocity = glm::vec3(3.0f, 0.0f, 0.0f);
+    //     physicsHandler.Enqueue(tetraBod);
+    // }
+
+    Mesh* myTetra = new TetrahedronMesh(1.0f);
+    myTetra->setPosition({ 2.0f, 1.5f, 0.0f });
+    // myTetra->setScale({0.5f, 1.0f, 0.5f});
+    myTetra->setMaterial(colorMaterial);
+    renderer.Enqueue(myTetra);
+
+    // myTetra->setRotation({ -120.0f, 20.0f, 0.0f });
+    RigidBody* tetraBod = new RigidBody(myTetra);
+    tetraBod->collider = new MeshCollider(PrimitiveMesh(PrimitiveGenerator::Tetrahedron(1.0f)));
+    tetraBod->mass = 1.0f;
+    // tetraBod->gravity = 0.0f;
+    physicsHandler.Enqueue(tetraBod);
 
     Mesh* floor = new PlaneMesh(255.0f);
     floor->setRotation({ -90.0f, 0.0f, 0.0f });
@@ -94,14 +107,23 @@ int main() {
         // if(time.time < 3)
         //     for (auto& body: physicsHandler.bodies)
         //         body->applyForce(glm::vec3(15.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.0f, 0.0f));
-        
-        // if(glfwGetKey(renderer.window, GLFW_KEY_I) == GLFW_PRESS) tetraBod->angularVelocity.x += 0.1f;
-        // if(glfwGetKey(renderer.window, GLFW_KEY_K) == GLFW_PRESS) tetraBod->angularVelocity.x -= 0.1f;
-        // if(glfwGetKey(renderer.window, GLFW_KEY_J) == GLFW_PRESS) tetraBod->angularVelocity.y += 0.1f;
-        // if(glfwGetKey(renderer.window, GLFW_KEY_L) == GLFW_PRESS) tetraBod->angularVelocity.y -= 0.1f;
-        // if(glfwGetKey(renderer.window, GLFW_KEY_U) == GLFW_PRESS) tetraBod->angularVelocity.z += 0.1f;
-        // if(glfwGetKey(renderer.window, GLFW_KEY_O) == GLFW_PRESS) tetraBod->angularVelocity.z -= 0.1f;
 
+        if(glfwGetKey(renderer.window, GLFW_KEY_SPACE) == GLFW_PRESS) { tetraBod->gravity = 0.0f; tetraBod->velocity = glm::vec3(0.0f); tetraBod->angularVelocity = glm::vec3(0.0f); };
+        
+        if(glfwGetKey(renderer.window, GLFW_KEY_KP_4) == GLFW_PRESS) tetraBod->angularVelocity.x += 0.1f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_KP_6) == GLFW_PRESS) tetraBod->angularVelocity.x -= 0.1f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_KP_8) == GLFW_PRESS) tetraBod->angularVelocity.y += 0.1f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_KP_5) == GLFW_PRESS) tetraBod->angularVelocity.y -= 0.1f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_KP_7) == GLFW_PRESS) tetraBod->angularVelocity.z += 0.1f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_KP_9) == GLFW_PRESS) tetraBod->angularVelocity.z -= 0.1f;
+        
+        if(glfwGetKey(renderer.window, GLFW_KEY_I) == GLFW_PRESS) tetraBod->velocity.x += 0.1f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_K) == GLFW_PRESS) tetraBod->velocity.x -= 0.1f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_J) == GLFW_PRESS) tetraBod->velocity.y += 0.1f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_L) == GLFW_PRESS) tetraBod->velocity.y -= 0.1f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_U) == GLFW_PRESS) tetraBod->velocity.z += 0.1f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_O) == GLFW_PRESS) tetraBod->velocity.z -= 0.1f;
+        
         // glm::vec3 impulse = {0, -0.1f, 0};
         // glm::vec3 impulsePos = {0, 0, -1.0f};
         

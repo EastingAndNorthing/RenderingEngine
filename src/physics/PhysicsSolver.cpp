@@ -41,37 +41,6 @@ void PhysicsSolver::solveRestingContact(const std::vector<ContactSet>& contacts)
         A->applyForceW(glm::dot(A->forces, N)/ncontacts * N, contacts[i].p);
         B->applyForceW(-glm::dot(B->forces, N)/ncontacts * N, contacts[i].p);
     }
-
-    // std::vector<std::vector<float>> amat(ncontacts, std::vector<float>(ncontacts));
-    // std::vector<float> bvec(ncontacts);
-    // std::vector<float> fvec(ncontacts);
-
-    // // compute_a_matrix(contacts, ncontacts, amat);
-    // // for(int i = 0; i < ncontacts; i++)
-    // //     for(int j = 0; j < ncontacts; j++)
-    // //         a[i,j] = compute_aij(contacts[i], contacts[j]);
-
-    // // Well.......... qp_solve is not defined in the paper.
-    // // compute_b_vector(contacts, ncontacts, bvec);
-    // // qp_solve(amat, bmat, fvec);
-
-    // for(int i = 0; i < ncontacts; i++) {
-
-    //     glm::vec3 reactionForce = fvec[i] * contacts[i].N;
-
-    //     contacts[i].A->applyForce(reactionForce);
-    //     contacts[i].B->applyForce(-reactionForce);
-
-    //     // RigidBody* A = contacts[i].A;
-    //     // RigidBody* B = contacts[i].B;
-
-    //     // A->force += f * n;
-    //     // A->torque += (contacts[i].p - A->x) * (f*n);
-
-    //     // B->force -= f * n;
-    //     // B->torque -= (contacts[i].p - B->x) * (f*n);
-
-    // }
 }
 
 std::pair<glm::vec3, glm::vec3> PhysicsSolver::elasticParticleCollision(
