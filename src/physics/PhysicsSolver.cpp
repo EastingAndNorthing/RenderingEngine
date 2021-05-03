@@ -30,16 +30,23 @@ void PhysicsSolver::solveRestingContact(const std::vector<ContactSet>& contacts)
 
     unsigned int ncontacts = contacts.size();
 
-    if(ncontacts > 0)
-        return;
-
-    for(int i = 0; i < ncontacts; i++) {
+    for(int i = 0; i < contacts.size(); i++) {
         RigidBody* A = contacts[i].A;
         RigidBody* B = contacts[i].B;
         const glm::vec3& N = contacts[i].N;
 
-        A->applyForceW(glm::dot(A->forces, N)/ncontacts * N, contacts[i].p);
-        B->applyForceW(-glm::dot(B->forces, N)/ncontacts * N, contacts[i].p);
+        const glm::vec3 totalVelocity1 = (A->isDynamic) ? A->getPointVelocityW(contacts[i].p) : glm::vec3(0.0f);
+        const glm::vec3 totalVelocity2 = (B->isDynamic) ? B->getPointVelocityW(contacts[i].p) : glm::vec3(0.0f);
+        const glm::vec3 v = totalVelocity2 - totalVelocity1;
+
+        const float vn = glm::dot(v, N);
+        glm::vec3 vt = v - contacts[i].N * vn;
+
+        if(A->isDynamic) A->velocity += vt * A->staticFriction * 0.1f; // Bullshit formula, need normal force
+        if(B->isDynamic) B->velocity += vt * B->staticFriction * 0.1f; // Bullshit formula, need normal force
+
+        // A->applyForceW(glm::dot(A->forces, N)/ncontacts * N, contacts[i].p);
+        // B->applyForceW(-glm::dot(B->forces, N)/ncontacts * N, contacts[i].p);
     }
 }
 
@@ -135,15 +142,17 @@ void PhysicsSolver::collide_MESH_PLANE(RigidBody* A, RigidBody* B) {
         
         const float& signedDistance = PhysicsSolver::getPointToPlaneDistance(contactPointW, B->position, N);
 
-        if(signedDistance < 0.0f) {
+        if(signedDistance < 0.00001f) {
 
             const glm::vec3 totalVelocity1 = (A->isDynamic) ? A->getPointVelocityW(contactPointW) : glm::vec3(0.0f);
             const glm::vec3 totalVelocity2 = (B->isDynamic) ? B->getPointVelocityW(contactPointW) : glm::vec3(0.0f);
             const glm::vec3 relativeVelocity = totalVelocity2 - totalVelocity1;
 
-            const float relativeVelocityToNormal = glm::dot(relativeVelocity, N);
+            const float vn = glm::dot(relativeVelocity, N);
 
-            if(relativeVelocityToNormal > PhysicsSolver::restingContactVelocity) {
+            // std::cout << vn << std::endl;
+
+            // if(vn > PhysicsSolver::restingContactVelocity) {
                 // Impulse based collision reaction (David Baraff: Rigid Body Simulation)
                 // https://en.m.wikipedia.org/wiki/Collision_response#Impulse-based_reaction_model
                 // https://www.youtube.com/watch?v=SHinxAhv1ZE
@@ -154,16 +163,20 @@ void PhysicsSolver::collide_MESH_PLANE(RigidBody* A, RigidBody* B) {
                 // Bug: World inertia tensor does not seem to be aligned properly, causing bouncing if local/world coordinate systems are not nearly aligned
                 // https://physics.stackexchange.com/questions/468941/inertia-tensor-of-rigid-body-in-generalized-coordinate-frame
                 // Somehow using the local inertia tensor makes the simulation more stable / predictable 
-                const glm::vec3 inertiaInfluenceA = (A->isDynamic) ? glm::cross(glm::cross(r1, N), r1) * A->_inverseInertiaTensor : glm::vec3(0.0f); // Static bodies have 'infinite' inertia, reciprocal is zero
-                const glm::vec3 inertiaInfluenceB = (B->isDynamic) ? glm::cross(glm::cross(r2, N), r2) * B->_inverseInertiaTensor : glm::vec3(0.0f);
+                const glm::vec3 w1 = (A->isDynamic) ? glm::cross(glm::cross(r1, N), r1) * A->_inverseInertiaTensor : glm::vec3(0.0f); // Static bodies have 'infinite' inertia, reciprocal is zero
+                const glm::vec3 w2 = (B->isDynamic) ? glm::cross(glm::cross(r2, N), r2) * B->_inverseInertiaTensor : glm::vec3(0.0f);
                 
                 const float inverseMassA = (A->isDynamic) ? A->_inverseMass : 0.0f; // Static bodies have 'infinite' mass, reciprocal is zero
                 const float inverseMassB = (B->isDynamic) ? B->_inverseMass : 0.0f;
 
-                const float combinedCOR = (A->bounciness + B->bounciness) / 2.0f; // Average coefficient of restitution 
+                float e = 0.5f * (A->bounciness + B->bounciness); // Average coefficient of restitution 
+
+                if(vn < PhysicsSolver::restingContactVelocity) {
+                    e = 0.0f;
+                }
                 
-                const glm::vec3 impulse = N * glm::dot(-(1.0f + combinedCOR) * relativeVelocity, N) / ( inverseMassA + inverseMassB +
-                    glm::dot(inertiaInfluenceA + inertiaInfluenceB, N)
+                const glm::vec3 impulse = N * glm::dot(-(1.0f + e) * relativeVelocity, N) / ( inverseMassA + inverseMassB +
+                    glm::dot(w1 + w2, N)
                 );
 
                 if(A->isDynamic) {
@@ -180,7 +193,8 @@ void PhysicsSolver::collide_MESH_PLANE(RigidBody* A, RigidBody* B) {
 
                 if(B->isDynamic) B->applyWorldImpulse(impulse, contactPointW);
                 
-            } if(relativeVelocityToNormal > 0 && relativeVelocityToNormal <= PhysicsSolver::restingContactVelocity) {
+            // } 
+            if(vn > 0 && vn <= PhysicsSolver::restingContactVelocity) {
 
                 contacts.push_back(ContactSet(A, B, contactPointW, N)); // Resting contact point to be solved with all other points
 

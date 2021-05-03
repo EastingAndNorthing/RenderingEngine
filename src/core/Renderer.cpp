@@ -116,7 +116,8 @@ void Renderer::EndLoop() {
 }
 
 void Renderer::DrawMeshes() {
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe
 
     for (auto& mesh : this->meshQueue) {
 

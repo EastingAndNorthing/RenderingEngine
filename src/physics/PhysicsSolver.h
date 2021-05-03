@@ -10,7 +10,7 @@
 namespace PhysicsSolver {
 
     const float seperationDistance = 0.0005f;
-    const float restingContactVelocity = 0.3f;
+    const float restingContactVelocity = 0.4f;
 
     glm::vec3 constructPlaneFromPolygon(const Polygon& polygon);
 
