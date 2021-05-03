@@ -16,13 +16,18 @@ void RigidBody::makeStatic() {
     this->gravity = 0.0f;
     this->invMass = 0.0f;
     this->invInertia = glm::vec3(0.0f);
+
+    this->updateGeometry();
+    this->updateCollider();
 }
 
 float RigidBody::getInverseMass(glm::vec3& normal, glm::vec3 pos) {
     glm::vec3 n = glm::vec3(0.0f);
-    if (glm::length(pos) < 0.00001f) // @TODO check epsilon
+    if (glm::length(pos) < 0.00001f) {
+        // @TODO check epsilon
+        std::cout << "pos is zero" << std::endl;
         n = normal;
-    else {
+    } else {
         n = pos - this->pose.p;
         n = glm::cross(n, normal);
     }
@@ -36,10 +41,13 @@ float RigidBody::getInverseMass(glm::vec3& normal, glm::vec3 pos) {
     return w;
 }
 
-glm::vec3 RigidBody::getVelocityAt(glm::vec3& pos) {		
-    glm::vec3 vel = pos - this->pose.p;
-    vel = glm::cross(vel, this->omega);
-    vel = this->vel - vel;
+glm::vec3 RigidBody::getVelocityAt(glm::vec3& pos) {	
+    glm::vec3 vel = glm::vec3(0.0f);	
+    if(this->isDynamic) {
+        vel = pos - this->pose.p;
+        vel = glm::cross(vel, this->omega);
+        vel = this->vel - vel;
+    }
     return vel;
 }
 
@@ -95,54 +103,58 @@ void RigidBody::integrate(const float &dt) {
 
 void RigidBody::update(const float &dt) {
 
-    // this->vel = this->pose.p - this->prevPose.p;
-    // this->vel *= 1.0f / dt;
-    // glm::quat dq = glm::quat(1.0f, 0, 0, 0);
+    if(this->isDynamic) {
+        this->vel = this->pose.p - this->prevPose.p;
+        this->vel *= 1.0f / dt;
+        glm::quat dq = glm::quat(1.0f, 0, 0, 0);
 
-    // // dq.multiplyQuaternions(this.pose.q, this.prevPose.q.conjugate());
-    // dq = this->pose.q * glm::conjugate(this->prevPose.q);
-    
-    // this->omega = glm::vec3(dq.x * 2.0 / dt, dq.y * 2.0 / dt, dq.z * 2.0 / dt);
-    // if (dq.w < 0.0f)
-    //     this->omega = glm::vec3(-this->omega.x, -this->omega.y, -this->omega.z); // @TODO just omega = -omega?
+        // dq.multiplyQuaternions(this.pose.q, this.prevPose.q.conjugate());
+        dq = this->pose.q * glm::conjugate(this->prevPose.q);
+        
+        this->omega = glm::vec3(dq.x * 2.0 / dt, dq.y * 2.0 / dt, dq.z * 2.0 / dt);
+        if (dq.w < 0.0f)
+            this->omega = glm::vec3(-this->omega.x, -this->omega.y, -this->omega.z); // @TODO just omega = -omega?
 
-    // Dampening
-    // this->omega = this->omega * (1.0f - 1.0f * dt);
-    // this->vel = this->vel * (1.0f - 1.0f * dt);
+        // Dampening
+        // this->omega = this->omega * (1.0f - 1.0f * dt);
+        // this->vel = this->vel * (1.0f - 1.0f * dt);
 
-    this->updateGeometry();
-    this->updateCollider();
-
+        this->updateGeometry();
+        this->updateCollider();
+    }
 }
 
 void RigidBody::applyCorrection(glm::vec3 corr, glm::vec3 pos, bool velocityLevel) {
     
-    glm::vec3 dq = glm::vec3(0.0f);
+    if(this->isDynamic) {
+        
+        glm::vec3 dq = glm::vec3(0.0f);
 
-    if (glm::length(pos) < 0.00001f) { // @TODO check epsilon
-        dq = corr;
-    } else {
+        if (glm::length(pos) < 0.00001f) { // @TODO check epsilon
+            std::cout << "pos is zero!" << std::endl;
+            dq = corr;
+        } else {
+            if (velocityLevel)
+                this->vel += corr * this->invMass;
+            else
+                this->pose.p += corr * this->invMass;
+            dq = pos - this->pose.p;
+            dq = glm::cross(dq, corr);
+        }
+        
+        this->pose.invRotate(dq);
+        glm::vec3 dq2 = glm::vec3(
+            this->invInertia.x * dq.x, 
+            this->invInertia.y * dq.y, 
+            this->invInertia.z * dq.z
+        );
+        this->pose.rotate(dq2);
+        
         if (velocityLevel)
-            this->vel += corr * this->invMass;
-        else
-            this->pose.p += corr * this->invMass;
-        dq = pos - this->pose.p;
-        dq = glm::cross(dq, corr);
+            this->omega += dq2;
+        else 
+            this->applyRotation(dq2);
     }
-    
-    this->pose.invRotate(dq);
-    glm::vec3 dq2 = glm::vec3(
-        this->invInertia.x * dq.x, 
-        this->invInertia.y * dq.y, 
-        this->invInertia.z * dq.z
-    );
-    this->pose.rotate(dq2);
-    
-    if (velocityLevel)
-        // this->omega += dq2; // @TODO enable
-        this->omega += 0.0f;
-    else 
-        this->applyRotation(dq2);
 }
 
 

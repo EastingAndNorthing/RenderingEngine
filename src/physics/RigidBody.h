@@ -39,7 +39,7 @@ public:
     float gravity = -9.81f;                                     // In WORLD space.
     float staticFriction = 0.50f;                               // https://en.m.wikipedia.org/wiki/Friction
     float dynamicFriction = 0.30f;                              // https://en.m.wikipedia.org/wiki/Friction
-    float bounciness = 0.6f;                                    // https://en.m.wikipedia.org/wiki/Coefficient_of_restitution
+    float bounciness = 0.5f;                                    // https://en.m.wikipedia.org/wiki/Coefficient_of_restitution
     float rotationalDamping = 0.996f;
     
     RigidBody() = default;

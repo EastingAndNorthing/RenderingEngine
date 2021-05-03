@@ -13,7 +13,7 @@
 
 namespace XPBDSolver {
 
-    const int numSubSteps = 2;
+    const int numSubSteps = 1;
     const int numConstraintIterations = 1;
 
     const float AABBMargin = 2.0f;                  // Chapter 3.5

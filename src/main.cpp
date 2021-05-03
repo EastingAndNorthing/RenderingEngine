@@ -129,17 +129,18 @@ int main() {
 
         glm::vec3 impulse = {0, 0.1f, 0};
         glm::vec3 impulsePos = tetraPointW;
+        glm::vec3 v = tetraBod->getVelocityAt(tetraPointW);
 
         if(glfwGetKey(renderer.window, GLFW_KEY_Q) == GLFW_PRESS) {
             // tetraBod->applyWorldImpulse(impulse, impulsePos);
-            tetraBod->applyCorrection(impulse, impulsePos, false);
+            tetraBod->applyCorrection(impulse, impulsePos, true);
         } 
 
-        debugMesh.setPosition(impulsePos);
-        debugMesh.setScale(glm::length(impulse) * 10.0f);
+        debugMesh.setPosition(tetraPointW);
+        debugMesh.setScale(glm::length(v) * 10.0f);
         debugMesh.setRotation(Quaternion::createFromTwoVectors(
             glm::vec3(0.0f, 1.0f, 0.0f),
-            impulse
+            v
         ));
 
         debugMesh.Bind();
