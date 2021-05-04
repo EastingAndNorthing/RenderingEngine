@@ -5,22 +5,37 @@
 #include "primitives/Polygon.h"
 #include "physics/RigidBody.h"
 #include "physics/PhysicsHandler.h"
-#include "physics/ContactSet.h"
 #include "math/Quaternion.h"
 #include "math/CoordinateSystem.h"
+// #include "physics/ContactSet.h"
 
 #include "core/Renderer.h"
 
+struct ContactSet {
+    RigidBody* A = NULL;
+    RigidBody* B = NULL;
+    glm::vec3 p = glm::vec3(0.0f);
+    glm::vec3 n = glm::vec3(0.0f);
+    float d = 0.0f;
+    float vn = 0.0f;
+};
+
+struct CollisionPair {
+    RigidBody* A = NULL;
+    RigidBody* B = NULL;
+};
+
 namespace XPBDSolver {
 
-    const int numSubSteps = 1;
+    const int numSubSteps = 20;
     const int numConstraintIterations = 1;
 
-    const float AABBMargin = 2.0f;                  // Chapter 3.5
+    const float AABBMargin = 2.0f; // Chapter 3.5
 
     void update(const std::vector<RigidBody*> rigidBodies, const double dt);
 
-    std::vector<ContactSet> getCollisionPairs(const std::vector<RigidBody*> rigidBodies, const double& dt);
+    std::vector<CollisionPair> getPossibleCollisions(const std::vector<RigidBody*> rigidBodies, const double& dt);
+    std::vector<ContactSet> getContacts(const std::vector<CollisionPair>& collisions);
 
     void solvePositions(const std::vector<ContactSet>& contacts = {}, const double& h = 0.0f);
     void solveVelocities(const std::vector<ContactSet>& contacts = {}, const double& h = 0.0f);
