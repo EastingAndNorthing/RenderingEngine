@@ -13,16 +13,6 @@ void XPBDSolver::update(const std::vector<RigidBody*> rigidBodies, const double 
 
         auto contacts = XPBDSolver::getContacts(collisions); // Actual collision points
 
-        // for(volatile int j = 0; j < rigidBodies.size(); j++) {
-        //     rigidBodies[j]->integrate(h);
-        // }
-
-        // XPBDSolver::solvePositions(contacts, h);
-
-        // for(volatile int k = 0; k < rigidBodies.size(); k++) {
-        //     rigidBodies[k]->update(h);
-        // }
-
         for (auto& body: rigidBodies) {
             body->integrate(h);
         }
@@ -38,9 +28,15 @@ void XPBDSolver::update(const std::vector<RigidBody*> rigidBodies, const double 
         XPBDSolver::solveVelocities(contacts, h);
 
     }
+
+    for (auto& body: rigidBodies) {
+        body->force = glm::vec3(0.0f);
+        body->torque = glm::vec3(0.0f);
+        body->updateGeometry();
+    }
 }
 
-std::vector<CollisionPair> XPBDSolver::getPossibleCollisions(const std::vector<RigidBody*> rigidBodies, const double& dt) {
+std::vector<CollisionPair> XPBDSolver::getPossibleCollisions(const std::vector<RigidBody*>& rigidBodies, const double& dt) {
 
     // @TODO Chunking / octree, prevent checking body pairs multiple times
     // https://github.com/mwarning/SimpleOctree/tree/master/src
@@ -96,9 +92,9 @@ std::vector<CollisionPair> XPBDSolver::getPossibleCollisions(const std::vector<R
     return contacts;
 }
 
-std::vector<ContactSet> XPBDSolver::getContacts(const std::vector<CollisionPair>& collisions) {
+std::vector<ContactSet*> XPBDSolver::getContacts(const std::vector<CollisionPair>& collisions) {
     
-    std::vector<ContactSet> contacts = {};
+    std::vector<ContactSet*> contacts = {};
 
     for (auto collision: collisions) {
             
@@ -119,7 +115,7 @@ std::vector<ContactSet> XPBDSolver::getContacts(const std::vector<CollisionPair>
                         const glm::vec3& N = glm::normalize(PC->normal); // Maybe assume N to always be normalized for planes.
 
                         float deepestPenetration = 0.0f;
-                        ContactSet contactSet = { A, B };
+                        ContactSet* contactSet = new ContactSet(A, B);
 
                         for(int i = 0; i < MC->uniqueIndices.size(); i++) {
                             const Vertex& v = MC->vertices[MC->uniqueIndices[i]];
@@ -133,17 +129,16 @@ std::vector<ContactSet> XPBDSolver::getContacts(const std::vector<CollisionPair>
                                 glm::vec3 vrel = A->getVelocityAt(contactPointW) - B->getVelocityAt(contactPointW);
                                 float vn = glm::dot(N, vrel);
                                 
-                                contactSet.p = contactPointW;
-                                contactSet.n = N;
-                                contactSet.d = signedDistance;
-                                contactSet.vn = vn;
+                                contactSet->p = contactPointW;
+                                contactSet->n = N;
+                                contactSet->d = signedDistance;
+                                contactSet->vn = vn;
                             }
                         }
 
                         if(deepestPenetration < 0.0f) {
-
-                            contactSet.e = 0.5 * (A->bounciness + B->bounciness);
-                            contactSet.friction = 0.5 * (A->staticFriction + B->staticFriction);
+                            contactSet->e = 0.5f * (A->bounciness + B->bounciness);
+                            contactSet->friction = 0.5f * (A->staticFriction + B->staticFriction);
 
                             contacts.push_back(contactSet); // Insert actual collision pair if penetration happened
                         }
@@ -159,21 +154,17 @@ std::vector<ContactSet> XPBDSolver::getContacts(const std::vector<CollisionPair>
     return contacts;
 }
 
-void XPBDSolver::solvePositions(const std::vector<ContactSet>& contacts, const double& h) {
+void XPBDSolver::solvePositions(const std::vector<ContactSet*>& contacts, const double& h) {
 
     for (auto contact: contacts) {
         
-        if(contact.d >= 0.0f)
+        if(contact->d >= 0.0f)
             continue; // Contact has been solved
 
-        // glm::vec3 r1 = contact.A->pose.p - contact.p;
-        // glm::vec3 r2 = contact.B->pose.p - contact.p;
+        contact->A->useVelocitySolve = true;
+        contact->B->useVelocitySolve = true;
 
-        // const glm::vec3 p1 = contact.A->pose.p + r1 * contact.A->pose.q;
-        // const glm::vec3 p2 = contact.B->pose.p + r2 * contact.B->pose.q;
-        // float d = glm::dot(contact.n, (p1 - p2)); // D seems to be way off
-
-        glm::vec3 posCorr = -contact.d * contact.n;
+        glm::vec3 posCorr = -contact->d * contact->n;
 
         // Renderer &renderer = Renderer::Instance();
         // renderer.debugVector->setPosition(contact.p);
@@ -183,9 +174,6 @@ void XPBDSolver::solvePositions(const std::vector<ContactSet>& contacts, const d
         //     posCorr
         // ));
 
-        contact.A->skipVelocityUpdate = true;
-        contact.B->skipVelocityUpdate = true;
-
         XPBDSolver::applyBodyPairCorrection(
             // contact.A,
             // contact.B,
@@ -193,8 +181,8 @@ void XPBDSolver::solvePositions(const std::vector<ContactSet>& contacts, const d
             posCorr,
             0.0f,
             (float) h,
-            contact.p,
-            contact.p,
+            contact->p,
+            contact->p,
             false
         );
         
@@ -204,34 +192,34 @@ void XPBDSolver::solvePositions(const std::vector<ContactSet>& contacts, const d
     }
 }
 
-void XPBDSolver::solveVelocities(const std::vector<ContactSet>& contacts, const double& h) {
+void XPBDSolver::solveVelocities(const std::vector<ContactSet*>& contacts, const double& h) {
     
     for (auto contact: contacts) {
-        
-        // (29)
-        glm::vec3 v = contact.A->getVelocityAt(contact.p) - contact.B->getVelocityAt(contact.p);
-        float vn = glm::dot(contact.n, v);
-        glm::vec3 vt = v - contact.n * vn;
-
-        // if(vn >= 0.0f)
-        //     continue; // Contact has been solved
 
         glm::vec3 dv = glm::vec3(0.0f);
+        
+        // (29) Relative velocity
+        glm::vec3 v = contact->A->getVelocityAt(contact->p) - contact->B->getVelocityAt(contact->p);
+        float vn = glm::dot(contact->n, v);
+        glm::vec3 vt = v - (contact->n * vn);
+        float vt_length = glm::length(vt);
 
         // (30) Friction
-        float h_squared = (float) h * (float) h;
-        float Fn = contact.lambdaN / h_squared;
-        float vt_length = glm::length(vt);
-        glm::vec3 normalizedVt = (vt_length > 0.0001f) ? glm::normalize(vt) : glm::vec3(0.0f);
-        dv += -normalizedVt * std::min((float) h * contact.friction * Fn, vt_length);     
+        if(vt_length > 0.01f) {
+            float h_squared = (float) h * (float) h;
+            float Fn = -contact->lambdaN / h_squared;
+            // glm::vec3 normalizedVt = (vt_length > 0.001f) ? glm::normalize(vt) : glm::vec3(0.0f);
+            glm::vec3 normalizedVt = glm::normalize(vt);
+            dv += -normalizedVt * std::min((float) h * contact->friction * Fn, vt_length);     
+        }
         
         // (31, 32) @TODO dampening
 
         // (34), restitution
-        if(vn < 0.05f) {
-            const float vn_prev = contact.vn;
-            float e = (vn < (5.0f * -9.81f * h)) ? contact.e : 0.0f;
-            dv += contact.n * (-vn + std::max(-e * vn_prev, 0.0f));
+        if(vn < 0.5f) {
+            const float vn_prev = contact->vn;
+            float e = (vn < (1.2f * -9.81f * h)) ? contact->e : 0.0f;
+            dv += contact->n * (-vn + std::max(-e * vn_prev, 0.0f));
         }
 
         XPBDSolver::applyBodyPairCorrection(
@@ -241,13 +229,13 @@ void XPBDSolver::solveVelocities(const std::vector<ContactSet>& contacts, const 
             dv,
             0.0f,
             (float) h,
-            contact.p,
-            contact.p,
+            contact->p,
+            contact->p,
             true
         );
 
-        contact.A->skipVelocityUpdate = false;
-        contact.B->skipVelocityUpdate = false;
+        contact->A->useVelocitySolve = false;
+        contact->B->useVelocitySolve = false;
 
     }
 }
@@ -255,7 +243,7 @@ void XPBDSolver::solveVelocities(const std::vector<ContactSet>& contacts, const 
 void XPBDSolver::applyBodyPairCorrection(
     // RigidBody* body0, 
     // RigidBody* body1, 
-    ContactSet& contact,
+    ContactSet* contact,
     glm::vec3& corr, 
     float compliance, 
     float dt, 
@@ -264,8 +252,8 @@ void XPBDSolver::applyBodyPairCorrection(
     bool velocityLevel
 ) {
 
-    RigidBody* body0 = contact.A;
-    RigidBody* body1 = contact.B;
+    RigidBody* body0 = contact->A;
+    RigidBody* body1 = contact->B;
 
     float C = glm::length(corr);
     
@@ -284,9 +272,10 @@ void XPBDSolver::applyBodyPairCorrection(
     float dlambda = -C / (w + compliance / dt / dt);
     // float alpha = compliance / (dt*dt);
     // float dlambda = (-C - alpha * contact.lambdaN) / (w + alpha);
-    contact.lambdaN += dlambda;
+    if(!velocityLevel)
+        contact->lambdaN += dlambda; // Assuming n is in the normal direction of the collision plane
 
-    n = n * -dlambda; // Why is this negative
+    n = n * -dlambda;
 
     body0->applyCorrection(n, pos0, velocityLevel);
     body1->applyCorrection(-n, pos1, velocityLevel);

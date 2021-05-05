@@ -17,11 +17,21 @@ int main() {
     Renderer &renderer = Renderer::Instance();
     PhysicsHandler &physicsHandler = PhysicsHandler::Instance();
 
+    auto lightDirection = new Uniform<glm::vec3>("u_lightDirection", glm::vec3(0.5f, 0.0f, 2.0f));
+
     Material* colorMaterial = new Material("/shaders/Color");
     Material* phongMaterial = new Material("/shaders/Phong");
-    
-    auto lightDirection = new Uniform<glm::vec3>("u_lightDirection", glm::vec3(0.5f, 0.0f, 2.0f));
     phongMaterial->assignUniform(lightDirection);
+    // Material* floorMaterial = new Material("/shaders/Phong", {
+    //     new Uniform<glm::vec3>("ambient", glm::vec3(0.2f, 0.3f, 0.3f)),
+    //     new Uniform<glm::vec3>("diffuseAlbedo", glm::vec3(0.2f, 0.3f, 0.3f)),
+    //     new Uniform<glm::vec3>("specularAlbedo", glm::vec3(0.2f, 0.2f, 0.2f)),
+    //     new Uniform<glm::vec3>("rimColor", glm::vec3(0.2f, 0.3f, 0.3f)),
+    //     new Uniform<int>("rimLightOn", 1),
+    //     new Uniform<float>("shininess", 20.0f),
+    //     new Uniform<float>("rimPower", 200.0f),
+    //     lightDirection
+    // });
 
     std::random_device rd; std::mt19937 gen(rd()); std::uniform_real_distribution<> randboy(0, 10);
 
@@ -48,16 +58,10 @@ int main() {
     //     myTetra->setRotation({ randboy(gen) * 18, randboy(gen) * 18, randboy(gen) * 18 });
     //     RigidBody* tetraBod = new RigidBody(myTetra);
     //     tetraBod->collider = new MeshCollider(PrimitiveMesh(PrimitiveGenerator::Tetrahedron(1.0f)));
-    //     // tetraBod->bounciness = 0.10f;
-    //     // tetraBod->gravity = 0.0f;
     //     physicsHandler.Enqueue(tetraBod);
     // }
 
     // Single tetrahedron /////////////////////////////////////////////////////////////////////////
-    
-    // Mesh* debugTetra = new TetrahedronMesh(1.0f);
-    // debugTetra->setMaterial(colorMaterial);
-    // renderer.Enqueue(debugTetra);
 
     Mesh* myTetra = new TetrahedronMesh(1.0f);
     myTetra->setPosition({ 2.0f, 2.0f, 0.0f });
@@ -69,22 +73,13 @@ int main() {
     tetraBod->collider = new MeshCollider(PrimitiveMesh(PrimitiveGenerator::Tetrahedron(1.0f)));
     // tetraBod->bounciness = 1.0f;
     // tetraBod->gravity = 0.0f;
+    tetraBod->invMass = 1.0f;
+    tetraBod->invInertia = glm::vec3(1.0f);
     physicsHandler.Enqueue(tetraBod);
 
     // Floor //////////////////////////////////////////////////////////////////////////////////////
     Mesh* floor = new PlaneMesh(6.0f);
     floor->setRotation({ -90.0f, 0.0f, 0.0f });
-
-    // Material* floorMaterial = new Material("/shaders/Phong", {
-    //     new Uniform<glm::vec3>("ambient", glm::vec3(0.2f, 0.3f, 0.3f)),
-    //     new Uniform<glm::vec3>("diffuseAlbedo", glm::vec3(0.2f, 0.3f, 0.3f)),
-    //     new Uniform<glm::vec3>("specularAlbedo", glm::vec3(0.2f, 0.2f, 0.2f)),
-    //     new Uniform<glm::vec3>("rimColor", glm::vec3(0.2f, 0.3f, 0.3f)),
-    //     new Uniform<int>("rimLightOn", 1),
-    //     new Uniform<float>("shininess", 20.0f),
-    //     new Uniform<float>("rimPower", 200.0f),
-    //     lightDirection
-    // });
     floor->setMaterial(colorMaterial);
     renderer.Enqueue(floor);
     
@@ -130,17 +125,20 @@ int main() {
         glm::vec3 impulsePos = tetraPointW;
         glm::vec3 v = tetraBod->getVelocityAt(tetraPointW);
 
-        if(glfwGetKey(renderer.window, GLFW_KEY_Q) == GLFW_PRESS) {
-            // tetraBod->applyWorldImpulse(impulse, impulsePos);
-            tetraBod->applyCorrection(impulse, impulsePos, true);
-        } 
+        glm::vec3 force = glm::vec3(0, 20.0f, 0);
+        glm::vec3 forcePos = tetraPointW;
 
-        // debugMesh.setPosition(tetraPointW);
-        // debugMesh.setScale(glm::length(v) * 10.0f);
-        // debugMesh.setRotation(Quaternion::createFromTwoVectors(
-        //     glm::vec3(0.0f, 1.0f, 0.0f),
-        //     v
-        // ));
+        if(glfwGetKey(renderer.window, GLFW_KEY_Q) == GLFW_PRESS) {
+            // tetraBod->applyCorrection(impulse, impulsePos, true);
+            tetraBod->applyForce(force, forcePos);
+        }
+
+        debugMesh.setPosition(forcePos);
+        debugMesh.setScale(glm::length(force) * 1.0f);
+        debugMesh.setRotation(Quaternion::createFromTwoVectors(
+            glm::vec3(0.0f, 1.0f, 0.0f),
+            force
+        ));
 
         debugMesh.Bind();
         glUniformMatrix4fv(debugMesh.material->shader->getUniformLocation("u_modelViewProjectionMatrix"), 1, GL_FALSE, 
