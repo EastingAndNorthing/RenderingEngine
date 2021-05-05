@@ -17,7 +17,11 @@ struct ContactSet {
     glm::vec3 p = glm::vec3(0.0f);
     glm::vec3 n = glm::vec3(0.0f);
     float d = 0.0f;
+    glm::vec3 vrel = glm::vec3(0.0f);
     float vn = 0.0f;
+    float e = 0.5f;
+    float friction = 0.0f;
+    float lambdaN = 0.0f;
 };
 
 struct CollisionPair {
@@ -27,10 +31,8 @@ struct CollisionPair {
 
 namespace XPBDSolver {
 
-    const int numSubSteps = 20;
-    const int numConstraintIterations = 1;
-
-    const float AABBMargin = 2.0f; // Chapter 3.5
+    const int numSubSteps = 10;
+    const int numPosIters = 1;
 
     void update(const std::vector<RigidBody*> rigidBodies, const double dt);
 

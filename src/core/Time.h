@@ -7,7 +7,7 @@ public:
     double time = 0;
     double dt = 0;
     
-    float timeScale = 0.5f;
+    float timeScale = 1.0f;
     float minTimeScale = 0.0001f;
     float maxTimeScale = 8.0f;
     float timeScaleStep = 0.001f;

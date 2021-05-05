@@ -34,7 +34,6 @@ int main() {
 
     //     RigidBody* rigidBod = new RigidBody(mesh);
     //     rigidBod->collider = new SphereCollider(size);
-    //     rigidBod->mass = size;
     //     rigidBod->bounciness = 1.0f;
     //     physicsHandler.Enqueue(rigidBod);
     // }
@@ -49,7 +48,6 @@ int main() {
     //     myTetra->setRotation({ randboy(gen) * 18, randboy(gen) * 18, randboy(gen) * 18 });
     //     RigidBody* tetraBod = new RigidBody(myTetra);
     //     tetraBod->collider = new MeshCollider(PrimitiveMesh(PrimitiveGenerator::Tetrahedron(1.0f)));
-    //     tetraBod->mass = 1.0f;
     //     // tetraBod->bounciness = 0.10f;
     //     // tetraBod->gravity = 0.0f;
     //     physicsHandler.Enqueue(tetraBod);
@@ -57,6 +55,10 @@ int main() {
 
     // Single tetrahedron /////////////////////////////////////////////////////////////////////////
     
+    // Mesh* debugTetra = new TetrahedronMesh(1.0f);
+    // debugTetra->setMaterial(colorMaterial);
+    // renderer.Enqueue(debugTetra);
+
     Mesh* myTetra = new TetrahedronMesh(1.0f);
     myTetra->setPosition({ 2.0f, 2.0f, 0.0f });
     // myTetra->setRotation({ -120.0f, 20.0f, 0.0f });
@@ -66,7 +68,7 @@ int main() {
     RigidBody* tetraBod = new RigidBody(myTetra);
     tetraBod->collider = new MeshCollider(PrimitiveMesh(PrimitiveGenerator::Tetrahedron(1.0f)));
     // tetraBod->bounciness = 1.0f;
-    tetraBod->gravity = 0.0f;
+    // tetraBod->gravity = 0.0f;
     physicsHandler.Enqueue(tetraBod);
 
     // Floor //////////////////////////////////////////////////////////////////////////////////////
@@ -89,8 +91,8 @@ int main() {
     RigidBody* floorCollider = new RigidBody(floor, new PlaneCollider(glm::vec2(6.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
     floorCollider->makeStatic();
     // floorCollider->gravity = 0.0f;
-    // floorCollider->invMass = 10.0f;
-    // floorCollider->invInertia = glm::vec3(10.0f);
+    // floorCollider->invMass = 0.001f;
+    // floorCollider->invInertia = glm::vec3(0.001f);
     physicsHandler.Enqueue(floorCollider);
 
     Mesh debugMesh = Mesh(PrimitiveGenerator::Arrow());
@@ -100,22 +102,20 @@ int main() {
 
         renderer.BeginLoop();
         
-        if(glfwGetKey(renderer.window, GLFW_KEY_UP) == GLFW_PRESS)   { time.slower(); };
-        if(glfwGetKey(renderer.window, GLFW_KEY_DOWN) == GLFW_PRESS) { time.faster(); };
+        if(glfwGetKey(renderer.window, GLFW_KEY_UP) == GLFW_PRESS)   { time.faster(); };
+        if(glfwGetKey(renderer.window, GLFW_KEY_DOWN) == GLFW_PRESS) { time.slower(); };
         if(glfwGetKey(renderer.window, GLFW_KEY_M) == GLFW_PRESS) { time.setStepMode(true); };
         if(glfwGetKey(renderer.window, GLFW_KEY_N) == GLFW_PRESS) { time.setStepMode(false); };
     
         if(!time.isStepMode || glfwGetKey(renderer.window, GLFW_KEY_P) == GLFW_PRESS) { physicsHandler.update(); };
 
         if(glfwGetKey(renderer.window, GLFW_KEY_SPACE) == GLFW_PRESS) { tetraBod->gravity = 0.0f; tetraBod->vel = glm::vec3(0.0f); tetraBod->omega = glm::vec3(0.0f); };
-        
         if(glfwGetKey(renderer.window, GLFW_KEY_KP_4) == GLFW_PRESS) tetraBod->omega.x += 0.1f;
         if(glfwGetKey(renderer.window, GLFW_KEY_KP_6) == GLFW_PRESS) tetraBod->omega.x -= 0.1f;
         if(glfwGetKey(renderer.window, GLFW_KEY_KP_8) == GLFW_PRESS) tetraBod->omega.y += 0.1f;
         if(glfwGetKey(renderer.window, GLFW_KEY_KP_5) == GLFW_PRESS) tetraBod->omega.y -= 0.1f;
         if(glfwGetKey(renderer.window, GLFW_KEY_KP_7) == GLFW_PRESS) tetraBod->omega.z += 0.1f;
         if(glfwGetKey(renderer.window, GLFW_KEY_KP_9) == GLFW_PRESS) tetraBod->omega.z -= 0.1f;
-        
         if(glfwGetKey(renderer.window, GLFW_KEY_L) == GLFW_PRESS) tetraBod->vel.x += 0.1f;
         if(glfwGetKey(renderer.window, GLFW_KEY_J) == GLFW_PRESS) tetraBod->vel.x -= 0.1f;
         if(glfwGetKey(renderer.window, GLFW_KEY_I) == GLFW_PRESS) tetraBod->vel.y += 0.1f;
@@ -125,7 +125,6 @@ int main() {
 
         glm::vec3 tetraPointL = { 0, -0.333333333333333333, 0.9428090415820633658 };
         glm::vec3 tetraPointW = CoordinateSystem::localToWorld(tetraPointL, tetraBod->pose.q, tetraBod->pose.p);
-        glm::vec3 worldPointVel = tetraBod->getVelocityAt(tetraPointL);
 
         glm::vec3 impulse = {0, 0.1f, 0};
         glm::vec3 impulsePos = tetraPointW;
@@ -136,12 +135,12 @@ int main() {
             tetraBod->applyCorrection(impulse, impulsePos, true);
         } 
 
-        debugMesh.setPosition(tetraPointW);
-        debugMesh.setScale(glm::length(v) * 10.0f);
-        debugMesh.setRotation(Quaternion::createFromTwoVectors(
-            glm::vec3(0.0f, 1.0f, 0.0f),
-            v
-        ));
+        // debugMesh.setPosition(tetraPointW);
+        // debugMesh.setScale(glm::length(v) * 10.0f);
+        // debugMesh.setRotation(Quaternion::createFromTwoVectors(
+        //     glm::vec3(0.0f, 1.0f, 0.0f),
+        //     v
+        // ));
 
         debugMesh.Bind();
         glUniformMatrix4fv(debugMesh.material->shader->getUniformLocation("u_modelViewProjectionMatrix"), 1, GL_FALSE, 

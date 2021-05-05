@@ -16,6 +16,8 @@ struct RigidBodyForce {
 class RigidBody {
 public:
 
+    bool skipVelocityUpdate = false;
+
     Mesh* mesh = NULL;                                          // Non-physical mesh that is rendered to the screen
     Collider* collider = NULL;                                  // Physics representation of shape. https://en.m.wikipedia.org/wiki/Convex_hull
     glm::vec3 boundingBox = glm::vec3(1.0f);                    // https://en.m.wikipedia.org/wiki/Bounding_volume
@@ -31,15 +33,14 @@ public:
     
     bool isDynamic = true;                                      // Whether physics applies to this body
 
-    std::vector<RigidBodyForce> externalForces = {};            // In WORLD space.
-    glm::vec3 forces = glm::vec3(0);                            // In WORLD space.
-    glm::vec3 torque = glm::vec3(0);                            // In LOCAL space. https://en.m.wikipedia.org/wiki/Torque
+    std::vector<RigidBodyForce> externalForces = {};            // 
+    glm::vec3 forces = glm::vec3(0);                            // 
+    glm::vec3 torque = glm::vec3(0);                            // https://en.m.wikipedia.org/wiki/Torque
 
-    float mass = 1.0f;
-    float gravity = -9.81f;                                     // In WORLD space.
-    float staticFriction = 0.50f;                               // https://en.m.wikipedia.org/wiki/Friction
-    float dynamicFriction = 0.30f;                              // https://en.m.wikipedia.org/wiki/Friction
-    float bounciness = 0.5f;                                    // https://en.m.wikipedia.org/wiki/Coefficient_of_restitution
+    float gravity = -9.81f;
+    float staticFriction = 0.70f;                               // https://en.m.wikipedia.org/wiki/Friction
+    float dynamicFriction = 0.50f;                              // https://en.m.wikipedia.org/wiki/Friction
+    float bounciness = 0.7f;                                    // https://en.m.wikipedia.org/wiki/Coefficient_of_restitution
     float rotationalDamping = 0.996f;
     
     RigidBody() = default;
@@ -50,7 +51,7 @@ public:
     void applyCorrection(glm::vec3 corr, glm::vec3 pos = glm::vec3(0.0f), bool velocityLevel = false);
 
     void integrate(const float &deltaTime);
-    void update(const float &deltaTime);
+    void update(const double &deltaTime);
 
     void updateCollider();
     

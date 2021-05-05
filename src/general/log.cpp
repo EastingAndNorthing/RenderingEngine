@@ -22,3 +22,7 @@ void Log(const std::string& msg, LogLevel&& logLevel, const std::string& origin)
 void Log(const glm::vec3& vec3, const std::string& name) {
     std::cout << name << " " << vec3.x << " " << vec3.y << " " << vec3.z << " " << std::endl;
 }
+
+void Log(const float& val, const std::string& name) {
+    std::cout << name << " " << val << std::endl;
+}

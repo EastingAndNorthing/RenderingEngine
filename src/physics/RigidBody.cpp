@@ -22,31 +22,44 @@ void RigidBody::makeStatic() {
 }
 
 float RigidBody::getInverseMass(glm::vec3& normal, glm::vec3 pos) {
-    glm::vec3 n = glm::vec3(0.0f);
-    if (glm::length(pos) < 0.00001f) {
-        // @TODO check epsilon
-        std::cout << "pos is zero" << std::endl;
-        n = normal;
-    } else {
-        n = pos - this->pose.p;
-        n = glm::cross(n, normal);
-    }
-    this->pose.invRotate(n);
-    float w = 
-        n.x * n.x * this->invInertia.x +
-        n.y * n.y * this->invInertia.y +
-        n.z * n.z * this->invInertia.z;
-    if (glm::length(pos) < 0.00001f)
-        w += this->invMass;
+    // glm::vec3 n = glm::vec3(0.0f);
+    // if (glm::length(pos) < 0.00001f) {
+    //     // @TODO check epsilon
+    //     std::cout << "pos is zero" << std::endl;
+    //     n = normal;
+    // } else {
+    //     n = pos - this->pose.p;
+    //     n = glm::cross(n, normal);
+    // }
+    // this->pose.invRotate(n);
+    // float w = 
+    //     n.x * n.x * this->invInertia.x +
+    //     n.y * n.y * this->invInertia.y +
+    //     n.z * n.z * this->invInertia.z;
+    // if (glm::length(pos) < 0.00001f)
+    //     w += this->invMass;
+    // return w;
+
+    glm::vec3 r = pos - this->pose.p;
+    glm::vec3 rcross = glm::cross(r, normal);
+
+    glm::vec3 I = glm::conjugate(this->pose.q) * this->invInertia;
+
+    float inertiaInfluence = 
+        rcross.x * rcross.x * I.x +
+        rcross.y * rcross.y * I.y +
+        rcross.z * rcross.z * I.z;
+
+    float w = this->invMass + inertiaInfluence;
+
     return w;
 }
 
 glm::vec3 RigidBody::getVelocityAt(glm::vec3& pos) {	
     glm::vec3 vel = glm::vec3(0.0f);	
     if(this->isDynamic) {
-        vel = pos - this->pose.p;
-        vel = glm::cross(vel, this->omega);
-        vel = this->vel - vel;
+        glm::vec3 r1 = pos - this->pose.p;
+        vel = this->vel + glm::cross(this->omega, r1);
     }
     return vel;
 }
@@ -75,12 +88,12 @@ void RigidBody::applyRotation(glm::vec3 rot, float scale) {
     this->pose.q = glm::normalize(this->pose.q);
 }
 
-// @TODO also update planeCollider after rotation
 void RigidBody::integrate(const float &dt) {
 
     if(this->isDynamic) {
 
-        this->prevPose.copy(this->pose);
+        this->prevPose.p = pose.p;
+        this->prevPose.q = pose.q;
 
         this->forces = glm::vec3(0.0f);
         this->torque = glm::vec3(0.0f);
@@ -94,30 +107,32 @@ void RigidBody::integrate(const float &dt) {
         // this->externalForces.clear();
 
         // Euler step
-        this->vel = this->vel + glm::vec3(0, this->gravity, 0) * dt;			
+        this->vel += glm::vec3(0, this->gravity, 0) * dt;			
         this->pose.p += this->vel * dt;
         this->applyRotation(this->omega, dt);
+
+        // this->invInertia = this->pose.q * this->invInertia;
         
     }
 }
 
-void RigidBody::update(const float &dt) {
+void RigidBody::update(const double &dt) {
 
     if(this->isDynamic) {
-        this->vel = this->pose.p - this->prevPose.p;
-        this->vel *= 1.0f / dt;
-        glm::quat dq = glm::quat(1.0f, 0, 0, 0);
+        if(!skipVelocityUpdate) {
+            this->vel = (this->pose.p - this->prevPose.p) / (float) dt; 
 
-        // dq.multiplyQuaternions(this.pose.q, this.prevPose.q.conjugate());
-        dq = this->pose.q * glm::conjugate(this->prevPose.q);
-        
-        this->omega = glm::vec3(dq.x * 2.0 / dt, dq.y * 2.0 / dt, dq.z * 2.0 / dt);
-        if (dq.w < 0.0f)
-            this->omega = glm::vec3(-this->omega.x, -this->omega.y, -this->omega.z); // @TODO just omega = -omega?
+            glm::quat dq = this->pose.q * glm::conjugate(this->prevPose.q);
+            
+            this->omega = glm::vec3(dq.x * 2.0 / dt, dq.y * 2.0 / dt, dq.z * 2.0 / dt);
 
-        // Dampening
-        // this->omega = this->omega * (1.0f - 1.0f * dt);
-        // this->vel = this->vel * (1.0f - 1.0f * dt);
+            if (dq.w < 0.0f)
+                this->omega = glm::vec3(-this->omega.x, -this->omega.y, -this->omega.z); // @TODO just omega = -omega?
+
+            // Dampening
+            this->omega = this->omega * (1.0f - 1.0f * (float) dt);
+            this->vel = this->vel * (1.0f - 1.0f * (float) dt);
+        }
 
         this->updateGeometry();
         this->updateCollider();
@@ -151,6 +166,7 @@ void RigidBody::applyCorrection(glm::vec3 corr, glm::vec3 pos, bool velocityLeve
         this->pose.rotate(dq2);
         
         if (velocityLevel)
+            // this->omega += 0.0fk;
             this->omega += dq2;
         else 
             this->applyRotation(dq2);
@@ -169,7 +185,6 @@ void RigidBody::updateGeometry() {
 void RigidBody::updateCollider() {
 
     switch(this->collider->colliderType) {
-
         case ColliderType::Plane :
             auto PC = static_cast<PlaneCollider*>(this->collider);
             PC->normal = this->pose.q * glm::vec3(0.0f, 0.0f, 1.0f); // @TODO store initial up direction of plane collider normal
