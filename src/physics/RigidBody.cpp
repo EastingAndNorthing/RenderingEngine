@@ -80,9 +80,9 @@ void RigidBody::update(const double &dt) {
             if (dq.w < 0.0f)
                 this->omega = glm::vec3(-this->omega.x, -this->omega.y, -this->omega.z); // @TODO just omega = -omega?
 
-            // Dampening
-            // this->omega = this->omega * (1.0f - 1.0f * (float) dt);
+            // // Dampening
             // this->vel = this->vel * (1.0f - 1.0f * (float) dt);
+            // this->omega = this->omega * (1.0f - 1.0f * (float) dt);
         }
 
         this->updateCollider();

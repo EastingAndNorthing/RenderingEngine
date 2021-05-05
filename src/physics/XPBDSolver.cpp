@@ -205,9 +205,9 @@ void XPBDSolver::solveVelocities(const std::vector<ContactSet*>& contacts, const
         float vt_length = glm::length(vt);
 
         // (30) Friction
-        if(vt_length > 0.01f) {
+        if(vt_length > 0.005f) {
             float h_squared = (float) h * (float) h;
-            float Fn = -contact->lambdaN / h_squared;
+            float Fn = -contact->lambdaN / h_squared; // Seems that this a bit more than expected
             // glm::vec3 normalizedVt = (vt_length > 0.001f) ? glm::normalize(vt) : glm::vec3(0.0f);
             glm::vec3 normalizedVt = glm::normalize(vt);
             dv += -normalizedVt * std::min((float) h * contact->friction * Fn, vt_length);     

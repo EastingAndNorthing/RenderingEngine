@@ -105,18 +105,18 @@ int main() {
         if(!time.isStepMode || glfwGetKey(renderer.window, GLFW_KEY_P) == GLFW_PRESS) { physicsHandler.update(); };
 
         if(glfwGetKey(renderer.window, GLFW_KEY_SPACE) == GLFW_PRESS) { tetraBod->gravity = 0.0f; tetraBod->vel = glm::vec3(0.0f); tetraBod->omega = glm::vec3(0.0f); };
-        if(glfwGetKey(renderer.window, GLFW_KEY_KP_4) == GLFW_PRESS) tetraBod->omega.x += 0.1f;
-        if(glfwGetKey(renderer.window, GLFW_KEY_KP_6) == GLFW_PRESS) tetraBod->omega.x -= 0.1f;
-        if(glfwGetKey(renderer.window, GLFW_KEY_KP_8) == GLFW_PRESS) tetraBod->omega.y += 0.1f;
-        if(glfwGetKey(renderer.window, GLFW_KEY_KP_5) == GLFW_PRESS) tetraBod->omega.y -= 0.1f;
-        if(glfwGetKey(renderer.window, GLFW_KEY_KP_7) == GLFW_PRESS) tetraBod->omega.z += 0.1f;
-        if(glfwGetKey(renderer.window, GLFW_KEY_KP_9) == GLFW_PRESS) tetraBod->omega.z -= 0.1f;
-        if(glfwGetKey(renderer.window, GLFW_KEY_L) == GLFW_PRESS) tetraBod->vel.x += 0.1f;
-        if(glfwGetKey(renderer.window, GLFW_KEY_J) == GLFW_PRESS) tetraBod->vel.x -= 0.1f;
-        if(glfwGetKey(renderer.window, GLFW_KEY_I) == GLFW_PRESS) tetraBod->vel.y += 0.1f;
-        if(glfwGetKey(renderer.window, GLFW_KEY_K) == GLFW_PRESS) tetraBod->vel.y -= 0.1f;
-        if(glfwGetKey(renderer.window, GLFW_KEY_U) == GLFW_PRESS) tetraBod->vel.z += 0.1f;
-        if(glfwGetKey(renderer.window, GLFW_KEY_O) == GLFW_PRESS) tetraBod->vel.z -= 0.1f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_KP_4) == GLFW_PRESS) tetraBod->omega.x += 0.3f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_KP_6) == GLFW_PRESS) tetraBod->omega.x -= 0.3f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_KP_8) == GLFW_PRESS) tetraBod->omega.y += 0.3f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_KP_5) == GLFW_PRESS) tetraBod->omega.y -= 0.3f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_KP_7) == GLFW_PRESS) tetraBod->omega.z += 0.3f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_KP_9) == GLFW_PRESS) tetraBod->omega.z -= 0.3f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_L) == GLFW_PRESS) tetraBod->vel.x += 0.3f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_J) == GLFW_PRESS) tetraBod->vel.x -= 0.3f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_I) == GLFW_PRESS) tetraBod->vel.y += 0.3f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_K) == GLFW_PRESS) tetraBod->vel.y -= 0.3f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_U) == GLFW_PRESS) tetraBod->vel.z += 0.3f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_O) == GLFW_PRESS) tetraBod->vel.z -= 0.3f;
 
         glm::vec3 tetraPointL = { 0, -0.333333333333333333, 0.9428090415820633658 };
         glm::vec3 tetraPointW = CoordinateSystem::localToWorld(tetraPointL, tetraBod->pose.q, tetraBod->pose.p);
