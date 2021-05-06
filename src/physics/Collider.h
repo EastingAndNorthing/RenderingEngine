@@ -2,7 +2,7 @@
 
 #include "common.h"
 #include "primitives/Polygon.h"
-#include "primitives/PrimitiveGenerator.h"
+#include "primitives/GeometryGenerator.h"
 #include "primitives/Mesh.h"
 
 enum ColliderType {
@@ -46,4 +46,5 @@ struct SphereCollider : public Collider {
 
 struct MeshCollider : public Collider {
     MeshCollider(PrimitiveMesh convexMesh);
+    MeshCollider(Mesh* mesh);
 };

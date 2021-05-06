@@ -5,7 +5,7 @@
 #include "core/VertexBuffer.h"
 #include "core/IndexBuffer.h"
 #include "core/Material.h"
-#include "primitives/PrimitiveGenerator.h"
+#include "primitives/GeometryGenerator.h"
 
 struct Mesh {
 public: 

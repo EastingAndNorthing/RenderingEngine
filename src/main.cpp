@@ -22,15 +22,21 @@ int main() {
     Material* colorMaterial = new Material("/shaders/Color");
     Material* phongMaterial = new Material("/shaders/Phong");
     phongMaterial->assignUniform(lightDirection);
-    // Material* floorMaterial = new Material("/shaders/Phong", {
-    //     new Uniform<glm::vec3>("ambient", glm::vec3(0.2f, 0.3f, 0.3f)),
-    //     new Uniform<glm::vec3>("diffuseAlbedo", glm::vec3(0.2f, 0.3f, 0.3f)),
-    //     new Uniform<glm::vec3>("specularAlbedo", glm::vec3(0.2f, 0.2f, 0.2f)),
-    //     new Uniform<glm::vec3>("rimColor", glm::vec3(0.2f, 0.3f, 0.3f)),
-    //     new Uniform<int>("rimLightOn", 1),
-    //     new Uniform<float>("shininess", 20.0f),
-    //     new Uniform<float>("rimPower", 200.0f),
-    //     lightDirection
+    Material* phongMaterial2 = new Material("/shaders/Phong", {
+        new Uniform<glm::vec3>("ambient", glm::vec3(0.2f, 0.3f, 0.3f)),
+        new Uniform<glm::vec3>("diffuseAlbedo", glm::vec3(0.2f, 0.3f, 0.3f)),
+        new Uniform<glm::vec3>("specularAlbedo", glm::vec3(0.2f, 0.2f, 0.2f)),
+        new Uniform<glm::vec3>("rimColor", glm::vec3(0.2f, 0.3f, 0.3f)),
+        new Uniform<int>("rimLightOn", 1),
+        new Uniform<float>("shininess", 20.0f),
+        new Uniform<float>("rimPower", 200.0f),
+        lightDirection
+    });
+    phongMaterial2->assignUniform(lightDirection);
+
+    // Material* wireframeMat = new Material("/shaders/Wireframe", {
+    //     // new Uniform<glm::vec3>("uColor", glm::vec3(1.0f, 1.0f, 1.0f)),
+    //     // new Uniform<glm::vec4>("uLineWidth", 1.0f),
     // });
 
     std::random_device rd; std::mt19937 gen(rd()); std::uniform_real_distribution<> randboy(0, 10);
@@ -57,22 +63,19 @@ int main() {
 
     //     myMesh->setRotation({ randboy(gen) * 18, randboy(gen) * 18, randboy(gen) * 18 });
     //     RigidBody* myBody = new RigidBody(myMesh);
-    //     myBody->collider = new MeshCollider(PrimitiveMesh(PrimitiveGenerator::Tetrahedron(1.0f)));
+    //     myBody->collider = new MeshCollider(PrimitiveMesh(GeometryGenerator::Tetrahedron(1.0f)));
     //     physicsHandler.Enqueue(myBody);
     // }
 
     // Single tetrahedron /////////////////////////////////////////////////////////////////////////
 
-    Mesh* myMesh = new TetrahedronMesh(1.0f);
+    Mesh* myMesh = new BoxMesh(1.0f);
     myMesh->setPosition({ 3.0f, 7.0f, 0.0f });
     // myMesh->setRotation({ -120.0f, 20.0f, 0.0f });
-    myMesh->setMaterial(colorMaterial);
+    myMesh->setMaterial(phongMaterial);
     renderer.Enqueue(myMesh);
 
     RigidBody* myBody = new RigidBody(myMesh);
-    myBody->collider = new MeshCollider(PrimitiveMesh(PrimitiveGenerator::Tetrahedron(1.0f)));
-    // myBody->bounciness = 1.0f;
-    // myBody->gravity = 0.0f;
     myBody->invMass = 1.0f;
     myBody->invInertia = glm::vec3(1.0f);
     physicsHandler.Enqueue(myBody);
@@ -80,18 +83,12 @@ int main() {
     // Floor //////////////////////////////////////////////////////////////////////////////////////
     Mesh* floor = new PlaneMesh(10.0f);
     floor->setRotation({ -90.0f, 0.0f, 0.0f });
-    floor->setMaterial(colorMaterial);
+    floor->setMaterial(phongMaterial2);
     renderer.Enqueue(floor);
     
-    RigidBody* floorCollider = new RigidBody(floor, new PlaneCollider(glm::vec2(10.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-    floorCollider->makeStatic();
-    // floorCollider->gravity = 0.0f;
-    // floorCollider->invMass = 0.001f;
-    // floorCollider->invInertia = glm::vec3(0.001f);
-    physicsHandler.Enqueue(floorCollider);
-
-    Mesh debugMesh = Mesh(PrimitiveGenerator::Arrow());
-    debugMesh.setMaterial(renderer.defaultShader);
+    RigidBody* floorBody = new RigidBody(floor, new PlaneCollider(glm::vec2(10.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+    floorBody->makeStatic();
+    physicsHandler.Enqueue(floorBody);
     
     while (renderer.isActive()) {
 
@@ -101,6 +98,9 @@ int main() {
         if(glfwGetKey(renderer.window, GLFW_KEY_DOWN) == GLFW_PRESS) { time.slower(); };
         if(glfwGetKey(renderer.window, GLFW_KEY_M) == GLFW_PRESS) { time.setStepMode(true); };
         if(glfwGetKey(renderer.window, GLFW_KEY_N) == GLFW_PRESS) { time.setStepMode(false); };
+
+        if(glfwGetKey(renderer.window, GLFW_KEY_Z) == GLFW_PRESS) { g_settings.wireframe = true; };
+        if(glfwGetKey(renderer.window, GLFW_KEY_X) == GLFW_PRESS) { g_settings.wireframe = false; };
     
         if(!time.isStepMode || glfwGetKey(renderer.window, GLFW_KEY_P) == GLFW_PRESS) { physicsHandler.update(); };
 
@@ -132,24 +132,11 @@ int main() {
             // myBody->applyCorrection(impulse, impulsePos, true);
             myBody->applyForce(force, forcePos);
         }
-
-        debugMesh.setPosition(forcePos);
-        debugMesh.setScale(glm::length(force) * 1.0f);
-        debugMesh.setRotation(Quaternion::createFromTwoVectors(
-            glm::vec3(0.0f, 1.0f, 0.0f),
-            force
-        ));
-
-        debugMesh.Bind();
-        glUniformMatrix4fv(debugMesh.material->shader->getUniformLocation("u_modelViewProjectionMatrix"), 1, GL_FALSE, 
-            glm::value_ptr(renderer.camera->viewProjectionMatrix * debugMesh.getWorldPositionMatrix())
-        );
-        glDrawArrays(GL_LINES, 0, debugMesh.vertexBuffer.getCount());
         
-        colorMaterial->setUniform("u_color", glm::vec4(0.0f, 1.0, 0.8f, 1.0f)); 
-        // float oscillator = sin(time.time*1.5) / 2.0f + 0.5f;
+        float oscillator = sin(time.time*1.5) / 2.0f + 0.5f;
+        // colorMaterial->setUniform("u_color", glm::vec4(0.0f, 1.0, 0.8f, 1.0f)); 
         // colorMaterial->setUniform("u_color", glm::vec4(0.0f, oscillator, 0.8f, 1.0f)); 
-        // lightDirection->set({ oscillator * 4.0f - 2.0f, 1.0f, 0.0f });
+        lightDirection->set({ oscillator * 4.0f - 2.0f, 1.0f, 0.0f });
 
         renderer.EndLoop();
     }

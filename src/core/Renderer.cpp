@@ -32,7 +32,11 @@ Renderer::Renderer() {
     }
 
     glfwMakeContextCurrent(this->window);
-	glfwSwapInterval(g_settings.vsync);
+
+    if(g_settings.vsync)
+	    glfwSwapInterval(1);
+    else 
+	    glfwSwapInterval(0);
     
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
         Log("Failed to initialize OpenGL context.", LogLevel::ERROR);
@@ -40,22 +44,21 @@ Renderer::Renderer() {
     }
 
     this->camera = new Camera(this->window); // Requires the framebuffer to be set up.
-
     this->SetupFramebuffer(this->frameBufferWidth, this->frameBufferHeight);
 
     printf("Initialized with OpenGL %d.%d.\n", GLVersion.major, GLVersion.minor);
     printf("Supported GLSL version is %s.\n", (char*) glGetString(GL_SHADING_LANGUAGE_VERSION));
 
-    // Breaks on MacOS?
+    // // Breaks on MacOS?
     // glDebugMessageCallback(GlDebugMsg, nullptr);
     // glEnable(GL_DEBUG_OUTPUT);
     // glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe ->> https://vitaliburkov.wordpress.com/2016/09/17/simple-and-fast-high-quality-antialiased-lines-with-opengl/
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Wireframe ->> https://vitaliburkov.wordpress.com/2016/09/17/simple-and-fast-high-quality-antialiased-lines-with-opengl/
 	// glEnable(GL_CULL_FACE);
 
 	glEnable(GL_DEPTH_TEST);
-	// glDepthFunc(GL_LESS);
+	glDepthFunc(GL_LESS);
 	
     // glEnable(GL_STENCIL_TEST);
 	// glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
@@ -63,7 +66,7 @@ Renderer::Renderer() {
 
     this->defaultShader = new Material("/shaders/Basic");
     
-    this->debugVector = new Mesh(PrimitiveGenerator::Arrow());
+    this->debugVector = new Mesh(GeometryGenerator::Arrow());
     this->debugVector->setMaterial(defaultShader);
     this->overlayQueue.push_back(this->debugVector);
 
@@ -116,8 +119,13 @@ void Renderer::EndLoop() {
 }
 
 void Renderer::DrawMeshes() {
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    // if(g_settings.wireframe) {
+    //     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //     // glDisable(GL_CULL_FACE);
+    // } else {
+    //     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    //     // glEnable(GL_CULL_FACE);
+    // }
 
     for (auto& mesh : this->meshQueue) {
 
@@ -142,8 +150,8 @@ void Renderer::DrawMeshes() {
 
 void Renderer::DrawOverlays() {
 
-    glClear(GL_DEPTH_BUFFER_BIT);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe
+    glClear(GL_DEPTH_BUFFER_BIT); // Always on top
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe
 
     for (auto& mesh : this->overlayQueue) {
         mesh->Bind();

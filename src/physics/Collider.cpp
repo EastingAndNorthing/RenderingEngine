@@ -36,7 +36,7 @@ void Collider::setGeometry(const PrimitiveMesh& geometry) {
 
 BoxCollider::BoxCollider(const glm::vec3 &size) {
     this->colliderType = ColliderType::Box;
-    // this->setGeometry(PrimitiveGenerator::Box(size.x, size.y, size.z));
+    // this->setGeometry(GeometryGenerator::Box(size.x, size.y, size.z));
 }
 
 PlaneCollider::PlaneCollider(const glm::vec2 &size, const glm::vec3 &normal) {
@@ -53,4 +53,9 @@ SphereCollider::SphereCollider(const float &diameter) {
 MeshCollider::MeshCollider(PrimitiveMesh convexMesh) {
     this->colliderType = ColliderType::ConvexMesh;
     this->setGeometry(convexMesh);
+}
+
+MeshCollider::MeshCollider(Mesh* mesh) {
+    this->colliderType = ColliderType::ConvexMesh;
+    this->setGeometry(PrimitiveMesh(mesh->vertexBuffer.vertices, mesh->indexBuffer.indices));
 }

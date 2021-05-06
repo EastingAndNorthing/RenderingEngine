@@ -4,6 +4,10 @@
 RigidBody::RigidBody(Mesh* mesh, Collider* collider)
     : mesh(mesh), collider(collider) {
 
+    if(this->collider == NULL) {
+        this->collider = new MeshCollider(mesh);
+    }
+
     if(mesh) {
         this->mesh->managedByRigidBody = true;
         this->pose.p = mesh->position;
