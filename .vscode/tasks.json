@@ -30,7 +30,7 @@
             "command": "g++",
             "args": [
                 "-g",
-                "-O0",
+                "-O2",
                 "-I${workspaceFolder}\\src\\",
                 "${workspaceFolder}\\src\\*.cpp",
                 "${workspaceFolder}\\src\\general\\*.cpp",
@@ -66,6 +66,7 @@
             "command": "/usr/bin/clang++",
             "args": [
                 "-g",
+                "-O0",
                 "-std=c++17",
                 "-stdlib=libc++",
                 "-framework",

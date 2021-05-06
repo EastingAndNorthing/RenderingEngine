@@ -14,7 +14,7 @@ public:
     Pose prevPose = Pose();
 
     bool isDynamic = true;                                      // Whether physics applies to this body
-    bool useVelocitySolve = false;
+    // bool hasCollided = false;
 
     Mesh* mesh = NULL;                                          // Non-physical mesh that is rendered to the screen
     Collider* collider = NULL;                                  // Physics representation of shape. https://en.m.wikipedia.org/wiki/Convex_hull
@@ -32,7 +32,7 @@ public:
     float gravity = -9.81f;
     float staticFriction = 0.40f;                               // https://en.m.wikipedia.org/wiki/Friction
     float dynamicFriction = 0.30f;                              // https://en.m.wikipedia.org/wiki/Friction
-    float bounciness = 0.5f;                                    // https://en.m.wikipedia.org/wiki/Coefficient_of_restitution
+    float bounciness = 0.7f;                                    // https://en.m.wikipedia.org/wiki/Coefficient_of_restitution
     
     RigidBody() = default;
     RigidBody(Mesh* mesh = NULL, Collider* collider = NULL);

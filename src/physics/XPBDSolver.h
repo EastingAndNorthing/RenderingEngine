@@ -29,6 +29,8 @@ struct ContactSet {
 struct CollisionPair {
     RigidBody* A = NULL;
     RigidBody* B = NULL;
+    float e = 0.5f;
+    float friction = 0.0f;
 };
 
 namespace XPBDSolver {
@@ -41,8 +43,8 @@ namespace XPBDSolver {
     std::vector<CollisionPair> getPossibleCollisions(const std::vector<RigidBody*>& rigidBodies, const double& dt);
     std::vector<ContactSet*> getContacts(const std::vector<CollisionPair>& collisions);
 
-    void solvePositions(const std::vector<ContactSet*>& contacts = {}, const double& h = 0.0f);
-    void solveVelocities(const std::vector<ContactSet*>& contacts = {}, const double& h = 0.0f);
+    void solvePositions(const std::vector<ContactSet*>& contacts, const double& h);
+    void solveVelocities(const std::vector<ContactSet*>& contacts, const double& h);
 
     void applyBodyPairCorrection(
         // RigidBody* body0, 

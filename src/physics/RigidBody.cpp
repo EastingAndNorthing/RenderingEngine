@@ -70,7 +70,7 @@ void RigidBody::integrate(const float &dt) {
 void RigidBody::update(const double &dt) {
 
     if(this->isDynamic) {
-        if(!useVelocitySolve) {
+        // if(!this->hasCollided) {
             this->vel = (this->pose.p - this->prevPose.p) / (float) dt; 
 
             glm::quat dq = this->pose.q * glm::conjugate(this->prevPose.q);
@@ -83,7 +83,7 @@ void RigidBody::update(const double &dt) {
             // // Dampening
             // this->vel = this->vel * (1.0f - 1.0f * (float) dt);
             // this->omega = this->omega * (1.0f - 1.0f * (float) dt);
-        }
+        // }
 
         this->updateCollider();
     }
