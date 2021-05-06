@@ -51,6 +51,8 @@ PrimitiveMesh GeometryGenerator::Tetrahedron(const float &size) {
 
 PrimitiveMesh GeometryGenerator::Box(const float &width, const float &height, const float &depth) {
     
+    // @TODO add normals
+
     float x_dist = width  / 2;
     float y_dist = height / 2;
     float z_dist = depth  / 2;
@@ -65,41 +67,30 @@ PrimitiveMesh GeometryGenerator::Box(const float &width, const float &height, co
         Vertex(glm::vec3(-x_dist,  y_dist,  z_dist)), // Back
         Vertex(glm::vec3(-x_dist, -y_dist,  z_dist)), // Back
 
-        // // Front Side
-        // Vertex(glm::vec3(0f, 0f, 0f)),
-        // Vertex(glm::vec3(1f, 0f, 0f)),
-        // Vertex(glm::vec3(0f, 1f, 0f)),
-        // Vertex(glm::vec3(1f, 1f, 0f)),
-
-        // // Right Side
-        // Vertex(glm::vec3(1f, 0f, 0f)),
-        // Vertex(glm::vec3(1f, 0f, 1f)),
-        // Vertex(glm::vec3(1f, 1f, 0f)),
-        // Vertex(glm::vec3(1f, 1f, 1f)),
-
-        // // Back Side
-        // Vertex(glm::vec3(1f, 0f, 1f)),
-        // Vertex(glm::vec3(0f, 0f, 1f)),
-        // Vertex(glm::vec3(1f, 1f, 1f)),
-        // Vertex(glm::vec3(0f, 1f, 1f)),
-
-        // // Left Side
-        // Vertex(glm::vec3(0f, 1f, 0f)),
-        // Vertex(glm::vec3(0f, 1f, 1f)),
-        // Vertex(glm::vec3(0f, 0f, 0f)),
-        // Vertex(glm::vec3(0f, 0f, 1f)),
-
-        // // Top Side
-        // Vertex(glm::vec3(0f, 1f, 0f)),
-        // Vertex(glm::vec3(1f, 1f, 0f)),
-        // Vertex(glm::vec3(0f, 1f, 1f)),
-        // Vertex(glm::vec3(1f, 1f, 1f)),
-
-        // // Bottom Side
-        // Vertex(glm::vec3(1f, 0f, 0f)),
-        // Vertex(glm::vec3(0f, 0f, 0f)),
-        // Vertex(glm::vec3(1f, 0f, 1f)),
-        // Vertex(glm::vec3(0f, 0f, 1f)),
+        // Vertex(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
+        // Vertex(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
+        // Vertex(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
+        // Vertex(glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
+        // Vertex(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)),
+        // Vertex(glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f)),
+        // Vertex(glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)),
+        // Vertex(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.0f, -1.0f)),
+        // Vertex(glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f)),
+        // Vertex(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f)),
+        // Vertex(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.0f, -1.0f)),
+        // Vertex(glm::vec3(0.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.0f, -1.0f)),
+        // Vertex(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+        // Vertex(glm::vec3(0.0f, 1.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+        // Vertex(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+        // Vertex(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+        // Vertex(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f)),
+        // Vertex(glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f)),
+        // Vertex(glm::vec3(0.0f, 1.0f, 1.0f), glm::vec3(-1.0f, 0.0f, 0.0f)),
+        // Vertex(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(-1.0f, 0.0f, 0.0f)),
+        // Vertex(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
+        // Vertex(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
+        // Vertex(glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
+        // Vertex(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
     }; 
 
     std::vector<unsigned int> indices = {

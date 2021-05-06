@@ -8,27 +8,17 @@ void Collider::setGeometry(const PrimitiveMesh& geometry) {
         this->indices = geometry.indices;
 
         for(int i = 0; i < this->indices.size(); i++) {
-
             if (std::find(this->uniqueIndices.begin(), this->uniqueIndices.end(), this->indices[i]) == this->uniqueIndices.end()) {
                 this->uniqueIndices.push_back(this->indices[i]);
             }
-            // Vertex v = vertices[indices[i]];
-            // std::cout << indices[i] << std::endl;
-            // std::cout << v.position.x << " " << v.position.y << " " << v.position.z << " " << std::endl;
         }
-
-        // for (int i = 0; i < this->indices.size(); i += 3) {
-        //     // if( (i+2) < this->indices.size()) {
-        //     // std::cout << "Indices: " << this->indices[i] << " " << this->indices[i+1] << " " << this->indices[i+2] << std::endl;
-        //     //     // this->polygons.push_back( Polygon({ geometry.vertices[i], geometry.vertices[i+1], geometry.vertices[i+2] }) );
-        //     // }
-        // };
 
     } else if (geometry.vertices.size() > 0) {
         
         for (int i = 0; i < geometry.vertices.size(); i++) {
-            std::cout << "Generating collider indices" << std::endl;
+            std::cout << "Generating collider indices #INEFFICIENT" << std::endl;
             this->indices.push_back(i);
+            this->uniqueIndices.push_back(i);
         }
 
     }

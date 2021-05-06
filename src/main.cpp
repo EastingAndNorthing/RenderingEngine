@@ -69,7 +69,7 @@ int main() {
 
     // Single tetrahedron /////////////////////////////////////////////////////////////////////////
 
-    Mesh* myMesh = new BoxMesh(1.0f);
+    Mesh* myMesh = new SphereMesh(1.0f, 10);
     myMesh->setPosition({ 3.0f, 7.0f, 0.0f });
     // myMesh->setRotation({ -120.0f, 20.0f, 0.0f });
     myMesh->setMaterial(phongMaterial);
@@ -113,10 +113,10 @@ int main() {
         if(glfwGetKey(renderer.window, GLFW_KEY_KP_9) == GLFW_PRESS) myBody->omega.z -= 0.3f;
         if(glfwGetKey(renderer.window, GLFW_KEY_L) == GLFW_PRESS) myBody->vel.x += 0.3f;
         if(glfwGetKey(renderer.window, GLFW_KEY_J) == GLFW_PRESS) myBody->vel.x -= 0.3f;
-        if(glfwGetKey(renderer.window, GLFW_KEY_I) == GLFW_PRESS) myBody->vel.y += 0.3f;
-        if(glfwGetKey(renderer.window, GLFW_KEY_K) == GLFW_PRESS) myBody->vel.y -= 0.3f;
-        if(glfwGetKey(renderer.window, GLFW_KEY_U) == GLFW_PRESS) myBody->vel.z += 0.3f;
-        if(glfwGetKey(renderer.window, GLFW_KEY_O) == GLFW_PRESS) myBody->vel.z -= 0.3f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_O) == GLFW_PRESS) myBody->vel.y += 0.3f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_U) == GLFW_PRESS) myBody->vel.y -= 0.3f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_K) == GLFW_PRESS) myBody->vel.z += 0.3f;
+        if(glfwGetKey(renderer.window, GLFW_KEY_I) == GLFW_PRESS) myBody->vel.z -= 0.3f;
 
         glm::vec3 tetraPointL = { 0, -0.333333333333333333, 0.9428090415820633658 };
         glm::vec3 tetraPointW = CoordinateSystem::localToWorld(tetraPointL, myBody->pose.q, myBody->pose.p);

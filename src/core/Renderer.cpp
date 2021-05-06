@@ -119,13 +119,13 @@ void Renderer::EndLoop() {
 }
 
 void Renderer::DrawMeshes() {
-    // if(g_settings.wireframe) {
-    //     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    //     // glDisable(GL_CULL_FACE);
-    // } else {
-    //     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    //     // glEnable(GL_CULL_FACE);
-    // }
+    if(g_settings.wireframe) {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glDisable(GL_CULL_FACE);
+    } else {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glEnable(GL_CULL_FACE);
+    }
 
     for (auto& mesh : this->meshQueue) {
 
@@ -150,8 +150,12 @@ void Renderer::DrawMeshes() {
 
 void Renderer::DrawOverlays() {
 
+    // How about making a list of layers where geometry can be enqueued to?
+    // Then just clear depth buffer foreach layer
+
     glClear(GL_DEPTH_BUFFER_BIT); // Always on top
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe
+    glDisable(GL_CULL_FACE);
 
     for (auto& mesh : this->overlayQueue) {
         mesh->Bind();
