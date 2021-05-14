@@ -1,10 +1,17 @@
 #pragma once
 
+#include "physics/XPBDSolver.h"
 #include "physics/RigidBody.h"
 #include "core/Time.h"
 
+enum SolverType {
+    XPBD
+};
+
 class PhysicsHandler {
 public:
+
+    const SolverType solverType = SolverType::XPBD;
 
 	std::vector<RigidBody*> bodies = {};
 

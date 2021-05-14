@@ -1,29 +1,32 @@
 #pragma once
 
-#include "common.h"
-#include "physics/RigidBody.h"
+// #include "common.h"
+// #include "physics/RigidBody.h"
 
-struct ContactSet {
+// struct ContactSet {
     
-    RigidBody* A;
-    RigidBody* B;
+//     RigidBody* A = NULL;
+//     RigidBody* B = NULL;
 
-    glm::vec3 p;  // Contact position in world space
-    glm::vec3 N;  // Normal of collision plane
-    glm::vec3 eA; // Edge direction of A
-    glm::vec3 eB; // Edge direction of B
+//     glm::vec3 P = glm::vec3(0.0f);      // Contact position in world space
+//     glm::vec3 N = glm::vec3(0.0f);      // Normal of collision plane
 
-    bool vf; // True if point p and plane N are in contact
+//     float signedDistance = 0.0f;        // Signed distance
+    
+//     float vn = 0.0f;                    // Normal velocity
+//     float d = 0.0f;
+    
+//     float lambdaN = 0.0f;
+//     float lambdaT = 0.0f;
 
-    ContactSet(
-        RigidBody* A, 
-        RigidBody* B, 
-        const glm::vec3& touchPoint,
-        const glm::vec3& collisionPlane,
-        const glm::vec3& edgeA = glm::vec3(0),
-        const glm::vec3& edgeB = glm::vec3(0),
-        bool hasContact = true
-    );
-    ~ContactSet();
+//     ContactSet(
+//         RigidBody* A, 
+//         RigidBody* B, 
+//         // const glm::vec3& touchPoint,
+//         // const glm::vec3& collisionPlane,
+//         // const float& signedDistance,
+//         // const float& vn = 0.0f
+//     );
+//     ~ContactSet();
 
-};
+// };

@@ -30,7 +30,7 @@
             "command": "g++",
             "args": [
                 "-g",
-                // "-O3", // Harsh optimization
+                "-O2",
                 "-I${workspaceFolder}\\src\\",
                 "${workspaceFolder}\\src\\*.cpp",
                 "${workspaceFolder}\\src\\general\\*.cpp",
@@ -55,7 +55,10 @@
             "problemMatcher": [
                 "$gcc"
             ],
-            "group": "build"
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         },
         {
             "type": "shell",
@@ -63,6 +66,7 @@
             "command": "/usr/bin/clang++",
             "args": [
                 "-g",
+                "-O0",
                 "-std=c++17",
                 "-stdlib=libc++",
                 "-framework",
@@ -94,6 +98,6 @@
                 "$gcc"
             ],
             "group": "build"
-        },
+        }
     ]
 }

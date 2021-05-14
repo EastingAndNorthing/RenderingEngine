@@ -1,6 +1,7 @@
 #pragma once
 
 #include "primitives/Mesh.h"
+#include "primitives/GeometryGenerator.h"
 
 struct TetrahedronMesh : public Mesh {
     TetrahedronMesh(float size = 1.0f);

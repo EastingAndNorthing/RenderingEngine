@@ -6,7 +6,7 @@
 #include "core/Uniforms.h"
 #include "core/Camera.h"
 #include "primitives/Mesh.h"
-#include "primitives/PrimitiveGenerator.h"
+#include "primitives/GeometryGenerator.h"
 #include "input/WindowEventHandler.h"
 
 class Renderer {
