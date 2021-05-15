@@ -23,6 +23,7 @@ void Collider::setGeometry(const PrimitiveMesh& geometry) {
 
     }
 }
+void Collider::updateRotation(const glm::quat& rotation) { }
 
 BoxCollider::BoxCollider(const glm::vec3 &size) {
     this->colliderType = ColliderType::Box;
@@ -32,7 +33,12 @@ BoxCollider::BoxCollider(const glm::vec3 &size) {
 PlaneCollider::PlaneCollider(const glm::vec2 &size, const glm::vec3 &normal) {
     this->colliderType = ColliderType::Plane;
     this->size = size;
-    this->normal = normal;
+    this->normal = glm::normalize(normal);
+    this->normalRef = glm::normalize(normal);
+}
+void PlaneCollider::updateRotation(const glm::quat& rotation) {
+    // this->normal = rotation * glm::vec3(0.0f, 0.0f, 1.0f);
+    this->normal = rotation * this->normalRef;
 }
 
 SphereCollider::SphereCollider(const float &diameter) {

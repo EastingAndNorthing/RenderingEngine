@@ -26,6 +26,8 @@ public:
     
     void setGeometry(const PrimitiveMesh& geometry);
 
+    virtual void updateRotation(const glm::quat& rotation);
+
 };
 
 struct BoxCollider : public Collider {
@@ -35,8 +37,10 @@ struct BoxCollider : public Collider {
 
 struct PlaneCollider : public Collider {
     glm::vec2 size = glm::vec2(1.0f, 1.0f);
-    glm::vec3 normal = glm::vec3(0.0f, 1.0f, 0.0f);
-    PlaneCollider(const glm::vec2 &size, const glm::vec3 &normal = glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::vec3 normal = glm::vec3(0.0f, 0.0f, 1.0f);
+    glm::vec3 normalRef = glm::vec3(0.0f, 0.0f, 1.0f);
+    PlaneCollider(const glm::vec2 &size, const glm::vec3 &normal = glm::vec3(0.0f, 0.0f, 1.0f));
+    void updateRotation(const glm::quat& rotation);
 };
 
 struct SphereCollider : public Collider {

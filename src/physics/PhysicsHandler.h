@@ -2,6 +2,7 @@
 
 #include "physics/XPBDSolver.h"
 #include "physics/RigidBody.h"
+#include "physics/Collider.h"
 #include "core/Time.h"
 
 enum SolverType {

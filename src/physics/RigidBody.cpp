@@ -13,6 +13,8 @@ RigidBody::RigidBody(Mesh* mesh, Collider* collider)
         this->pose.p = mesh->position;
         this->pose.q = mesh->rotation;
     }
+
+    this->updateCollider();
 }
 
 void RigidBody::makeStatic() {
@@ -170,45 +172,5 @@ void RigidBody::updateGeometry() {
 }
 
 void RigidBody::updateCollider() {
-    switch(this->collider->colliderType) {
-        case ColliderType::Plane :
-            auto PC = static_cast<PlaneCollider*>(this->collider);
-            PC->normal = this->pose.q * glm::vec3(0.0f, 0.0f, 1.0f); // @TODO store initial up direction of plane collider normal
-            
-        break;
-        
-    }
+    this->collider->updateRotation(this->pose.q);
 }
-
-// void RigidBody::applyForceW(glm::vec3 worldForce, glm::vec3 positionW) {
-//     this->applyForceL(RigidBodyForce(worldForce, CoordinateSystem::worldToLocal(positionW, this->_inverseRotation)));
-// }
-
-// void RigidBody::applyForceL(glm::vec3 worldForce, glm::vec3 positionL) {
-//     this->applyForceL(RigidBodyForce(worldForce, positionL));
-// }
-
-// void RigidBody::applyForceL(RigidBodyForce force) {
-//     this->externalForces.push_back(force);
-// }
-
-// void RigidBody::applyLocalImpulse(const glm::vec3& impulse, const glm::vec3& position) {
-    
-//     std::cout << "applyLocalImpulse is not yet implemented" << std::endl;
-
-// }
-
-// void RigidBody::applyWorldImpulse(const glm::vec3& impulse, const glm::vec3& position) {
-    
-//     this->velocity += impulse;
-    
-//     glm::vec3 localImpulse = CoordinateSystem::worldToLocal(impulse, this->_inverseRotation, glm::vec3(0.0f));
-//     glm::vec3 localPosition = CoordinateSystem::worldToLocal(position, this->_inverseRotation, this->position);
-    
-//     this->angularVelocity += this->_inverseInertiaTensor * glm::cross(localImpulse, -localPosition);
-
-// }
-
-// glm::vec3 RigidBody::getAngularVelocityW() {
-//     return CoordinateSystem::localToWorld(this->angularVelocity, this->rotation);   
-// }

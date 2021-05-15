@@ -109,11 +109,12 @@ std::vector<ContactSet*> XPBDSolver::getContacts(const std::vector<CollisionPair
                         auto MC = static_cast<MeshCollider*>(A->collider);
                         auto PC = static_cast<PlaneCollider*>(B->collider);
 
-                        const glm::vec3& N = glm::normalize(PC->normal); // Maybe assume N to always be normalized for planes.
+                        const glm::vec3& N = PC->normal;
 
                         float deepestPenetration = 0.0f;
                         ContactSet* contactSet = new ContactSet(A, B);
 
+                        // @TODO check if vertex is actually inside plane size :)
                         for(int i = 0; i < MC->uniqueIndices.size(); i++) {
                             const Vertex& v = MC->vertices[MC->uniqueIndices[i]];
                             glm::vec3 point = CoordinateSystem::localToWorld(v.position, A->pose.q, A->pose.p);

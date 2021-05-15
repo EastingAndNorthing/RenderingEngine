@@ -86,8 +86,11 @@ int main() {
     floor->setMaterial(phongMaterial2);
     renderer.Enqueue(floor);
     
-    RigidBody* floorBody = new RigidBody(floor, new PlaneCollider(glm::vec2(10.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-    floorBody->makeStatic();
+    RigidBody* floorBody = new RigidBody(floor, new PlaneCollider(glm::vec2(10.0f)));
+    // floorBody->makeStatic();
+    floorBody->invMass = 0.005f;
+    floorBody->gravity = 0.0f;
+    floorBody->invInertia = glm::vec3(0.005f);
     physicsHandler.Enqueue(floorBody);
     
     while (renderer.isActive()) {
